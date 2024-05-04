@@ -7,6 +7,7 @@ import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ReactPaginate from "react-paginate";
 import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import Swal from "sweetalert2";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -35,14 +36,19 @@ export default function HistoryPage() {
   const userObject = JSON.parse(user);
   const user_id = userObject.id;
 
-  const fetchComments = useCallback(async () => {
-    try {
-      const result = await getData(`form/user_comment?user_id=${user_id}`);
-      setShowComments(result.data);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  }, [user_id]);
+  const fetchComments = useCallback(
+    async (paper_id) => {
+      try {
+        const result = await getData(
+          `form/user_comment?user_id=${user_id}&paper_id=${paper_id}`
+        );
+        setShowComments(result.data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    },
+    [user_id]
+  );
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
@@ -93,7 +99,7 @@ export default function HistoryPage() {
     }
   }, [user_id]);
 
-  // console.log(papers);
+  console.log(papers);
   // console.log(articles);
 
   // const fetchArticles = async () => {
@@ -109,18 +115,56 @@ export default function HistoryPage() {
 
   useEffect(() => {
     fetchPapers();
-    fetchComments();
-    const intervalId = setInterval(fetchComments, 5000);
+    const intervalId = setInterval(fetchCommentsForAllPapers, 5000);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [fetchPapers, fetchComments]);
+  }, [fetchPapers]);
+
+  const fetchCommentsForAllPapers = useCallback(() => {
+    papers.forEach((paper) => {
+      fetchComments(paper.paper_id);
+    });
+  }, [papers, fetchComments]);
+
+  const fetchCommentsForAllPapersPeriodically = useCallback(() => {
+    fetchCommentsForAllPapers();
+  }, [fetchCommentsForAllPapers]);
+
+  useEffect(() => {
+    fetchCommentsForAllPapersPeriodically();
+
+    const intervalId = setInterval(fetchCommentsForAllPapersPeriodically, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [fetchCommentsForAllPapersPeriodically]);
 
   // function to delete a paper
   const DeletePaper = async (paperid) => {
     try {
-      await getData(`form/delete_paper?id=${paperid}`);
+      // Show confirmation message
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You will not be able to recover this paper!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true,
+      });
+
+      if (result.isConfirmed) {
+        // User confirmed, proceed with deletion
+        await getData(`form/delete_paper?id=${paperid}`);
+
+        Swal.fire("Deleted!", "Your paper has been deleted.", "success");
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // User cancelled, do nothing
+        Swal.fire("Cancelled", "Your paper is safe :)", "error");
+      }
       fetchPapers();
     } catch (error) {
       console.error("Error deleting paper:", error);

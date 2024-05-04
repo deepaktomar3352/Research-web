@@ -66,13 +66,12 @@ const UserList = () => {
   console.log("peopledata",peopleData);
 
   useEffect(() => {
-    fetchusers();
-    // if (peopleData && peopleData.user_id) {
-    //   const userId = peopleData.user_id;
-    //   const colorIndex = userId % colors.length;
-    //   const userColor = colors[colorIndex];
-    //   setProfileColor(userColor);
-    // }
+    const intervalId = setInterval(() => {
+      fetchusers();
+    }, 5000);
+  
+    // Clear the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   // console.log("Accept", acceptedUsers);

@@ -23,11 +23,12 @@ export default function ReplyUser(props) {
   };
 
   const fetchComments = useCallback(async () => {
-    if (props.person && props.person.user_id) {
+    if (props.person.user_id && props.person.paper_id) {
       try {
+        const paper_id = props.person.paper_id;
         const user_id = props.person.user_id;
         setUserId(user_id);
-        const result = await getData(`form/admin_comment?user_id=${user_id}`);
+        const result = await getData(`form/admin_comment?user_id=${user_id}&paper_id=${paper_id}`);
         setShowComments(result.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
