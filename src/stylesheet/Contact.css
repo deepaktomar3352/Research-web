@@ -1,0 +1,45 @@
+.ContactMain-Container {
+  background-color: #f8f8f8;
+  margin: 0.5% 0px;
+  padding: 10px;
+}
+
+.Contact-heading {
+  font-size: 3vw;
+  font-weight: 800;
+  /* font-family: "Poppins"; */
+  color: #ff4500;
+  position: relative;
+  display: inline-block;
+}
+
+.Contact-heading::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  height: 4px;
+  background-color: #ec1ce8;
+}
+
+.color-contact {
+  color: #1a2238;
+}
+/* .btn-Contact {
+  background-color: #1a2238;
+  font-size: 1vw;
+  width: 100%;
+  height: auto;
+  padding: 1%;
+  color: #fff;
+  border:none;
+  border-radius: 2px;
+  margin: 0px;
+} */
+@media screen and (max-width: 600px) {
+  .Contact-heading {
+    font-size: 8vw;
+  }
+}

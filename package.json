@@ -1,0 +1,63 @@
+{
+  "name": "Research-paper",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@babel/core": "^7.24.4",
+    "@cyntler/react-doc-viewer": "^1.14.1",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@faker-js/faker": "^8.4.1",
+    "@fontsource/poppins": "^5.0.13",
+    "@mui/icons-material": "^5.15.15",
+    "@mui/material": "^5.15.15",
+    "@mui/styled-engine-sc": "^6.0.0-alpha.18",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.6.8",
+    "countries-list": "^3.1.0",
+    "country-state-city": "^3.2.1",
+    "poppins": "^0.1.1",
+    "react": "^18.2.0",
+    "react-doc-viewer": "^0.1.5",
+    "react-dom": "^18.2.0",
+    "react-file-viewer": "^1.2.1",
+    "react-hook-form": "^7.51.3",
+    "react-paginate": "^8.2.0",
+    "react-pdf": "^7.7.1",
+    "react-router-dom": "^6.22.3",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.8.0",
+    "styled-components": "^6.1.8",
+    "sweetalert2": "^11.10.8",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+  }
+}

@@ -1,0 +1,64 @@
+.title {
+    text-align: center;
+  }
+  
+  .user-list-container {
+    padding: 10px;
+    margin-top: 1%;
+  }
+  
+  .user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: auto;
+    padding: 5px;
+  }
+  
+  .user-info {
+    display: block;
+    align-items: center;
+  }
+  .user-pic-name-align{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -10px;
+  }
+  
+  .user-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+  }
+  
+  .user-details {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .user-name {
+    margin: 0;
+  }
+  
+  .button-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .icon {
+    margin-left: 5px;
+  }
+.userlist-dialog-box-container{
+  /* background-color: red; */
+}
+.dialog-title {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.dialog-actions {
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,100 @@
+.styled-table {
+  width: 100%;
+  border-collapse: collapse; /* Removes gaps between table cells */
+  background-color: #f7f7f7; /* Light gray background for table */
+}
+
+.styled-table th,
+.styled-table td {
+  border: 1px solid #ddd; /* Border for table cells */
+  padding: 12px; /* Padding inside table cells */
+  text-align: left; /* Align text to the left */
+}
+
+.styled-table th {
+  background-color: #f2f2f2; /* Light background for table headers */
+  font-weight: bold; /* Bold font for headers */
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Different background color for even rows */
+}
+
+.styled-table tbody tr:hover {
+  background-color: #e1e1e1; /* Hover effect for rows */
+}
+
+.delete-button {
+  background-color: #f44336; /* Red background for delete button */
+  color: white; /* White text */
+  padding: 8px 16px; /* Padding for the button */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Cursor change on hover */
+}
+
+.delete-button:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}
+
+/* Styles for pagination container */
+.pagination {
+  display: flex;
+  justify-content: center; /* Center the pagination controls */
+  align-items: center;
+  list-style-type: none; /* No default bullet points */
+  padding: 0;
+  margin: 20px 0; /* Spacing between table and pagination */
+}
+
+/* Pagination links */
+.pagination a {
+  border: 1px solid #ddd; /* Light border */
+  padding: 10px 15px; /* Padding for each link */
+  margin: 0 5px; /* Spacing between links */
+  text-decoration: none; /* Remove underline */
+  color: #333; /* Dark text color */
+  font-weight: bold; /* Bold text */
+  border-radius: 5px; /* Rounded corners */
+  transition: all 0.3s; /* Smooth transition on hover */
+  cursor: pointer;
+}
+
+/* Hover effect */
+.pagination a:hover {
+  background-color: #ddd; /* Light gray background on hover */
+}
+
+/* Active page */
+.active {
+  background-color: #ddd; /* Bright background for active page */
+  color: black; /* Black text for better contrast on yellow */
+  border: none; /* No border */
+  padding: 10px; /* Padding within the element */
+  margin: 0; /* Ensure no extra margin */
+  text-align: center; /* Align text to the center */
+  border-radius: 5px;
+}
+
+/* Ellipsis style for break points */
+.break-me {
+  padding: 10px; /* Padding for ellipsis */
+}
+
+/* Responsive adjustments using media queries */
+@media (max-width: 600px) {
+  /* On smaller screens, reduce padding and margin */
+  .pagination a {
+    padding: 0.4rem 0.8rem;
+    margin: 0 0.3rem;
+  }
+
+  .pagination {
+    justify-content: center; /* Align left for smaller screens */
+  }
+
+  /* Optionally, adjust active class for better visibility */
+  .active {
+    background-color: #ccc; /* Lighter background for better visibility */
+  }
+}
