@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Avatar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
+import { Button, Avatar } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import "../stylesheet/UserList.css"; // Import the CSS file for styling
 import ReplyIcon from "@mui/icons-material/Reply";
-import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
-import { ServerURL, getData, postData } from "../services/ServerServices";
+import { ServerURL, getData } from "../services/ServerServices";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ReplyUser from "./admin-SubComponents/ReplyUser";
 import OpenDocument from "./admin-SubComponents/OpenDocument";
@@ -26,27 +18,29 @@ import {
   indigo,
   brown,
 } from "@mui/material/colors";
+// import IosShareIcon from "@mui/icons-material/IosShare";
+
 const UserList = () => {
   const [openDialog, setOpenDialog] = useState(false); // State to control dialog open/close
 
   const [peopleData, setPeopleData] = useState([]);
   const [replyDialogOpen, setReplyDialogOpen] = useState(false); // State to control reply dialog open/close
   const [openView, setOpenView] = useState(false); // State to control view dialog open/close
-  const [file, setFile] = useState(""); // State to hold the file for view dialog
-  const [userDetails, setUserDetails] = useState("");
+  // const [file, setFile] = useState(""); // State to hold the file for view dialog
+  // const [userDetails, setUserDetails] = useState("");
   const [personData, setPersonData] = useState("");
-  const [profileColor, setProfileColor] = useState(null);
+  // const [profileColor, setProfileColor] = useState(null);
 
   const fetchusers = async () => {
-   try {
-    const result = await getData("form/paper_requests");
-    // console.log(result.papers);
-    if (result.status) {
-      setPeopleData(result.papers);
+    try {
+      const result = await getData("form/paper_requests");
+      // console.log(result.papers);
+      if (result.status) {
+        setPeopleData(result.papers);
+      }
+    } catch (error) {
+      colors.error(error);
     }
-   } catch (error) {
-    colors.error(error);
-   }
   };
 
   // Function to generate a random color from an array of colors
@@ -63,23 +57,22 @@ const UserList = () => {
     brown[500],
   ];
 
-  console.log("peopledata",peopleData);
+  console.log("peopledata", peopleData);
 
   useEffect(() => {
+    fetchusers();
     const intervalId = setInterval(() => {
       fetchusers();
     }, 5000);
-  
+
     // Clear the interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
 
-  // console.log("Accept", acceptedUsers);
-
-  const handleReject = (person) => {
-    // Filter out the rejected user from the list
+  const handleReject = (paperId) => {
+    // Filter out the rejected user from the list based on paper_id
     const updatedPeopleData = peopleData.filter(
-      (p) => p.user_id !== person.user_id
+      (person) => person.paper_id !== paperId
     );
     setPeopleData(updatedPeopleData);
   };
@@ -93,11 +86,11 @@ const UserList = () => {
     setPersonData(person);
   };
 
-  const handleView = (person) => {
-    // setFile(person.file);
-    setPersonData(person);
-    // setOpenView(true);
-  };
+  // const handleView = (person) => {
+  //   // setFile(person.file);
+  //   setPersonData(person);
+  //   // setOpenView(true);
+  // };
 
   const handleCloseView = () => {
     setOpenView(false);
@@ -120,7 +113,7 @@ const UserList = () => {
                     />
                   ) : (
                     <Avatar
-                    className="user-image"
+                      className="user-image"
                       // onClick={() => setClickProfile(!clickProfile)}
                       sx={{
                         bgcolor: pink[500],
@@ -154,7 +147,21 @@ const UserList = () => {
                   onClick={() => handleReply(person)}
                 >
                   <ReplyIcon />
-                  {/* Reply */}
+                </Button>
+
+                <Button
+                  sx={{ marginRight: "2%" }}
+                  variant="text"
+                  // onClick={() => handleView(person)}
+                >
+                  <a
+                    rel="noreferrer"
+                    href={`${ServerURL}/images/${person.paper_uploaded}`}
+                    target="_blank"
+                  >
+                    <CloudDownloadIcon />
+                  </a>
+                  {/* View */}
                 </Button>
 
                 <Button
@@ -166,24 +173,10 @@ const UserList = () => {
                 </Button>
 
                 <Button
-                  sx={{ marginRight: "2%" }}
-                  variant="text"
-                  // onClick={() => handleView(person)}
-                >
-                  <a
-                    href={`${ServerURL}/images/${person.paper_uploaded}`}
-                    target="_blank"
-                  >
-                    <CloudDownloadIcon />
-                  </a>
-                  {/* View */}
-                </Button>
-
-                <Button
                   sx={{ marginRight: "5%" }}
                   variant="text"
                   color="error"
-                  onClick={() => handleReject(person)}
+                  onClick={() => handleReject(person.paper_id)}
                 >
                   <ClearIcon className="icon" />
                   {/* Reject */}
