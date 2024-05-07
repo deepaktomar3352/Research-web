@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Grid, Paper } from "@mui/material";
-import { ServerURL, getData } from "../services/ServerServices";
+import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
@@ -8,11 +8,13 @@ import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
+import Badge from "@mui/material/Badge";
 
 export default function HistoryPage() {
   const [papers, setPapers] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [paperId, setPaperId] = useState("");
+  const [notifyCount, setNotifyCount] = useState([]);
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user);
   const user_id = userObject.id;
@@ -70,11 +72,31 @@ export default function HistoryPage() {
     }
   };
 
-  const handleComment = (paperid)=>{
+  const handleComment = async (paperid) => {
     setPaperId(paperid);
-  }
+    try {
+      const body = {
+        paperid: paperid,
+      };
+      var result = await postData("form/reset_count", body);
+      console.log("reset", result);
+    } catch (error) {}
+  };
 
-  console.log("id",paperId);
+  useEffect(() => {
+    const fetchNewAdminCommentsCount = async () => {
+      try {
+        const results = await getData(`form/new_count`);
+        setNotifyCount(results.counts);
+      } catch (error) {
+        console.error("Error fetching new admin comments count:", error);
+      }
+    };
+
+    fetchNewAdminCommentsCount();
+    const interval = setInterval(fetchNewAdminCommentsCount, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div>
@@ -137,16 +159,53 @@ export default function HistoryPage() {
                         </td>
                         <td>
                           <center>
-                            <ChatIcon  style={{
-                                color: "#ed15d8",
-                                cursor: "pointer",
-                                fontSize: 25,
-                              }} 
-                              onClick={() => {
-                                handleComment(paper.paper_id);
-                              }}/>
+                            {notifyCount.map((notify) => {
+                              if (notify.paper_id === paper.paper_id) {
+                                return (
+                                  <Badge
+                                    key={notify.paper_id}
+                                    badgeContent={notify.count}
+                                    color="primary"
+                                  >
+                                    <ChatIcon
+                                      style={{
+                                        color: "#ed15d8",
+                                        cursor: "pointer",
+                                        fontSize: 25,
+                                      }}
+                                      onClick={() => {
+                                        handleComment(paper.paper_id);
+                                      }}
+                                    />
+                                  </Badge>
+                                );
+                              }
+                              return null; // Add this line to return null when the condition is not met
+                            })}
+                            {/* If no match found, display 0 */}
+                            {notifyCount.every(
+                              (notify) => notify.paper_id !== paper.paper_id
+                            ) && (
+                              <Badge
+                                key={paper.paper_id}
+                                badgeContent={0}
+                                color="primary"
+                              >
+                                <ChatIcon
+                                  style={{
+                                    color: "#ed15d8",
+                                    cursor: "pointer",
+                                    fontSize: 25,
+                                  }}
+                                  onClick={() => {
+                                    handleComment(paper.paper_id);
+                                  }}
+                                />
+                              </Badge>
+                            )}
                           </center>
                         </td>
+
                         <td>
                           <center>
                             <DeleteIcon
@@ -161,7 +220,6 @@ export default function HistoryPage() {
                             />
                           </center>
                         </td>
-                        
                       </tr>
                     ))}
                   </tbody>

@@ -79,25 +79,6 @@ export default function CommentSection(props) {
     }
   };
 
-//   const fetchCommentsForAllPapers = useCallback(() => {
-//     props.papers.forEach((paper) => {
-//       fetchComments(paper.paper_id);
-//     });
-//   }, [props.papers, fetchComments]);
-
-//   const fetchCommentsForAllPapersPeriodically = useCallback(() => {
-//     fetchCommentsForAllPapers();
-//   }, [fetchCommentsForAllPapers]);
-
-//   useEffect(() => {
-//     fetchCommentsForAllPapersPeriodically();
-
-//     const intervalId = setInterval(fetchCommentsForAllPapersPeriodically, 5000);
-
-//     return () => {
-//       clearInterval(intervalId);
-//     };
-//   }, [fetchCommentsForAllPapersPeriodically]);
 
 
   return (
@@ -111,6 +92,7 @@ export default function CommentSection(props) {
           m: "3%",
         }}
       >
+       {props.paperId ? <>
         <div>
           <h2>Send a comment to Admin</h2>
           <TextField
@@ -143,6 +125,7 @@ export default function CommentSection(props) {
             </Button>
           </div>
         </div>
+       </>:<></>}
 
         <div
           style={{

@@ -28,7 +28,9 @@ export default function ReplyUser(props) {
         const paper_id = props.person.paper_id;
         const user_id = props.person.user_id;
         setUserId(user_id);
-        const result = await getData(`form/admin_comment?user_id=${user_id}&paper_id=${paper_id}`);
+        const result = await getData(
+          `form/admin_comment?user_id=${user_id}&paper_id=${paper_id}`
+        );
         setShowComments(result.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -42,7 +44,8 @@ export default function ReplyUser(props) {
       comment: comment.text,
       is_admin_comment: "1",
       user_id: user_id,
-      paper_id: props.person.paper_id
+      paper_id: props.person.paper_id,
+      
     };
 
     try {
@@ -73,21 +76,21 @@ export default function ReplyUser(props) {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-  
+
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-  
+
     let hours = date.getHours();
     const isPM = hours >= 12; // Determine if it's PM
     const displayHours = hours % 12 || 12; // Convert to 12-hour format
     const minutes = String(date.getMinutes()).padStart(2, "0");
     const ampm = isPM ? "PM" : "AM"; // Determine AM or PM
-  
+
     return `${day}/${month}/${year} ${displayHours}:${minutes} ${ampm}`;
   };
-  
-console.log("props", props.person);
+
+  console.log("props", props.person);
   return (
     <div>
       {/****************** Reply Dialog Box Start ******************************/}
@@ -122,7 +125,7 @@ console.log("props", props.person);
               margin="dense"
               label="Your Comment"
               type="text"
-              sx={{ width: "100%", }}
+              sx={{ width: "100%" }}
               value={comment}
               autoCapitalize="true"
               onChange={handleCommentChange}
@@ -252,7 +255,9 @@ console.log("props", props.person);
                         </div>
                       </div>
                     </>
-                  ) : (<></>)}
+                  ) : (
+                    <></>
+                  )}
                 </div>
               ))}
           </div>
