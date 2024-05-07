@@ -22,7 +22,6 @@ export default function HistoryPage() {
   var itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
   const currentPapers = papers.slice(offset, offset + itemsPerPage);
-  // const currentArticles = articles.slice(offset, offset + itemsPerPage);
 
   const handlePageChange = (selected) => {
     setCurrentPage(selected.selected); // Set the new page when changed
@@ -72,8 +71,8 @@ export default function HistoryPage() {
     }
   };
 
-  const handleComment = async (paperid) => {
-    setPaperId(paperid);
+
+  const handleUnCount =async(paperid)=>{
     try {
       const body = {
         paperid: paperid,
@@ -81,6 +80,11 @@ export default function HistoryPage() {
       var result = await postData("form/reset_count", body);
       console.log("reset", result);
     } catch (error) {}
+  }
+
+  const handleComment = async (paperid) => {
+    setPaperId(paperid);
+    handleUnCount(paperid)
   };
 
   useEffect(() => {
@@ -251,6 +255,7 @@ export default function HistoryPage() {
             papers={papers}
             userObject={userObject}
             paperId={paperId}
+            UnCount={handleUnCount}
           />
         </Grid>
       </Grid>

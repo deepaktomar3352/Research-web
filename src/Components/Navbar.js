@@ -112,12 +112,12 @@ export default function Navbar(props) {
                 )}
                 {isLoggedIn && (
                   <>
-                    <li>
+                    {/* <li>
                       <Link onClick={() => props.setRender("home")}>Home</Link>
-                    </li>
+                    </li> */}
                     <li>
-                      <Link onClick={() => props.setRender("submit-paper")}>
-                        Submit Paper
+                      <Link to={"/PaperSubmissionForm"}>
+                         Paper Submit
                       </Link>
                     </li>
                     {/* <li>

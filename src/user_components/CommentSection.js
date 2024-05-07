@@ -59,6 +59,7 @@ export default function CommentSection(props) {
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
       await handleCommentSubmit(newComment); // Send the latest comment
+      props.UnCount(props.paperId)
       fetchComments();
     }
   };

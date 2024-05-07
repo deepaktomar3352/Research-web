@@ -5,14 +5,12 @@ import {
   Divider,
   TextareaAutosize,
   Button,
+  Autocomplete,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import "../stylesheet/ArticlePage.css";
 import { postData } from "../services/ServerServices";
 import Swal from "sweetalert2";
-
-
-
 
 export default function PaperSubmissionForm() {
   const user = localStorage.getItem("user");
@@ -25,6 +23,7 @@ export default function PaperSubmissionForm() {
     uploadPaper: "",
     keywords: "",
     abstract: "",
+    category: "",
     authors: [],
     addressLine1: "",
     addressLine2: "",
@@ -32,10 +31,11 @@ export default function PaperSubmissionForm() {
     postalCode: "",
   });
 
+  const handleCategoryChange = (event, newValue) => {
+    setFormData({ ...formData, category: newValue });
+  };
 
-
-  
-  const EmptyData =()=>{
+  const EmptyData = () => {
     setFormData({
       user_id: id,
       paperTitle: "",
@@ -43,13 +43,14 @@ export default function PaperSubmissionForm() {
       uploadPaper: "",
       keywords: "",
       abstract: "",
+      category:"",
       authors: [],
       addressLine1: "",
       addressLine2: "",
       city: "",
       postalCode: "",
-    })
-  }
+    });
+  };
 
   const handleInputChange = (event) => {
     const { id, value } = event.target;
@@ -75,7 +76,7 @@ export default function PaperSubmissionForm() {
 
   const handleRemoveAuthor = (index) => {
     const updatedAuthors = formData.authors.filter((_, i) => i !== index);
-    console.log("index",index)
+    console.log("index", index);
     setFormData({ ...formData, authors: updatedAuthors });
   };
 
@@ -96,8 +97,7 @@ export default function PaperSubmissionForm() {
 
     try {
       const result = await postData("form/upload_paper", form);
-      if(result.status)
-      {
+      if (result.status) {
         Swal.fire({
           icon: "success",
           // title: "Paper Submit successfully!.",
@@ -105,11 +105,9 @@ export default function PaperSubmissionForm() {
           showConfirmButton: false,
           timer: 1500,
         });
-        EmptyData()
+        EmptyData();
         console.log("Upload result:", result);
-      }
-      
-      else{
+      } else {
         Swal.fire({
           icon: "error",
           title: "Paper Submit failed",
@@ -118,7 +116,6 @@ export default function PaperSubmissionForm() {
         });
         console.error("Upload error:", result.message);
       }
-      
     } catch (error) {
       console.error("Upload error:", error);
     }
@@ -184,7 +181,7 @@ export default function PaperSubmissionForm() {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <TextareaAutosize
                   required
                   autoComplete="off"
@@ -201,6 +198,32 @@ export default function PaperSubmissionForm() {
                   id="abstract"
                   value={formData.abstract}
                   onChange={handleInputChange}
+                />
+              </Grid>
+
+              <Grid item xs={6}>
+                <Autocomplete
+                  fullWidth
+                  value={formData.category}
+                  onChange={handleCategoryChange}
+                  options={[
+                    "Life sciences and Health Sciences",
+                    "Physical, Chemical Sciences & Engineering",
+                    "Arts and Humanities",
+                    "Accounting & Commerce",
+                  ]}
+                  renderInput={(params) => (
+                    <TextField
+                      required
+                      autoComplete="off"
+                      {...params}
+                      label="Select Category"
+                      variant="outlined"
+                      style={{
+                        backgroundColor: "white",
+                      }}
+                    />
+                  )}
                 />
               </Grid>
 
@@ -248,7 +271,7 @@ export default function PaperSubmissionForm() {
                   </Grid>
                   <Grid item xs={6}>
                     <TextField
-                    autoComplete="off"
+                      autoComplete="off"
                       fullWidth
                       required
                       id={`university${index}`}
@@ -350,7 +373,7 @@ export default function PaperSubmissionForm() {
                   onChange={handleInputChange}
                 />
               </Grid>
-            
+
               <Grid item xs={6}>
                 <TextField
                   fullWidth
