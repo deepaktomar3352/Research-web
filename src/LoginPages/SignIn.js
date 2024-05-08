@@ -17,6 +17,13 @@ import PersonPinIcon from "@mui/icons-material/PersonPin";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 function Copyright(props) {
   return (
@@ -47,7 +54,13 @@ const defaultTheme = createTheme();
 export default function SignIn() {
   const navigate = useNavigate();
   const [value, setValue] = React.useState(0);
+  const [showPassword, setShowPassword] = React.useState(false);
 
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission
 
@@ -60,8 +73,8 @@ export default function SignIn() {
       if (value === 1) {
         const result = await postData("viewer/viewer_login", body);
         if (result && result.status) {
-          console.log("result:-", result);
-          localStorage.setItem("viewer", JSON.stringify(result.user));
+          console.log("viewer result:-", result);
+          localStorage.setItem("viewer", JSON.stringify(result.viewer));
           Swal.fire({
             position: "center",
             icon: "success",
@@ -69,7 +82,7 @@ export default function SignIn() {
             showConfirmButton: false,
             timer: 500,
           });
-          navigate("/ViewerDashboard");
+          navigate("/");
           // console.log(result);
         } else {
           Swal.fire({
@@ -183,16 +196,30 @@ export default function SignIn() {
                 autoComplete="email"
                 autoFocus
               />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
+              <FormControl sx={{width: "100%" }} variant="outlined">
+                <InputLabel htmlFor="outlined-adornment-password">
+                  Password
+                </InputLabel>
+                <OutlinedInput
+                  name="password"
+                  autoComplete="current-password"
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+              </FormControl>
               {/* <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"

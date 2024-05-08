@@ -10,7 +10,7 @@ import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
 
-export default function HistoryPage() {
+export default function ViewerHistoryPage() {
   const [papers, setPapers] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [paperId, setPaperId] = useState("");
@@ -114,7 +114,7 @@ export default function HistoryPage() {
             }}
           >
             <div>
-              <h1>Your Papers</h1>
+              <h1>Papers</h1>
               <div style={{ overflowX: "auto" }}>
                 {" "}
                 {/* Wrapper for horizontal scrolling */}
@@ -123,11 +123,11 @@ export default function HistoryPage() {
                     <tr>
                       <th>Title</th>
                       <th>Research Area</th>
+                      <th>Paper Abstract</th>
                       <th>Submission Date</th>
-                      <th>Status</th>
-                      <th>View Paper</th>
+                      <th>Category</th>
                       <th>Comment</th>
-                      <th>Action</th>
+                      <th>View Paper</th>
                     </tr>
                   </thead>
                   <tbody>

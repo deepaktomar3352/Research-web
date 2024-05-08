@@ -6,7 +6,6 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import { ServerURL, getData } from "../services/ServerServices";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ReplyUser from "./admin-SubComponents/ReplyUser";
-import OpenDocument from "./admin-SubComponents/OpenDocument";
 import {
   deepOrange,
   deepPurple,
@@ -18,6 +17,7 @@ import {
   indigo,
   brown,
 } from "@mui/material/colors";
+import UserSelection from "./admin-SubComponents/UserSelection";
 // import IosShareIcon from "@mui/icons-material/IosShare";
 
 const UserList = () => {
@@ -25,11 +25,9 @@ const UserList = () => {
 
   const [peopleData, setPeopleData] = useState([]);
   const [replyDialogOpen, setReplyDialogOpen] = useState(false); // State to control reply dialog open/close
+  const [viewerDialogOpen, setViewerDialogOpen] = useState(false); // State to control reply dialog open/close
   const [openView, setOpenView] = useState(false); // State to control view dialog open/close
-  // const [file, setFile] = useState(""); // State to hold the file for view dialog
-  // const [userDetails, setUserDetails] = useState("");
   const [personData, setPersonData] = useState("");
-  // const [profileColor, setProfileColor] = useState(null);
 
   const fetchusers = async () => {
     try {
@@ -57,7 +55,7 @@ const UserList = () => {
     brown[500],
   ];
 
-  console.log("peopledata", peopleData);
+  // console.log("peopledata", peopleData);
 
   useEffect(() => {
     fetchusers();
@@ -77,8 +75,10 @@ const UserList = () => {
     setPeopleData(updatedPeopleData);
   };
 
-  const handleSendMessage = () => {
+  const handleViewerSelection = (person) => {
     setOpenDialog(true); // Open the dialog when sending message
+    setViewerDialogOpen(true); // Open the dialog when receiving
+    setPersonData(person);
   };
 
   const handleReply = (person) => {
@@ -166,7 +166,7 @@ const UserList = () => {
 
                 <Button
                   sx={{ marginRight: "2%" }}
-                  onClick={handleSendMessage}
+                  onClick={()=>handleViewerSelection(person)}
                   variant="contained"
                 >
                   Share
@@ -197,12 +197,12 @@ const UserList = () => {
         />
       )}
 
-      {/****************** View Dialog Box Start ******************************/}
-      {openView && (
-        <OpenDocument
-          person={personData}
-          openView={openView}
-          handleCloseView={handleCloseView}
+      {/*******************  select viewer section start here ****************** */}
+      {viewerDialogOpen && (
+        <UserSelection
+          personData={personData}
+          viewerDialogOpen={viewerDialogOpen}
+          handleViewerDialogClose={() => setViewerDialogOpen(false)}
         />
       )}
     </div>

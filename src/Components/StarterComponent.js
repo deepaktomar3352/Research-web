@@ -42,7 +42,7 @@ export default function StarterComponent() {
                 ongoing conversations within various disciplines.
               </p>
               
-                  <Link style={{ textDecoration: "none" }} to={"SignIn"}>
+                  <Link style={{ textDecoration: "none" }} to={"/SignIn"}>
                     <button className="get-started-btn">Get Started</button>
                   </Link>                
                 

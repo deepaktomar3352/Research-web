@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import UserProfile from "./pages/UserProfile";
 import ForgotPassword from "./Components/ForgotPassword";
 import UserResetPassword from "./Components/ResetPassword";
+import ViewerDashboard from "./pages/ViewerDashboard";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route Component={ArticlePage} path="/ArticlePage" />
           <Route Component={PaperSubmissionForm} path="/PaperSubmissionForm" />
           <Route Component={Dashboard} path="/Dashboard" />
+          <Route Component={ViewerDashboard} path="/ViewerDashboard" />
         </Routes>
       </Router>
     </div>

@@ -18,126 +18,107 @@ import {
 } from "@mui/material/colors";
 
 // Function to generate a random color from an array of colors
-
-  const colors = [
-    deepOrange[500],
-    deepPurple[500],
-    green[500],
-    pink[500],
-    red[500],
-    purple[500],
-    orange[500],
-    indigo[500],
-    brown[500],
-  ];
-
+const colors = [
+  deepOrange[500],
+  deepPurple[500],
+  green[500],
+  pink[500],
+  red[500],
+  purple[500],
+  orange[500],
+  indigo[500],
+  brown[500],
+];
 
 export default function Navbar(props) {
-  // Retrieve the item from localStorage
-  const userString = localStorage.getItem("user");
-  const user = JSON.parse(userString);
-  const navigate = useNavigate();
-  const [MobileMenu, setMobileMenu] = useState(false);
+  const [user, setUser] = useState(null);
+  const [viewer, setViewer] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [clickProfile, setClickProfile] = useState(false);
   const [profileColor, setProfileColor] = useState(null);
-
-
+  const navigate = useNavigate();
 
   // Check user login status on component mount
   useEffect(() => {
-    const userLoggedIn = localStorage.getItem("user");
-    if (userLoggedIn) {
+    const userString = localStorage.getItem("user");
+    const viewerString = localStorage.getItem("viewer");
+
+    if (userString) {
+      setUser(JSON.parse(userString));
       setIsLoggedIn(true);
     }
-    
-    
+
+    if (viewerString) {
+      setViewer(JSON.parse(viewerString));
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  // Set profile color based on user ID
+  const getRandomColor = () => {
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+  };
   
+  useEffect(() => {
     if (user && user.id) {
       const userId = user.id;
       const colorIndex = userId % colors.length;
       const userColor = colors[colorIndex];
       setProfileColor(userColor);
     }
-   
-  }, [user]);
+  
+    if (viewer && viewer.id) {
+      const userId = viewer.id;
+      const colorIndex = userId % colors.length;
+      const userColor = colors[colorIndex];
+      setProfileColor(userColor);
+    } else {
+      // If viewer is not available, generate a random color
+      const randomColor = getRandomColor();
+      setProfileColor(randomColor);
+    }
+  }, [user, viewer]);
 
   // Function to handle user logout
-  const handleLogout = () => {
+  const handleUserLogout = () => {
     localStorage.removeItem("user");
     setIsLoggedIn(false);
-    navigate("/")
+    setUser(null); // Update user state
+    window.location.href = "/"; // Navigate to the home page and refresh
   };
 
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setMobileMenu(window.innerWidth < 600);
-    };
-
-    checkScreenSize();
-
-    window.addEventListener("resize", checkScreenSize);
-
-    return () => {
-      window.removeEventListener("resize", checkScreenSize);
-    };
-  }, []);
+  // Function to handle viewer logout
+  const handleViewerLogout = () => {
+    localStorage.removeItem("viewer");
+    setIsLoggedIn(false);
+    setViewer(null); // Update viewer state
+    navigate("/");
+    window.location.href = "/"; // Navigate to the home page and refresh
+  };
 
   return (
     <div>
       <header className="navbar-container">
         <h1>Research Paper</h1>
-        {MobileMenu ? (
-          <>
-            <HomePageDrawer color={"#ec1ce8"} />
-          </>
-        ) : (
-          <>
-            <nav>
-              <ul>
-                {userString ? (
-                  <></>
-                ) : (
+        <nav>
+          <ul>
+            {isLoggedIn && (
+              <>
+                {user && (
                   <>
                     <li>
-                      <Link to="/">Home</Link>
+                      <Link to={"/PaperSubmissionForm"}>Paper Submit</Link>
                     </li>
                     <li>
-                      <Link to="/">About Us</Link>
-                    </li>
-                    <li>
-                      <Link to="/">Contact</Link>
-                    </li>
-                  </>
-                )}
-                {isLoggedIn && (
-                  <>
-                    {/* <li>
-                      <Link onClick={() => props.setRender("home")}>Home</Link>
-                    </li> */}
-                    <li>
-                      <Link to={"/PaperSubmissionForm"}>
-                         Paper Submit
-                      </Link>
-                    </li>
-                    {/* <li>
-                      <Link onClick={() => props.setRender("article-paper")}>
-                        Submit Articles
-                      </Link>
-                    </li> */}
-
-                    {user.userpic ? (
-                      <li>
+                      {user.userpic ? (
                         <img
                           onClick={() => setClickProfile(!clickProfile)}
                           src={`${ServerURL}/images/${user.userpic}`}
                           className="user-profile-avatar"
                           alt=""
                         />
-                      </li>
-                    ) : (
-                      <li>
-                        {/* If user profile is not available, create a default profile with the first letter of their name */}
+                      ) : (
                         <div className="default-profile-avatar">
                           <Avatar
                             onClick={() => setClickProfile(!clickProfile)}
@@ -155,52 +136,89 @@ export default function Navbar(props) {
                             </div>
                           </Avatar>
                         </div>
-                      </li>
-                    )}
-
-                    {clickProfile ? (
-                      <>
-                        <div className="user-profile-details-container">
-                          <div className="user-profile-details-text">
-                            <Link to="/UserProfile">Profile</Link>
-                          </div>
-
-                          <div className="user-profile-details-text">
-                            <Link
-                              className="user-profile-details-text"
-                              onClick={handleLogout}
-                            >
-                              Logout
-                            </Link>
-                          </div>
+                      )}
+                    </li>
+                    {clickProfile && (
+                      <div className="user-profile-details-container">
+                        <div className="user-profile-details-text">
+                          <Link to="/UserProfile">Profile</Link>
                         </div>
-                      </>
-                    ) : null}
-
-                    {/* <li>
-                      <Link to="/">User Profile</Link>
-                    </li> */}
-                    {/* <li>
-                      <button
-                        style={{
-                          border: "none",
-                          backgroundColor: "transparent",
-                          color: "#fff", 
-                          cursor: "pointer", 
-                          fontSize:"1vw",
-                          fontWeight:500
-                        }}
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </button>
-                    </li> */}
+                        <div className="user-profile-details-text">
+                          <Link
+                            className="user-profile-details-text"
+                            onClick={handleUserLogout} // Call handleUserLogout on click
+                          >
+                            Logout
+                          </Link>
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
-              </ul>
-            </nav>
-          </>
-        )}
+                {viewer && (
+                  <>
+                    <li>
+                      {viewer.userpic ? (
+                        <img
+                          onClick={() => setClickProfile(!clickProfile)}
+                          src={`${ServerURL}/images/${viewer.userpic}`}
+                          className="user-profile-avatar"
+                          alt=""
+                        />
+                      ) : (
+                        <div className="default-profile-avatar">
+                          <Avatar
+                            onClick={() => setClickProfile(!clickProfile)}
+                            sx={{
+                              bgcolor: profileColor,
+                              width: "1.8vw",
+                              height: "1.8vw",
+                              padding: 2.2,
+                              cursor: "pointer",
+                            }}
+                          >
+                            <div style={{ fontSize: "0.8em" }}>
+                              {viewer.firstname.charAt(0).toUpperCase()}
+                              {viewer.lastname.charAt(0).toUpperCase()}
+                            </div>
+                          </Avatar>
+                        </div>
+                      )}
+                    </li>
+                    {clickProfile && (
+                      <div className="user-profile-details-container">
+                        <div className="user-profile-details-text">
+                          <Link to="/UserProfile">Profile</Link>
+                        </div>
+                        <div className="user-profile-details-text">
+                          <Link
+                            className="user-profile-details-text"
+                            onClick={handleViewerLogout} // Call handleViewerLogout on click
+                          >
+                            Logout
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+            {!isLoggedIn && (
+              <>
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+                <li>
+                  <Link to="/">About Us</Link>
+                </li>
+                <li>
+                  <Link to="/">Contact</Link>
+                </li>
+              </>
+            )}
+          </ul>
+        </nav>
       </header>
     </div>
   );
