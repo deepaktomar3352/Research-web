@@ -3,8 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -15,6 +13,10 @@ import { Link } from "react-router-dom";
 import { getData, postData } from "../services/ServerServices";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import PersonPinIcon from "@mui/icons-material/PersonPin";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 
 function Copyright(props) {
   return (
@@ -44,6 +46,7 @@ const defaultTheme = createTheme();
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const [value, setValue] = React.useState(0);
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission
@@ -54,28 +57,52 @@ export default function SignIn() {
         email: formData.get("email"),
         password: formData.get("password"),
       };
-      const result = await postData("users/user_login", body);
-      if (result && result.status) {
-        console.log("result:-",result)
-        localStorage.setItem("user", JSON.stringify(result.user));
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Login successful!",
-          showConfirmButton: false,
-          timer: 500,
-        });
-        navigate("/");
-        // console.log(result); 
+      if (value === 1) {
+        const result = await postData("viewer/viewer_login", body);
+        if (result && result.status) {
+          console.log("result:-", result);
+          localStorage.setItem("viewer", JSON.stringify(result.user));
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Login successful!",
+            showConfirmButton: false,
+            timer: 500,
+          });
+          navigate("/ViewerDashboard");
+          // console.log(result);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Login failed",
+            text: result?.message || "please check your credentials",
+            timer: 1500,
+          });
+          console.warn("Login failed:", result?.message || "Unknown error");
+        }
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Login failed",
-          text: result?.message || "please check your credentials",
-          timer: 1500,
-        });
-        console.warn("Login failed:", result?.message || "Unknown error");
-       
+        const result = await postData("users/user_login", body);
+        if (result && result.status) {
+          console.log("result:-", result);
+          localStorage.setItem("user", JSON.stringify(result.user));
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Login successful!",
+            showConfirmButton: false,
+            timer: 500,
+          });
+          navigate("/");
+          // console.log(result);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Login failed",
+            text: result?.message || "please check your credentials",
+            timer: 1500,
+          });
+          console.warn("Login failed:", result?.message || "Unknown error");
+        }
       }
     } catch (error) {
       console.error("Error during login:", error); // Log any errors
@@ -87,6 +114,11 @@ export default function SignIn() {
       });
       // alert("An error occurred during login. Please try again.");
     }
+  };
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    console.log("new values", newValue);
   };
 
   return (
@@ -124,6 +156,16 @@ export default function SignIn() {
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in
+            </Typography>
+            <Typography>
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                aria-label="icon label tabs example"
+              >
+                <Tab icon={<PersonPinIcon />} label="user" />
+                <Tab icon={<PersonSearchIcon />} label="Viewer" />
+              </Tabs>
             </Typography>
             <Box
               component="form"
