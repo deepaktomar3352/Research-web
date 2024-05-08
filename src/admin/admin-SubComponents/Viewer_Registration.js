@@ -110,7 +110,7 @@ export default function Viewer_Registration() {
           showConfirmButton: false,
           timer: 500,
         });
-        navigate("/Viewer_Login");
+        navigate("/signin");
       } else {
         Swal.fire({
           icon: "error",
@@ -243,7 +243,7 @@ export default function Viewer_Registration() {
               </Button>
               <Grid container justifyContent="flex-end">
                 <Grid item>
-                  <Link to="/Viewer_Login" style={{ textDecoration: "none" }}>
+                  <Link to="/SignIn" style={{ textDecoration: "none" }}>
                     Already have an account? Sign in
                   </Link>
                 </Grid>

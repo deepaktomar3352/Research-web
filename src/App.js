@@ -9,7 +9,6 @@ import Home from "./pages/Home";
 import UserProfile from "./pages/UserProfile";
 import ForgotPassword from "./Components/ForgotPassword";
 import UserResetPassword from "./Components/ResetPassword";
-import Viewer_Login from "./admin/admin-SubComponents/Viewer_Login";
 
 function App() {
   return (
@@ -25,7 +24,6 @@ function App() {
           <Route Component={ArticlePage} path="/ArticlePage" />
           <Route Component={PaperSubmissionForm} path="/PaperSubmissionForm" />
           <Route Component={Dashboard} path="/Dashboard" />
-          <Route Component={Viewer_Login} path="/Viewer_Login" />
         </Routes>
       </Router>
     </div>
