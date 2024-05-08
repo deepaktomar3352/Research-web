@@ -18,10 +18,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MainView from "./MainView";
-import PeopleIcon from '@mui/icons-material/People';
-
-
-
+import PeopleIcon from "@mui/icons-material/People";
+import Viewer_Registration from "./admin-SubComponents/Viewer_Registration";
 
 function Copyright(props) {
   return (
@@ -103,9 +101,13 @@ export default function Dashboard() {
   };
 
   const renderComponent = () => {
-    switch (activeItem) { // Render component based on active item
+    switch (
+      activeItem // Render component based on active item
+    ) {
       case "dashboard":
         return <MainView />;
+      case "viewer_registration":
+        return <Viewer_Registration />;
       default:
         return null;
     }
@@ -165,23 +167,26 @@ export default function Dashboard() {
           </Toolbar>
           <Divider />
           <List component="nav">
+
+
             <ListItemButton
               onClick={() => handleItemClick("dashboard")} // Set active item on click
-              selected={activeItem === "dashboard"} // Check if it's active
+              selected={activeItem === "dashboard"}
             >
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>
               <ListItemText primary="Dashboard" />
             </ListItemButton>
+
             <ListItemButton
-              onClick={() => handleItemClick("users")} // Set active item on click
-              selected={activeItem === "users"} // Check if it's active
+              onClick={() => handleItemClick("viewer_registration")} // Set active item on click
+              selected={activeItem === "viewer_registration"} // Check if it's active
             >
               <ListItemIcon>
                 <PeopleIcon />
               </ListItemIcon>
-              <ListItemText primary="Users" />
+              <ListItemText primary="Viewer" />
             </ListItemButton>
             <Divider sx={{ my: 1 }} />
           </List>

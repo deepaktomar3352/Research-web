@@ -37,6 +37,16 @@ function Copyright(props) {
   );
 }
 
+function validateEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(String(email).toLowerCase());
+}
+
+function validatePassword(password) {
+  return password.length >= 8;
+}
+
+
 const defaultTheme = createTheme();
 
 function FileNamePreview({ fileName }) {
@@ -53,6 +63,10 @@ export default function SignUp() {
   const navigate = useNavigate();
   const mathes = useMediaQuery('(max-width:600px)');
   const [selectedFileName, setSelectedFileName] = React.useState("");
+  const [errors, setErrors] = React.useState({});
+
+
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFileName(file ? file.name : "");
@@ -60,9 +74,15 @@ export default function SignUp() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+     const data = new FormData(event.currentTarget);
+
+    const errors = validateForm(data);
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      return;
+    }
+
     const isEmailUpdatesAllowed = data.has("allowExtraEmails");
-    // Step 4: Prepare data and send to backend using Axios
     const formData = new FormData();
     formData.append("firstname", data.get("firstName"));
     formData.append("lastname", data.get("lastName"));
@@ -101,6 +121,30 @@ export default function SignUp() {
     }
   };
 
+  const validateForm = (data) => {
+    const errors = {};
+
+    if (!data.get("firstName")) {
+      errors.firstName = "First name is required";
+    }
+
+    if (!data.get("lastName")) {
+      errors.lastName = "Last name is required";
+    }
+
+    const email = data.get("email");
+    if (!email || !validateEmail(email)) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    const password = data.get("password");
+    if (!password || !validatePassword(password)) {
+      errors.password = "Password must be at least 8 characters long";
+    }
+
+    return errors;
+  };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -127,7 +171,7 @@ export default function SignUp() {
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
+              <TextField
                   autoComplete="off"
                   name="firstName"
                   required
@@ -135,20 +179,24 @@ export default function SignUp() {
                   id="firstName"
                   label="First Name"
                   autoFocus
+                  error={!!errors.firstName}
+                  helperText={errors.firstName}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
+              <TextField
                   required
                   fullWidth
                   id="lastName"
                   label="Last Name"
                   name="lastName"
                   autoComplete="off"
+                  error={!!errors.lastName}
+                  helperText={errors.lastName}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+              <TextField
                   required
                   fullWidth
                   id="email"
@@ -156,10 +204,12 @@ export default function SignUp() {
                   name="email"
                   autoComplete="off"
                   type="email"
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+              <TextField
                   required
                   fullWidth
                   name="password"
@@ -167,6 +217,8 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="off"
+                  error={!!errors.password}
+                  helperText={errors.password}
                 />
               </Grid>
               <Grid item xs={mathes?12:6}>
