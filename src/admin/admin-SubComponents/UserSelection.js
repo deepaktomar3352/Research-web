@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useCallback, useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,20 +11,20 @@ import {
   Avatar,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { getData } from "../../services/ServerServices";
+import { getData, postData } from "../../services/ServerServices";
 
 export default function UserSelection(props) {
   const matches = useMediaQuery("(min-width:600px)");
   const [selectedUsers, setSelectedUsers] = useState([]); // State to store selected users
   const [viewerData, setViewerData] = useState([]); // State to store
 
-  const fetchViewerData = async () => {
+  const fetchViewerData = useCallback( async () => {
     try {
       var result = await getData("viewer/viewer_info");
       setViewerData(result.viewer);
-      console.log(result);
+      // console.log(result);
     } catch (error) {}
-  };
+  },[]);
 
   useEffect(() => {
     fetchViewerData();
@@ -33,16 +33,25 @@ export default function UserSelection(props) {
   const handleCheckboxChange = (event, userId) => {
     if (event.target.checked) {
       setSelectedUsers([...selectedUsers, userId]);
-      console.log("Selected users", selectedUsers);
+      // console.log("Selected users", selectedUsers);
     } else {
         setSelectedUsers(selectedUsers.filter((id) => id !== userId));
     }
 };
 
-console.log("Selected users", props.personData);
-  const handleSendData = () => {
-    props.setOpenDialog(false);
-    // setSelectedUsers([]);
+const handleSendData = async() => {
+  try {
+    const body = {
+      viewer_id: selectedUsers,
+      paper_id: props.personData.paper_id,
+      
+    }
+    var result = await postData("viewer/send_paper",body);
+    console.log("data send :-", result);
+    props.handleViewerDialogClose(false)
+   } catch (error) {
+    console.log(error);
+   }
   };
 
   //   const handleAccept = (person) => {

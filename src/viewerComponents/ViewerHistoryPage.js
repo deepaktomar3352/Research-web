@@ -15,9 +15,9 @@ export default function ViewerHistoryPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [paperId, setPaperId] = useState("");
   const [notifyCount, setNotifyCount] = useState([]);
-  const user = localStorage.getItem("viewer");
-  const userObject = JSON.parse(user);
-  const user_id = userObject.id;
+  const viewer = localStorage.getItem("viewer");
+  const viewerObject = JSON.parse(viewer);
+  const viewer_id = viewerObject.id;
 
   var itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
@@ -31,14 +31,15 @@ export default function ViewerHistoryPage() {
   // Function to fetch papers
   const fetchPapers = useCallback(async () => {
     try {
-      const result = await getData(`form/user_paper?user_id=${user_id}`);
+      const result = await getData(`viewer/viewer_paper_data?viewer_id=${viewer_id}`);
       if (result) {
-        setPapers(result.papers);
+        setPapers(result);
+        console.log(result);
       }
     } catch (error) {
       console.error(error);
     }
-  }, [user_id]);
+  }, [viewer_id]);
 
   useEffect(() => {
     fetchPapers();
@@ -58,12 +59,12 @@ export default function ViewerHistoryPage() {
       });
 
       if (result.isConfirmed) {
-        // User confirmed, proceed with deletion
+        // viewer confirmed, proceed with deletion
         await getData(`form/delete_paper?id=${paperid}`);
 
         Swal.fire("Deleted!", "Your paper has been deleted.", "success");
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        // User cancelled, do nothing
+        // viewer cancelled, do nothing
         Swal.fire("Cancelled", "Your paper is safe :)", "error");
       }
       fetchPapers();
@@ -124,39 +125,23 @@ export default function ViewerHistoryPage() {
                       <th>Title</th>
                       <th>Research Area</th>
                       <th>Paper Abstract</th>
-                      <th>Submission Date</th>
                       <th>Category</th>
+                      <th>Submission Date</th>
                       <th>Comment</th>
                       <th>View Paper</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentPapers.map((paper) => (
-                      <tr key={paper.paper_id}>
+                      <tr key={paper.id}>
                         <td>{paper.paper_title}</td>
                         <td>{paper.research_area}</td>
+                        <td>{paper.paper_abstract}</td>
+                        <td>{paper.category}</td>
                         <td>
                           {new Date(paper.submission_date).toLocaleDateString()}
                         </td>
 
-                        <td>{paper.paper_status}</td>
-                        <td>
-                          <a
-                            href={`${ServerURL}/images/${paper.paper_uploaded}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <center>
-                              <CloudDownloadIcon
-                                style={{
-                                  // color: "red",
-                                  cursor: "pointer",
-                                  fontSize: 25,
-                                }}
-                              />
-                            </center>
-                          </a>
-                        </td>
                         <td>
                           <center>
                             {notifyCount.map((notify) => {
@@ -207,6 +192,24 @@ export default function ViewerHistoryPage() {
                         </td>
 
                         <td>
+                          <a
+                            href={`${ServerURL}/images/${paper.paper_uploaded}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <center>
+                              <CloudDownloadIcon
+                                style={{
+                                  // color: "red",
+                                  cursor: "pointer",
+                                  fontSize: 25,
+                                }}
+                              />
+                            </center>
+                          </a>
+                        </td>
+
+                        {/* <td>
                           <center>
                             <DeleteIcon
                               style={{
@@ -219,7 +222,7 @@ export default function ViewerHistoryPage() {
                               }}
                             />
                           </center>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>
@@ -247,9 +250,9 @@ export default function ViewerHistoryPage() {
         <Grid item xs={12} md={4} lg={4}>
           {" "}
           <CommentSection
-            user_id={user_id}
+            viewer_id={viewer_id}
             papers={papers}
-            userObject={userObject}
+            viewerObject={viewerObject}
             paperId={paperId}
           />
         </Grid>

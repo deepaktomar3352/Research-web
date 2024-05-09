@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, Avatar } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import "../stylesheet/UserList.css"; // Import the CSS file for styling
@@ -29,7 +29,7 @@ const UserList = () => {
   const [openView, setOpenView] = useState(false); // State to control view dialog open/close
   const [personData, setPersonData] = useState("");
 
-  const fetchusers = async () => {
+  const fetchusers =useCallback( async () => {
     try {
       const result = await getData("form/paper_requests");
       // console.log(result.papers);
@@ -39,7 +39,7 @@ const UserList = () => {
     } catch (error) {
       colors.error(error);
     }
-  };
+  },[]);
 
   // Function to generate a random color from an array of colors
 
