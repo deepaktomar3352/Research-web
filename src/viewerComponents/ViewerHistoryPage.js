@@ -10,7 +10,7 @@ import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
 
-export default function HistoryPage() {
+export default function ViewerHistoryPage() {
   const [papers, setPapers] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [paperId, setPaperId] = useState("");
@@ -31,9 +31,10 @@ export default function HistoryPage() {
   // Function to fetch papers
   const fetchPapers = useCallback(async () => {
     try {
-      const result = await getData(`form/user_paper?viewer_id=${viewer_id}`);
+      const result = await getData(`viewer/viewer_paper_data?viewer_id=${viewer_id}`);
       if (result) {
-        setPapers(result.papers);
+        setPapers(result);
+        console.log(result);
       }
     } catch (error) {
       console.error(error);
@@ -58,12 +59,12 @@ export default function HistoryPage() {
       });
 
       if (result.isConfirmed) {
-        // User confirmed, proceed with deletion
+        // viewer confirmed, proceed with deletion
         await getData(`form/delete_paper?id=${paperid}`);
 
         Swal.fire("Deleted!", "Your paper has been deleted.", "success");
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        // User cancelled, do nothing
+        // viewer cancelled, do nothing
         Swal.fire("Cancelled", "Your paper is safe :)", "error");
       }
       fetchPapers();
@@ -114,7 +115,7 @@ export default function HistoryPage() {
             }}
           >
             <div>
-              <h1>Your Papers</h1>
+              <h1>Papers</h1>
               <div style={{ overflowX: "auto" }}>
                 {" "}
                 {/* Wrapper for horizontal scrolling */}
@@ -123,40 +124,24 @@ export default function HistoryPage() {
                     <tr>
                       <th>Title</th>
                       <th>Research Area</th>
+                      <th>Paper Abstract</th>
+                      <th>Category</th>
                       <th>Submission Date</th>
-                      <th>Status</th>
-                      <th>View Paper</th>
                       <th>Comment</th>
-                      <th>Action</th>
+                      <th>View Paper</th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentPapers.map((paper) => (
-                      <tr key={paper.paper_id}>
+                      <tr key={paper.id}>
                         <td>{paper.paper_title}</td>
                         <td>{paper.research_area}</td>
+                        <td>{paper.paper_abstract}</td>
+                        <td>{paper.category}</td>
                         <td>
                           {new Date(paper.submission_date).toLocaleDateString()}
                         </td>
 
-                        <td>{paper.paper_status}</td>
-                        <td>
-                          <a
-                            href={`${ServerURL}/images/${paper.paper_uploaded}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <center>
-                              <CloudDownloadIcon
-                                style={{
-                                  // color: "red",
-                                  cursor: "pointer",
-                                  fontSize: 25,
-                                }}
-                              />
-                            </center>
-                          </a>
-                        </td>
                         <td>
                           <center>
                             {notifyCount.map((notify) => {
@@ -207,6 +192,24 @@ export default function HistoryPage() {
                         </td>
 
                         <td>
+                          <a
+                            href={`${ServerURL}/images/${paper.paper_uploaded}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <center>
+                              <CloudDownloadIcon
+                                style={{
+                                  // color: "red",
+                                  cursor: "pointer",
+                                  fontSize: 25,
+                                }}
+                              />
+                            </center>
+                          </a>
+                        </td>
+
+                        {/* <td>
                           <center>
                             <DeleteIcon
                               style={{
@@ -219,7 +222,7 @@ export default function HistoryPage() {
                               }}
                             />
                           </center>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>
