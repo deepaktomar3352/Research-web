@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { postData } from "../services/ServerServices";
+import SimpleSnackbar from "../Components/snackBar";
 
 function FileNamePreview({ fileName }) {
   return (
@@ -36,11 +37,15 @@ const defaultTheme = createTheme();
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const mathes = useMediaQuery('(max-width:600px)');
+  const mathes = useMediaQuery("(max-width:600px)");
   const [selectedFileName, setSelectedFileName] = React.useState("");
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFileName(file ? file.name : "");
+  };
+  const handleSignInClick = () => {
+    Swal.close();
+    navigate("/signin"); // Close the SweetAlert2 popup
   };
 
   const formik = useFormik({
@@ -53,7 +58,9 @@ export default function SignUp() {
     validationSchema: Yup.object({
       firstName: Yup.string().required("First Name is required"),
       lastName: Yup.string().required("Last Name is required"),
-      email: Yup.string().email("Invalid email address").required("Email is required"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
       password: Yup.string().required("Password is required"),
     }),
     onSubmit: async (values) => {
@@ -72,22 +79,37 @@ export default function SignUp() {
 
       try {
         var result = await postData("users/user_register", data);
-        if (result.status) {
+        if (result.status === 1) {
           Swal.fire({
             position: "center",
             icon: "success",
-            title: "Register successfully!",
-            showConfirmButton: false,
-            timer: 500,
+            title: "User already exists",
+            showConfirmButton: true,
+            footer:
+              '<span>Please Go For SignIn <a id="signInLink" href="/signin">Sign In</a></span>',
           });
-          navigate("/signin");
+
+          document
+            .getElementById("signInLink")
+            .addEventListener("click", handleSignInClick);
         } else {
-          Swal.fire({
-            icon: "error",
-            title: "Registration failed",
-            text: result?.message || "Unknown error",
-            timer: 1500,
-          });
+          if (result.status) {
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Register successfully!",
+              showConfirmButton: false,
+              timer: 500,
+            });
+            navigate("/signin");
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Registration failed",
+              text: result?.message || "Unknown error",
+              timer: 1500,
+            });
+          }
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -131,8 +153,12 @@ export default function SignUp() {
                   autoFocus
                   value={formik.values.firstName}
                   onChange={formik.handleChange}
-                  error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                  helperText={formik.touched.firstName && formik.errors.firstName}
+                  error={
+                    formik.touched.firstName && Boolean(formik.errors.firstName)
+                  }
+                  helperText={
+                    formik.touched.firstName && formik.errors.firstName
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -145,7 +171,9 @@ export default function SignUp() {
                   autoComplete="off"
                   value={formik.values.lastName}
                   onChange={formik.handleChange}
-                  error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                  error={
+                    formik.touched.lastName && Boolean(formik.errors.lastName)
+                  }
                   helperText={formik.touched.lastName && formik.errors.lastName}
                 />
               </Grid>
@@ -175,7 +203,9 @@ export default function SignUp() {
                   autoComplete="off"
                   value={formik.values.password}
                   onChange={formik.handleChange}
-                  error={formik.touched.password && Boolean(formik.errors.password)}
+                  error={
+                    formik.touched.password && Boolean(formik.errors.password)
+                  }
                   helperText={formik.touched.password && formik.errors.password}
                 />
               </Grid>
@@ -187,7 +217,10 @@ export default function SignUp() {
                   style={{ display: "none" }}
                   name="userImage"
                   onChange={(event) => {
-                    formik.setFieldValue("userImage", event.currentTarget.files[0]);
+                    formik.setFieldValue(
+                      "userImage",
+                      event.currentTarget.files[0]
+                    );
                     handleFileChange(event);
                   }}
                 />

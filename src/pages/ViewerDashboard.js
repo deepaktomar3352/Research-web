@@ -7,7 +7,8 @@ import ContactPage from "../Components/Contact";
 import Footer from "../Components/Footer";
 import PaperSubmissionForm from "../forms/PaperSubmissionForm";
 import ArticlePage from "../forms/ArticlePage";
-import HistoryPage from "../viewerComponents/HistoryPage";
+// import HistoryPage from "../viewerComponents/HistoryPage";
+import ViewerHistoryPage from "../viewerComponents/ViewerHistoryPage";
 
 const ViewerDashboard = () => {
   const viewerLoggedIn = localStorage.getItem("viewer");
