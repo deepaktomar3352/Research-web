@@ -15,9 +15,9 @@ export default function HistoryPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [paperId, setPaperId] = useState("");
   const [notifyCount, setNotifyCount] = useState([]);
-  const user = localStorage.getItem("viewer");
-  const userObject = JSON.parse(user);
-  const user_id = userObject.id;
+  const viewer = localStorage.getItem("viewer");
+  const viewerObject = JSON.parse(viewer);
+  const viewer_id = viewerObject.id;
 
   var itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
@@ -31,14 +31,14 @@ export default function HistoryPage() {
   // Function to fetch papers
   const fetchPapers = useCallback(async () => {
     try {
-      const result = await getData(`form/user_paper?user_id=${user_id}`);
+      const result = await getData(`form/user_paper?viewer_id=${viewer_id}`);
       if (result) {
         setPapers(result.papers);
       }
     } catch (error) {
       console.error(error);
     }
-  }, [user_id]);
+  }, [viewer_id]);
 
   useEffect(() => {
     fetchPapers();
@@ -247,9 +247,9 @@ export default function HistoryPage() {
         <Grid item xs={12} md={4} lg={4}>
           {" "}
           <CommentSection
-            user_id={user_id}
+            viewer_id={viewer_id}
             papers={papers}
-            userObject={userObject}
+            viewerObject={viewerObject}
             paperId={paperId}
           />
         </Grid>

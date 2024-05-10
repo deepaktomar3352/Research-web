@@ -30,14 +30,14 @@ export default function CommentSection(props) {
     async () => {
       try {
         const result = await getData(
-          `form/user_comment?user_id=${props.user_id}&paper_id=${props.paperId}`
+          `form/user_comment?user_id=${props.viewer_id}&paper_id=${props.paperId}`
         );
         setShowComments(result.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
     },
-    [props.user_id,props.paperId]
+    [props.viewer_id,props.paperId]
   );
 
   useEffect(()=>{
@@ -69,7 +69,7 @@ export default function CommentSection(props) {
       const body = {
         comment: comment.text,
         is_admin_comment: "0",
-        user_id: props.user_id,
+        viewer_id: props.viewer_id,
         paper_id: props.paperId
       };
       const response = await postData("form/send_comment", body);
@@ -172,7 +172,7 @@ export default function CommentSection(props) {
                     ) : (
                       <>
                         <img
-                          src={`${ServerURL}/images/${props.userObject.userpic}`}
+                          src={`${ServerURL}/images/${props.viewerObject.userpic}`}
                           alt={"User icon"}
                           style={{
                             width: 30,
@@ -187,7 +187,7 @@ export default function CommentSection(props) {
                     <h3 style={{ marginRight: "auto" }}>
                       {c.is_admin_comment === 1
                         ? "Admin"
-                        : props.userObject.firstname + " " + props.userObject.lastname}
+                        : props.viewerObject.firstname + " " + props.viewerObject.lastname}
                     </h3>
 
                     <div>
