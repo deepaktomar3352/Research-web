@@ -3,7 +3,7 @@ import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
+import { TextField, FormHelperText } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
@@ -18,6 +18,13 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useMediaQuery } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputLabel from "@mui/material/InputLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import FormControl from "@mui/material/FormControl";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 function Copyright(props) {
   return (
@@ -46,26 +53,32 @@ function validatePassword(password) {
   return password.length >= 8;
 }
 
-
 const defaultTheme = createTheme();
 
 function FileNamePreview({ fileName }) {
   return (
     <Typography variant="body1" color="textPrimary">
-      {fileName?<>
-        <span style={{color:"red"}} >Selected File:</span> {fileName}
-      </>:null}
+      {fileName ? (
+        <>
+          <span style={{ color: "red" }}>Selected File:</span> {fileName}
+        </>
+      ) : null}
     </Typography>
   );
 }
 
 export default function SignUp() {
   const navigate = useNavigate();
-  const mathes = useMediaQuery('(max-width:600px)');
+  const mathes = useMediaQuery("(max-width:600px)");
   const [selectedFileName, setSelectedFileName] = React.useState("");
   const [errors, setErrors] = React.useState({});
+  const [showPassword, setShowPassword] = React.useState(false);
 
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
 
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -74,7 +87,7 @@ export default function SignUp() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-     const data = new FormData(event.currentTarget);
+    const data = new FormData(event.currentTarget);
 
     const errors = validateForm(data);
     if (Object.keys(errors).length > 0) {
@@ -107,8 +120,7 @@ export default function SignUp() {
         });
         navigate("/signin");
         console.log("Form submitted successfully!");
-      }
-      else{
+      } else {
         Swal.fire({
           icon: "error",
           title: "Login failed",
@@ -171,7 +183,7 @@ export default function SignUp() {
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-              <TextField
+                <TextField
                   autoComplete="off"
                   name="firstName"
                   required
@@ -184,7 +196,7 @@ export default function SignUp() {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-              <TextField
+                <TextField
                   required
                   fullWidth
                   id="lastName"
@@ -196,7 +208,7 @@ export default function SignUp() {
                 />
               </Grid>
               <Grid item xs={12}>
-              <TextField
+                <TextField
                   required
                   fullWidth
                   id="email"
@@ -209,19 +221,40 @@ export default function SignUp() {
                 />
               </Grid>
               <Grid item xs={12}>
-              <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="off"
-                  error={!!errors.password}
-                  helperText={errors.password}
-                />
+                <FormControl sx={{ width: "100%" }} variant="outlined">
+                  <InputLabel
+                    htmlFor="outlined-adornment-password"
+                    error={!!errors.password}
+                  >
+                    Password
+                  </InputLabel>
+                  <OutlinedInput
+                    error={!!errors.password}
+                    name="password"
+                    required
+                    autoComplete="current-password"
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                  {errors.password && (
+                    <FormHelperText error>{errors.password}</FormHelperText>
+                  )}
+                </FormControl>
               </Grid>
-              <Grid item xs={mathes?12:6}>
+              <Grid item xs={mathes ? 12 : 6}>
                 <input
                   type="file"
                   accept="image/*"
@@ -241,7 +274,7 @@ export default function SignUp() {
                   </Button>
                 </label>
               </Grid>
-              <Grid item xs={mathes?12:6}>
+              <Grid item xs={mathes ? 12 : 6}>
                 <FileNamePreview fileName={selectedFileName} />
               </Grid>
               <Grid item xs={12}>

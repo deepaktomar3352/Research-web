@@ -100,7 +100,7 @@ const UserList = () => {
     <div>
       <h2 className="title">Paper List</h2>
       {peopleData.map((person) => (
-        <div key={person.paper_id} className="user-list-container">
+        <div style={{ overflowX: "auto" }} key={person.paper_id} className="user-list-container">
           <ul>
             <li className="user-item">
               <div className="user-info">

@@ -1,8 +1,8 @@
-import * as React from "react";
+import {React,useState,useRef} from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
+import { TextField, FormHelperText } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
@@ -17,6 +17,13 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Paper, useMediaQuery } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputLabel from "@mui/material/InputLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import FormControl from "@mui/material/FormControl";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 function validateEmail(email) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,11 +74,20 @@ function FileNamePreview({ fileName }) {
 const defaultTheme = createTheme();
 
 export default function Viewer_Registration() {
-  const navigate = useNavigate();
-  const mathes = useMediaQuery('(max-width:600px)');
-  const [selectedFileName, setSelectedFileName] = React.useState("");
-  const [errors, setErrors] = React.useState({});
   
+  const formRef = useRef(null);  
+  const navigate = useNavigate();
+  const mathes = useMediaQuery("(max-width:600px)");
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFileName(file ? file.name : "");
@@ -110,7 +126,8 @@ export default function Viewer_Registration() {
           showConfirmButton: false,
           timer: 500,
         });
-        navigate("/signin");
+        // navigate("/signin");
+        formRef.current.reset(); // Reset the form
       } else {
         Swal.fire({
           icon: "error",
@@ -131,7 +148,7 @@ export default function Viewer_Registration() {
           <CssBaseline />
           <Box
             sx={{
-              height: "90vh",
+              height: mathes?"auto":"90vh",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -146,6 +163,7 @@ export default function Viewer_Registration() {
             <Box
               component="form"
               noValidate
+              ref={formRef}
               onSubmit={handleSubmit}
               sx={{ mt: 3 }}
             >
@@ -189,17 +207,38 @@ export default function Viewer_Registration() {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="off"
-                    error={!!errors.password}
-                    helperText={errors.password}
-                  />
+                  <FormControl sx={{ width: "100%" }} variant="outlined">
+                    <InputLabel
+                      htmlFor="outlined-adornment-password"
+                      error={!!errors.password}
+                    >
+                      Password
+                    </InputLabel>
+                    <OutlinedInput
+                      error={!!errors.password}
+                      name="password"
+                      required
+                      autoComplete="current-password"
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      label="Password"
+                    />
+                    {errors.password && (
+                      <FormHelperText error>{errors.password}</FormHelperText>
+                    )}
+                  </FormControl>
                 </Grid>
                 <Grid item xs={mathes ? 12 : 6}>
                   <input

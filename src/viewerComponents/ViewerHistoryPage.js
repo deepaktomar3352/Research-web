@@ -11,15 +11,15 @@ import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
 
 export default function ViewerHistoryPage() {
-  const [papers, setPapers] = useState([]);
+  var itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(0);
+  const [papers, setPapers] = useState([]);
   const [paperId, setPaperId] = useState("");
   const [notifyCount, setNotifyCount] = useState([]);
   const viewer = localStorage.getItem("viewer");
   const viewerObject = JSON.parse(viewer);
   const viewer_id = viewerObject.id;
 
-  var itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
   const currentPapers = papers.slice(offset, offset + itemsPerPage);
   // const currentArticles = articles.slice(offset, offset + itemsPerPage);
@@ -45,33 +45,35 @@ export default function ViewerHistoryPage() {
     fetchPapers();
   }, [fetchPapers]);
 
-  const DeletePaper = async (paperid) => {
-    try {
-      // Show confirmation message
-      const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "You will not be able to recover this paper!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-      });
+  // const DeletePaper = async (paperid) => {
+  //   try {
+  //     // Show confirmation message
+  //     const result = await Swal.fire({
+  //       title: "Are you sure?",
+  //       text: "You will not be able to recover this paper!",
+  //       icon: "warning",
+  //       showCancelButton: true,
+  //       confirmButtonText: "Yes, delete it!",
+  //       cancelButtonText: "No, cancel!",
+  //       reverseButtons: true,
+  //     });
 
-      if (result.isConfirmed) {
-        // viewer confirmed, proceed with deletion
-        await getData(`form/delete_paper?id=${paperid}`);
+  //     if (result.isConfirmed) {
+  //       // viewer confirmed, proceed with deletion
+  //       await getData(`form/delete_paper?id=${paperid}`);
 
-        Swal.fire("Deleted!", "Your paper has been deleted.", "success");
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        // viewer cancelled, do nothing
-        Swal.fire("Cancelled", "Your paper is safe :)", "error");
-      }
-      fetchPapers();
-    } catch (error) {
-      console.error("Error deleting paper:", error);
-    }
-  };
+  //       Swal.fire("Deleted!", "Your paper has been deleted.", "success");
+  //     } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //       // viewer cancelled, do nothing
+  //       Swal.fire("Cancelled", "Your paper is safe :)", "error");
+  //     }
+  //     fetchPapers();
+  //   } catch (error) {
+  //     console.error("Error deleting paper:", error);
+  //   }
+  // };
+
+  console.log("paperid",paperId)
 
   const handleComment = async (paperid) => {
     setPaperId(paperid);
@@ -79,7 +81,7 @@ export default function ViewerHistoryPage() {
       const body = {
         paperid: paperid,
       };
-      var result = await postData("form/reset_count", body);
+      var result = await postData("viewer/reset_count", body);
       console.log("reset", result);
     } catch (error) {}
   };
@@ -87,7 +89,7 @@ export default function ViewerHistoryPage() {
   useEffect(() => {
     const fetchNewAdminCommentsCount = async () => {
       try {
-        const results = await getData(`form/new_count`);
+        const results = await getData(`viewer/new_count`);
         setNotifyCount(results.counts);
       } catch (error) {
         console.error("Error fetching new admin comments count:", error);
@@ -145,7 +147,7 @@ export default function ViewerHistoryPage() {
                         <td>
                           <center>
                             {notifyCount.map((notify) => {
-                              if (notify.paper_id === paper.paper_id) {
+                              if (notify.paper_id === paper.id) {
                                 return (
                                   <Badge
                                     key={notify.paper_id}
@@ -159,7 +161,7 @@ export default function ViewerHistoryPage() {
                                         fontSize: 25,
                                       }}
                                       onClick={() => {
-                                        handleComment(paper.paper_id);
+                                        handleComment(paper.id);
                                       }}
                                     />
                                   </Badge>
@@ -169,10 +171,10 @@ export default function ViewerHistoryPage() {
                             })}
                             {/* If no match found, display 0 */}
                             {notifyCount.every(
-                              (notify) => notify.paper_id !== paper.paper_id
+                              (notify) => notify.id !== paper.id
                             ) && (
                               <Badge
-                                key={paper.paper_id}
+                                key={paper.id}
                                 badgeContent={0}
                                 color="primary"
                               >
@@ -183,7 +185,7 @@ export default function ViewerHistoryPage() {
                                     fontSize: 25,
                                   }}
                                   onClick={() => {
-                                    handleComment(paper.paper_id);
+                                    handleComment(paper.id);
                                   }}
                                 />
                               </Badge>
@@ -218,7 +220,7 @@ export default function ViewerHistoryPage() {
                                 fontSize: 25,
                               }}
                               onClick={() => {
-                                DeletePaper(paper.paper_id);
+                                DeletePaper(paper.id);
                               }}
                             />
                           </center>
