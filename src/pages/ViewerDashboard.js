@@ -7,24 +7,25 @@ import ContactPage from "../Components/Contact";
 import Footer from "../Components/Footer";
 import PaperSubmissionForm from "../forms/PaperSubmissionForm";
 import ArticlePage from "../forms/ArticlePage";
-import HistoryPage from "../user_components/HistoryPage";
+// import HistoryPage from "../viewerComponents/HistoryPage";
+import ViewerHistoryPage from "../viewerComponents/ViewerHistoryPage";
 
 const ViewerDashboard = () => {
   const viewerLoggedIn = localStorage.getItem("viewer");
   const [renderType, setRenderType] = useState("home");
 
-  const renderedComponent = () => {
-    switch (renderType) {
-      // case "home":
-      //   return <HistoryPage />;
-      case "submit-paper":
-        return <PaperSubmissionForm />;
-      case "article-paper":
-        return <ArticlePage />;
-      default:
-        return null;
-    }
-  };
+  // const renderedComponent = () => {
+  //   switch (renderType) {
+  //     // case "home":
+  //     //   return <HistoryPage />;
+  //     case "submit-paper":
+  //       return <PaperSubmissionForm />;
+  //     case "article-paper":
+  //       return <ArticlePage />;
+  //     default:
+  //       return null;
+  //   }
+  // };
 
   return (
     <div className="home-page">
@@ -34,7 +35,9 @@ const ViewerDashboard = () => {
       </div>
       <div className="content">
         {viewerLoggedIn ? (
-          <>{renderedComponent()}</>
+          <>
+            <HistoryPage />
+          </>
         ) : (
           <>
             {/* ----------------------------------Starter Section------------------------------ */}
@@ -54,7 +57,6 @@ const ViewerDashboard = () => {
       </div>
       {/* ------------------------------------Footer section---------------------------- */}
       <div className="footer">
-      
         <Footer />
       </div>
     </div>

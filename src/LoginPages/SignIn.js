@@ -1,4 +1,6 @@
 import React from "react";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -10,128 +12,100 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
-import { getData, postData } from "../services/ServerServices";
+import { postData } from "../services/ServerServices";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
-import IconButton from '@mui/material/IconButton';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormControl from '@mui/material/FormControl';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link
-        color="inherit"
-        style={{ textDecoration: "none" }}
-        to="https://localhost:3000/"
-      >
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  password: Yup.string()
+    .required("Password is required")
+    .required("Password is require"),
+});
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
   const navigate = useNavigate();
   const [value, setValue] = React.useState(0);
-  const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-  const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission
-
-    try {
-      const formData = new FormData(event.currentTarget); // Create FormData from the form
-      const body = {
-        email: formData.get("email"),
-        password: formData.get("password"),
-      };
-      if (value === 1) {
-        const result = await postData("viewer/viewer_login", body);
-        if (result && result.status) {
-          console.log("viewer result:-", result);
-          localStorage.setItem("viewer", JSON.stringify(result.viewer));
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Login successful!",
-            showConfirmButton: false,
-            timer: 500,
-          });
-          navigate("/");
-          // console.log(result);
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      try {
+        const body = {
+          email: values.email,
+          password: values.password,
+        };
+        if (value === 1) {
+          const result = await postData("viewer/viewer_login", body);
+          if (result && result.status) {
+            console.log("result:-", result);
+            localStorage.setItem("viewer", JSON.stringify(result.viewer));
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Login successful!",
+              showConfirmButton: false,
+              timer: 500,
+            });
+            navigate("/ViewerDashboard");
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Login failed",
+              text: result?.message || "please check your credentials",
+              timer: 1500,
+            });
+            console.warn("Login failed:", result?.message || "Unknown error");
+          }
         } else {
-          Swal.fire({
-            icon: "error",
-            title: "Login failed",
-            text: result?.message || "please check your credentials",
-            timer: 1500,
-          });
-          console.warn("Login failed:", result?.message || "Unknown error");
+          const result = await postData("users/user_login", body);
+          if (result && result.status) {
+            console.log("result:-", result);
+            localStorage.setItem("user", JSON.stringify(result.user));
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Login successful!",
+              showConfirmButton: false,
+              timer: 500,
+            });
+            navigate("/");
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Login failed",
+              text: result?.message || "please check your credentials",
+              timer: 1500,
+            });
+            console.warn("Login failed:", result?.message || "Unknown error");
+          }
         }
-      } else {
-        const result = await postData("users/user_login", body);
-        if (result && result.status) {
-          console.log("result:-", result);
-          localStorage.setItem("user", JSON.stringify(result.user));
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Login successful!",
-            showConfirmButton: false,
-            timer: 500,
-          });
-          navigate("/");
-          // console.log(result);
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Login failed",
-            text: result?.message || "please check your credentials",
-            timer: 1500,
-          });
-          console.warn("Login failed:", result?.message || "Unknown error");
-        }
+      } catch (error) {
+        console.error("Error during login:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Login failed",
+          text: error || "Unknown error",
+          timer: 2000,
+        });
       }
-    } catch (error) {
-      console.error("Error during login:", error); // Log any errors
-      Swal.fire({
-        icon: "error",
-        title: "Login failed",
-        text: error || "Unknown error",
-        timer: 2000,
-      });
-      // alert("An error occurred during login. Please try again.");
-    }
-  };
+    },
+  });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    console.log("new values", newValue);
   };
 
   return (
@@ -183,7 +157,7 @@ export default function SignIn() {
             <Box
               component="form"
               noValidate
-              onSubmit={handleSubmit}
+              onSubmit={formik.handleSubmit}
               sx={{ mt: 1 }}
             >
               <TextField
@@ -195,36 +169,27 @@ export default function SignIn() {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
               />
-              <FormControl sx={{width: "100%" }} variant="outlined">
-                <InputLabel htmlFor="outlined-adornment-password">
-                  Password
-                </InputLabel>
-                <OutlinedInput
-                  name="password"
-                  autoComplete="current-password"
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="Password"
-                />
-              </FormControl>
-              {/* <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              /> */}
-              <Link style={{ textDecoration: "none" }} to=""></Link>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.password && Boolean(formik.errors.password)
+                }
+                helperText={formik.touched.password && formik.errors.password}
+              />
               <Button
                 type="submit"
                 fullWidth
@@ -248,7 +213,18 @@ export default function SignIn() {
                   </Link>
                 </Grid>
               </Grid>
-              <Copyright sx={{ mt: 5 }} />
+              <Typography variant="body2" color="text.secondary" align="center">
+                {"Copyright "}
+                <Link
+                  color="inherit"
+                  style={{ textDecoration: "none" }}
+                  to="https://localhost:3000/"
+                >
+                  Your Website
+                </Link>{" "}
+                {new Date().getFullYear()}
+                {"."}
+              </Typography>
             </Box>
           </Box>
         </Grid>

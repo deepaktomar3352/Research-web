@@ -1,9 +1,8 @@
-// Step 2: Import Axios
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import { TextField, FormHelperText } from "@mui/material";
+import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
@@ -13,47 +12,14 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { postData } from "../services/ServerServices";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useMediaQuery } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
-import FormControl from "@mui/material/FormControl";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" to="https://localhost:3000/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
-function validateEmail(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(String(email).toLowerCase());
-}
-
-function validatePassword(password) {
-  return password.length >= 8;
-}
-
-const defaultTheme = createTheme();
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { postData } from "../services/ServerServices";
+import SimpleSnackbar from "../Components/snackBar";
 
 function FileNamePreview({ fileName }) {
   return (
@@ -67,95 +33,89 @@ function FileNamePreview({ fileName }) {
   );
 }
 
+const defaultTheme = createTheme();
+
 export default function SignUp() {
   const navigate = useNavigate();
   const mathes = useMediaQuery("(max-width:600px)");
   const [selectedFileName, setSelectedFileName] = React.useState("");
-  const [errors, setErrors] = React.useState({});
-  const [showPassword, setShowPassword] = React.useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFileName(file ? file.name : "");
   };
+  const handleSignInClick = () => {
+    Swal.close();
+    navigate("/signin"); // Close the SweetAlert2 popup
+  };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      firstName: Yup.string().required("First Name is required"),
+      lastName: Yup.string().required("Last Name is required"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string().required("Password is required"),
+    }),
+    onSubmit: async (values) => {
+      const data = new FormData();
+      const isEmailUpdatesAllowed = values.allowExtraEmails;
+      data.append("firstName", values.firstName);
+      data.append("lastName", values.lastName);
+      data.append("email", values.email);
+      data.append("password", values.password);
+      data.append("receiveUpdates", isEmailUpdatesAllowed ? true : false);
 
-    const errors = validateForm(data);
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-      return;
-    }
-
-    const isEmailUpdatesAllowed = data.has("allowExtraEmails");
-    const formData = new FormData();
-    formData.append("firstname", data.get("firstName"));
-    formData.append("lastname", data.get("lastName"));
-    formData.append("email", data.get("email"));
-    formData.append("password", data.get("password"));
-    formData.append("receiveUpdates", isEmailUpdatesAllowed ? true : false);
-
-    const image = data.get("userImage");
-    if (image && image.size > 0) {
-      formData.append("userImage", image);
-    }
-    console.log("data", formData);
-    try {
-      var result = await postData("users/user_register", formData);
-      if (result.status) {
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Register successfully!",
-          showConfirmButton: false,
-          timer: 500,
-        });
-        navigate("/signin");
-        console.log("Form submitted successfully!");
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Login failed",
-          text: result?.message || "Unknown error",
-          timer: 1500,
-        });
+      const image = values.userImage;
+      if (image && image.size > 0) {
+        data.append("userImage", image);
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
 
-  const validateForm = (data) => {
-    const errors = {};
+      try {
+        var result = await postData("users/user_register", data);
+        if (result.status === 1) {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "User already exists",
+            showConfirmButton: true,
+            footer:
+              '<span>Please Go For SignIn <a id="signInLink" href="/signin">Sign In</a></span>',
+          });
 
-    if (!data.get("firstName")) {
-      errors.firstName = "First name is required";
-    }
-
-    if (!data.get("lastName")) {
-      errors.lastName = "Last name is required";
-    }
-
-    const email = data.get("email");
-    if (!email || !validateEmail(email)) {
-      errors.email = "Please enter a valid email address";
-    }
-
-    const password = data.get("password");
-    if (!password || !validatePassword(password)) {
-      errors.password = "Password must be at least 8 characters long";
-    }
-
-    return errors;
-  };
+          document
+            .getElementById("signInLink")
+            .addEventListener("click", handleSignInClick);
+        } else {
+          if (result.status) {
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Register successfully!",
+              showConfirmButton: false,
+              timer: 500,
+            });
+            navigate("/signin");
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Registration failed",
+              text: result?.message || "Unknown error",
+              timer: 1500,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      }
+    },
+  });
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -178,7 +138,7 @@ export default function SignUp() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={formik.handleSubmit}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
@@ -191,8 +151,14 @@ export default function SignUp() {
                   id="firstName"
                   label="First Name"
                   autoFocus
-                  error={!!errors.firstName}
-                  helperText={errors.firstName}
+                  value={formik.values.firstName}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.firstName && Boolean(formik.errors.firstName)
+                  }
+                  helperText={
+                    formik.touched.firstName && formik.errors.firstName
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -203,8 +169,12 @@ export default function SignUp() {
                   label="Last Name"
                   name="lastName"
                   autoComplete="off"
-                  error={!!errors.lastName}
-                  helperText={errors.lastName}
+                  value={formik.values.lastName}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.lastName && Boolean(formik.errors.lastName)
+                  }
+                  helperText={formik.touched.lastName && formik.errors.lastName}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -216,43 +186,28 @@ export default function SignUp() {
                   name="email"
                   autoComplete="off"
                   type="email"
-                  error={!!errors.email}
-                  helperText={errors.email}
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
                 />
               </Grid>
               <Grid item xs={12}>
-                <FormControl sx={{ width: "100%" }} variant="outlined">
-                  <InputLabel
-                    htmlFor="outlined-adornment-password"
-                    error={!!errors.password}
-                  >
-                    Password
-                  </InputLabel>
-                  <OutlinedInput
-                    error={!!errors.password}
-                    name="password"
-                    required
-                    autoComplete="current-password"
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password"
-                  />
-                  {errors.password && (
-                    <FormHelperText error>{errors.password}</FormHelperText>
-                  )}
-                </FormControl>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="off"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.password && Boolean(formik.errors.password)
+                  }
+                  helperText={formik.touched.password && formik.errors.password}
+                />
               </Grid>
               <Grid item xs={mathes ? 12 : 6}>
                 <input
@@ -261,7 +216,13 @@ export default function SignUp() {
                   id="userImage"
                   style={{ display: "none" }}
                   name="userImage"
-                  onChange={handleFileChange}
+                  onChange={(event) => {
+                    formik.setFieldValue(
+                      "userImage",
+                      event.currentTarget.files[0]
+                    );
+                    handleFileChange(event);
+                  }}
                 />
                 <label htmlFor="userImage">
                   <Button
@@ -301,7 +262,6 @@ export default function SignUp() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   );
