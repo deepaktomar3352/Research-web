@@ -36,7 +36,7 @@ const ViewerDashboard = () => {
       <div className="content">
         {viewerLoggedIn ? (
           <>
-            <HistoryPage />
+            <ViewerHistoryPage />
           </>
         ) : (
           <>

@@ -5,6 +5,7 @@ import "../stylesheet/UserList.css"; // Import the CSS file for styling
 import ReplyIcon from "@mui/icons-material/Reply";
 import { ServerURL, getData } from "../services/ServerServices";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import ChatIcon from "@mui/icons-material/Chat";
 import ReplyUser from "./admin-SubComponents/ReplyUser";
 import {
   deepOrange,
@@ -86,21 +87,13 @@ const UserList = () => {
     setPersonData(person);
   };
 
-  // const handleView = (person) => {
-  //   // setFile(person.file);
-  //   setPersonData(person);
-  //   // setOpenView(true);
-  // };
 
-  const handleCloseView = () => {
-    setOpenView(false);
-  };
 
   return (
     <div>
       <h2 className="title">Paper List</h2>
       {peopleData.map((person) => (
-        <div style={{ overflowX: "auto" }} key={person.paper_id} className="user-list-container">
+        <div style={{ overflowX: "auto","&::WebkitScrollbar":{display:"none"},msOverflowStyle:"none",scrollbarWidth:"none" }} key={person.paper_id} className="user-list-container">
           <ul>
             <li className="user-item">
               <div className="user-info">
@@ -172,6 +165,7 @@ const UserList = () => {
                   Share
                 </Button>
 
+               
                 <Button
                   sx={{ marginRight: "5%" }}
                   variant="text"

@@ -1,13 +1,35 @@
 .chat-container {
-  width: 300px;
+  display: flex;
   height: 500px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
+  
+}
+
+.viewer-list {
+  flex: 0 0 40%; /* Set the flex property to specify the initial width of the viewer list */
+  padding: 10px;
+  background-color: #ececec;
+  border-radius: 5px 0px 0px 5px;
+}
+
+.viewer {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+  font-size: 14px; /* Adjust the font size as needed */
+  text-transform: capitalize;
+  
+}
+
+.viewer.active {
+  background-color: #d8d8d8;
+  text-align: left;
+}
+
+.chat {
+  flex: 1; /* Allow the chat container to grow and fill the remaining space */
   display: flex;
   flex-direction: column;
-  position: relative;
-  background-color: #ff8a67d3;
+  
 }
 
 .chat-header {
@@ -16,6 +38,7 @@
   padding: 10px;
   font-weight: bold;
   text-align: center;
+  border-radius: 0px 5px 5px 0px;
 }
 
 .chat-messages {
@@ -23,7 +46,14 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 10px;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
 }
+
+.chat-messages::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome/Safari/Opera */
+}
+
 
 .message {
   max-width: 70%;
@@ -32,6 +62,7 @@
   margin-bottom: 10px;
   border-radius: 8px;
 }
+
 
 .message-content {
   word-wrap: break-word;
