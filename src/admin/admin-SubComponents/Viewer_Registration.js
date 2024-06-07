@@ -1,8 +1,8 @@
-import {React,useState,useRef} from "react";
+import { React, useState, useRef } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import { TextField, FormHelperText } from "@mui/material";
+import { TextField, FormHelperText,Autocomplete } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
@@ -74,13 +74,13 @@ function FileNamePreview({ fileName }) {
 const defaultTheme = createTheme();
 
 export default function Viewer_Registration() {
-  
-  const formRef = useRef(null);  
+  const formRef = useRef(null);
   const navigate = useNavigate();
   const mathes = useMediaQuery("(max-width:600px)");
   const [selectedFileName, setSelectedFileName] = useState("");
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -91,6 +91,10 @@ export default function Viewer_Registration() {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFileName(file ? file.name : "");
+  };
+
+  const handleCategoryChange = (event, newValue) => {
+    setSelectedCategory(newValue);
   };
 
   const handleSubmit = async (event) => {
@@ -109,6 +113,7 @@ export default function Viewer_Registration() {
     formData.append("lastname", data.get("lastName"));
     formData.append("email", data.get("email"));
     formData.append("password", data.get("password"));
+    formData.append("category", selectedCategory);  // Add selected category
     formData.append("receiveUpdates", isEmailUpdatesAllowed ? true : false);
 
     const image = data.get("userImage");
@@ -128,6 +133,7 @@ export default function Viewer_Registration() {
         });
         // navigate("/signin");
         formRef.current.reset(); // Reset the form
+        setSelectedCategory("")
       } else {
         Swal.fire({
           icon: "error",
@@ -148,7 +154,7 @@ export default function Viewer_Registration() {
           <CssBaseline />
           <Box
             sx={{
-              height: mathes?"auto":"90vh",
+              height: mathes ? "auto" : "90vh",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -240,6 +246,33 @@ export default function Viewer_Registration() {
                     )}
                   </FormControl>
                 </Grid>
+
+                <Grid item xs={12}>
+                  <Autocomplete
+                    fullWidth
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    options={[
+                      "Life sciences and Health Sciences",
+                      "Physical, Chemical Sciences & Engineering",
+                      "Arts and Humanities",
+                      "Accounting & Commerce",
+                    ]}
+                    renderInput={(params) => (
+                      <TextField
+                        required
+                        autoComplete="off"
+                        {...params}
+                        label="Select Category"
+                        variant="outlined"
+                        style={{
+                          backgroundColor: "white",
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
                 <Grid item xs={mathes ? 12 : 6}>
                   <input
                     type="file"
