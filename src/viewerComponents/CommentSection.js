@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Paper, TextField, Button } from "@mui/material";
+import { Paper, TextField, Button, Avatar } from "@mui/material";
 import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
 import SendIcon from "@mui/icons-material/Send";
@@ -30,7 +30,7 @@ export default function CommentSection(props) {
     async () => {
       try {
         const result = await getData(
-          `form/user_comment?user_id=${props.viewer_id}&paper_id=${props.paperId}`
+          `viewer/viewer_comment?viewer_id=${props.viewer_id}&paper_id=${props.paperId}`
         );
         setShowComments(result.data);
       } catch (error) {
@@ -72,7 +72,7 @@ export default function CommentSection(props) {
         viewer_id: props.viewer_id,
         paper_id: props.paperId
       };
-      const response = await postData("form/send_comment", body);
+      const response = await postData("viewer/send_comment", body);
       console.log("Response:", response.data);
     } catch (error) {
       console.error("Error submitting comment:", error);
@@ -171,7 +171,7 @@ export default function CommentSection(props) {
                       </>
                     ) : (
                       <>
-                        <img
+                        <Avatar
                           src={`${ServerURL}/images/${props.viewerObject.userpic}`}
                           alt={"User icon"}
                           style={{

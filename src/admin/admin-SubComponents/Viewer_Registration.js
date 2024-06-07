@@ -1,8 +1,8 @@
-import * as React from "react";
+import { React, useState, useRef } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
+import { TextField, FormHelperText,Autocomplete } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
@@ -17,6 +17,13 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { Paper, useMediaQuery } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputLabel from "@mui/material/InputLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import FormControl from "@mui/material/FormControl";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 function validateEmail(email) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,14 +74,27 @@ function FileNamePreview({ fileName }) {
 const defaultTheme = createTheme();
 
 export default function Viewer_Registration() {
+  const formRef = useRef(null);
   const navigate = useNavigate();
-  const mathes = useMediaQuery('(max-width:600px)');
-  const [selectedFileName, setSelectedFileName] = React.useState("");
-  const [errors, setErrors] = React.useState({});
-  
+  const mathes = useMediaQuery("(max-width:600px)");
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFileName(file ? file.name : "");
+  };
+
+  const handleCategoryChange = (event, newValue) => {
+    setSelectedCategory(newValue);
   };
 
   const handleSubmit = async (event) => {
@@ -93,6 +113,7 @@ export default function Viewer_Registration() {
     formData.append("lastname", data.get("lastName"));
     formData.append("email", data.get("email"));
     formData.append("password", data.get("password"));
+    formData.append("category", selectedCategory);  // Add selected category
     formData.append("receiveUpdates", isEmailUpdatesAllowed ? true : false);
 
     const image = data.get("userImage");
@@ -110,7 +131,9 @@ export default function Viewer_Registration() {
           showConfirmButton: false,
           timer: 500,
         });
-        navigate("/signin");
+        // navigate("/signin");
+        formRef.current.reset(); // Reset the form
+        setSelectedCategory("")
       } else {
         Swal.fire({
           icon: "error",
@@ -131,7 +154,7 @@ export default function Viewer_Registration() {
           <CssBaseline />
           <Box
             sx={{
-              height: "90vh",
+              height: mathes ? "auto" : "90vh",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -146,6 +169,7 @@ export default function Viewer_Registration() {
             <Box
               component="form"
               noValidate
+              ref={formRef}
               onSubmit={handleSubmit}
               sx={{ mt: 3 }}
             >
@@ -189,18 +213,66 @@ export default function Viewer_Registration() {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
-                    required
+                  <FormControl sx={{ width: "100%" }} variant="outlined">
+                    <InputLabel
+                      htmlFor="outlined-adornment-password"
+                      error={!!errors.password}
+                    >
+                      Password
+                    </InputLabel>
+                    <OutlinedInput
+                      error={!!errors.password}
+                      name="password"
+                      required
+                      autoComplete="current-password"
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      label="Password"
+                    />
+                    {errors.password && (
+                      <FormHelperText error>{errors.password}</FormHelperText>
+                    )}
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Autocomplete
                     fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="off"
-                    error={!!errors.password}
-                    helperText={errors.password}
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    options={[
+                      "Life sciences and Health Sciences",
+                      "Physical, Chemical Sciences & Engineering",
+                      "Arts and Humanities",
+                      "Accounting & Commerce",
+                    ]}
+                    renderInput={(params) => (
+                      <TextField
+                        required
+                        autoComplete="off"
+                        {...params}
+                        label="Select Category"
+                        variant="outlined"
+                        style={{
+                          backgroundColor: "white",
+                        }}
+                      />
+                    )}
                   />
                 </Grid>
+
                 <Grid item xs={mathes ? 12 : 6}>
                   <input
                     type="file"
