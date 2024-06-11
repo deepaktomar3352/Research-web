@@ -7,6 +7,10 @@ import { ServerURL, getData } from "../services/ServerServices";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ChatIcon from "@mui/icons-material/Chat";
 import ReplyUser from "./admin-SubComponents/ReplyUser";
+import { useDispatch} from "react-redux";
+import { setPaperId } from "../Storage/Slices/Paper";
+
+
 import {
   deepOrange,
   deepPurple,
@@ -22,6 +26,8 @@ import UserSelection from "./admin-SubComponents/UserSelection";
 // import IosShareIcon from "@mui/icons-material/IosShare";
 
 const UserList = () => {
+
+  const dispatch = useDispatch()
   const [openDialog, setOpenDialog] = useState(false); // State to control dialog open/close
 
   const [peopleData, setPeopleData] = useState([]);
@@ -30,7 +36,7 @@ const UserList = () => {
   const [openView, setOpenView] = useState(false); // State to control view dialog open/close
   const [personData, setPersonData] = useState("");
 
-  const fetchusers =useCallback( async () => {
+  const fetchusers = useCallback(async () => {
     try {
       const result = await getData("form/paper_requests");
       // console.log(result.papers);
@@ -40,7 +46,7 @@ const UserList = () => {
     } catch (error) {
       colors.error(error);
     }
-  },[]);
+  }, []);
 
   // Function to generate a random color from an array of colors
 
@@ -87,15 +93,27 @@ const UserList = () => {
     setPersonData(person);
   };
 
-
-
   return (
     <div>
       <h2 className="title">Paper List</h2>
       {peopleData.map((person) => (
-        <div style={{ overflowX: "auto","&::WebkitScrollbar":{display:"none"},msOverflowStyle:"none",scrollbarWidth:"none" }} key={person.paper_id} className="user-list-container">
+        <div
+        onClick={() => dispatch(setPaperId(person.paper_id))}
+          style={{
+            cursor:"pointer",
+            overflowX: "auto",
+            "&::WebkitScrollbar": { display: "none" },
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
+          }}
+          key={person.paper_id}
+          className="user-list-container"
+        >
           <ul>
-            <li className="user-item">
+            <li
+
+              className="user-item"
+            >
               <div className="user-info">
                 <div className="user-pic-name-align">
                   {person.userpic ? (
@@ -159,13 +177,12 @@ const UserList = () => {
 
                 <Button
                   sx={{ marginRight: "2%" }}
-                  onClick={()=>handleViewerSelection(person)}
+                  onClick={() => handleViewerSelection(person)}
                   variant="contained"
                 >
                   Share
                 </Button>
 
-               
                 <Button
                   sx={{ marginRight: "5%" }}
                   variant="text"
