@@ -28,7 +28,7 @@ const Chat = ({ viewers }) => {
     if (paperId !== null) {
       setLoading(true);
       try {
-        const result = await postData("viewer/viewer_info2", {
+        const result = await postData("viewer/selectedviewer_info", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -44,6 +44,10 @@ const Chat = ({ viewers }) => {
       }
     }
   }, [paperId]);
+
+  useEffect(()=>{
+    fetchViewerData();
+  },[paperId])
 
   const fetchComments = useCallback(async (viewerId) => {
     try {
@@ -70,7 +74,7 @@ const Chat = ({ viewers }) => {
 
       return () => clearInterval(fetchCommentsInterval);
     }
-  }, [selectedViewerId]); // Removed `fetchComments` from the dependency array to prevent unnecessary interval creation
+  }, [selectedViewerId]); 
 
   useEffect(() => {
     scrollToBottom();
@@ -85,10 +89,10 @@ const Chat = ({ viewers }) => {
   const sendMessage = async (messageText) => {
     scrollToBottom();
     console.log("message", selectedViewerId);
-    if (!selectedViewerId && selectedViewerId == null) {
-      console.error("No viewer selected to send message.");
-      return;
-    }
+    // if (!selectedViewerId && selectedViewerId == null) {
+    //   console.error("No viewer selected to send message.");
+    //   return;
+    // }
 
     const comment = {
       text: messageText,

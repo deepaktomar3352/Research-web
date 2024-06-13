@@ -16,10 +16,12 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import DnsIcon from '@mui/icons-material/Dns';
 import ListItemText from "@mui/material/ListItemText";
 import MainView from "./MainView";
 import PeopleIcon from "@mui/icons-material/People";
 import Viewer_Registration from "./admin-SubComponents/Viewer_Registration";
+import Viewers_list from "./admin-SubComponents/Viewers_list";
 
 function Copyright(props) {
   return (
@@ -88,7 +90,10 @@ const Drawer = styled(MuiDrawer, {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
+
+
 export default function Dashboard() {
+  
   const [open, setOpen] = useState(true);
   const [activeItem, setActiveItem] = useState("dashboard"); // Track active item
 
@@ -108,6 +113,8 @@ export default function Dashboard() {
         return <MainView />;
       case "viewer_registration":
         return <Viewer_Registration />;
+        case "Viewers_list":
+          return <Viewers_list />;
       default:
         return null;
     }
@@ -167,8 +174,6 @@ export default function Dashboard() {
           </Toolbar>
           <Divider />
           <List component="nav">
-
-
             <ListItemButton
               onClick={() => handleItemClick("dashboard")} // Set active item on click
               selected={activeItem === "dashboard"}
@@ -188,7 +193,17 @@ export default function Dashboard() {
               </ListItemIcon>
               <ListItemText primary="Viewer" />
             </ListItemButton>
+            <ListItemButton
+              onClick={() => handleItemClick("Viewers_list")} // Set active item on click
+              selected={activeItem === "Viewers_list"} // Check if it's active
+            >
+              <ListItemIcon>
+                <DnsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Viewers List" />
+            </ListItemButton>
             <Divider sx={{ my: 1 }} />
+
           </List>
         </Drawer>
 
