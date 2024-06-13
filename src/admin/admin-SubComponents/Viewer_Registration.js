@@ -154,7 +154,8 @@ export default function Viewer_Registration() {
           <CssBaseline />
           <Box
             sx={{
-              height: mathes ? "auto" : "90vh",
+              minHeight:"100vh",
+              height: "auto" ,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",

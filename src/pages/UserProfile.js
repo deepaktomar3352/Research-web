@@ -1,53 +1,133 @@
-import React, { useState } from "react";
-import { Avatar, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
-import { faker } from '@faker-js/faker';
+import React from 'react';
+import { Avatar, Button, Grid, Paper, TextField, Typography, Select, MenuItem, Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-const generateRandomUser = () => ({
-    userId: faker.string.uuid(),
-    username: faker.internet.userName(),
-    email: faker.internet.email(),
-    avatar: faker.image.avatar(),
-    password: faker.internet.password(),
-    birthdate: faker.date.birthdate(),
-    registeredAt: faker.date.past(),
-});
+const Root = styled('div')(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  backgroundColor: '#f5f5f5',
+}));
+
+const Cover = styled(Paper)(({ theme }) => ({
+  height: 200,
+  backgroundColor: '#3f51b5',
+  position: 'relative',
+}));
+
+const ChangeCoverButton = styled(Button)(({ theme }) => ({
+  position: 'absolute',
+  right: 10,
+  top: 10,
+  color: 'white',
+  borderColor: 'white',
+}));
+
+const ProfilePaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+const ProfileAvatar = styled(Avatar)(({ theme }) => ({
+  width: theme.spacing(7),
+  height: theme.spacing(7),
+  margin: 'auto',
+}));
 
 const UserProfile = () => {
-  const [open, setOpen] = useState(false);
-  const [user, setUser] = useState(generateRandomUser());
-
-  const handleOpen = () => {
-    setUser(generateRandomUser());
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   return (
-    <>
-      <Button onClick={handleOpen} variant="outlined" color="primary">
-        View Profile
-      </Button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>User Profile</DialogTitle>
-        <DialogContent>
-          <Avatar alt={user.username} src={user.avatar} />
-          <Typography variant="h5" gutterBottom>
-            {user.name}
-          </Typography>
-          <Typography variant="subtitle1">{user.email}</Typography>
-          <Typography variant="subtitle1">Age: {user.age}</Typography>
-          <Typography variant="subtitle1">Location: {user.location}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    <Root>
+      <Cover>
+        <ChangeCoverButton variant="outlined">Change Cover</ChangeCoverButton>
+      </Cover>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={4}>
+          <ProfilePaper>
+            <ProfileAvatar alt="Tim Cook" src="/path-to-image.jpg" />
+            <Typography variant="h6">Tim Cook</Typography>
+            <Typography variant="body2">CEO of Apple</Typography>
+            <Grid container justifyContent="center" spacing={2}>
+              <Grid item xs={4}>
+                <Typography variant="body1">32</Typography>
+                <Typography variant="body2">Opportunities applied</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography variant="body1">26</Typography>
+                <Typography variant="body2">Opportunities won</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography variant="body1">6</Typography>
+                <Typography variant="body2">Current opportunities</Typography>
+              </Grid>
+            </Grid>
+            <Button variant="contained" color="primary" style={{ marginTop: 10 }}>
+              View Public Profile
+            </Button>
+            <TextField
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              defaultValue="https://domain.com/user"
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+          </ProfilePaper>
+        </Grid>
+        <Grid item xs={12} sm={8}>
+          <ProfilePaper>
+            <Typography variant="h6">Account Settings</Typography>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="First Name"
+              defaultValue="Tim"
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="Last Name"
+              defaultValue="Cook"
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="Phone Number"
+              defaultValue="(408) 996-1010"
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="Email Address"
+              defaultValue="tcook@apple.com"
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="City"
+              defaultValue="New York"
+            />
+            <Select
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              defaultValue="America"
+            >
+              <MenuItem value="America">America</MenuItem>
+              {/* Add other options as needed */}
+            </Select>
+            <Button variant="contained" color="primary" fullWidth>
+              Update
+            </Button>
+          </ProfilePaper>
+        </Grid>
+      </Grid>
+    </Root>
   );
 };
 
