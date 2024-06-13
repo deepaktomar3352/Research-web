@@ -31,15 +31,16 @@ export default function ViewerHistoryPage() {
   // Function to fetch papers
   const fetchPapers = useCallback(async () => {
     try {
-      const result = await getData(`viewer/viewer_paper_data?viewer_id=${viewer_id}`);
+      const result = await getData("viewer/shared_paper_details");
       if (result) {
-        setPapers(result);
-        console.log(result);
+        setPapers(result.data);
+        console.log("shared paper result ", result);
+        console.log("shared paper ", papers);
       }
     } catch (error) {
       console.error(error);
     }
-  }, [viewer_id]);
+  },[]);
 
   useEffect(() => {
     fetchPapers();
@@ -73,7 +74,7 @@ export default function ViewerHistoryPage() {
   //   }
   // };
 
-  console.log("paperid",paperId)
+  console.log("paperid", paperId);
 
   const handleComment = async (paperid) => {
     setPaperId(paperid);

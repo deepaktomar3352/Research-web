@@ -18,15 +18,16 @@ export default function UserSelection(props) {
   const matches = useMediaQuery("(min-width:600px)");
   const [selectedUsers, setSelectedUsers] = useState([]); // State to store selected users
   const [viewerData, setViewerData] = useState([]); // State to store
+  const category = props.personData.category;
 
   const fetchViewerData = useCallback(async () => {
     try {
-      var result = await getData("viewer/viewer_info");
+      var result = await getData(`viewer//viewer_info?category=${category}`);
       setViewerData(result.viewer);
       // console.log(result);
     } catch (error) {}
   }, []);
-
+  console.log("user category", props.personData);
   useEffect(() => {
     fetchViewerData();
   }, []);
@@ -45,8 +46,10 @@ export default function UserSelection(props) {
       const body = {
         viewer_id: selectedUsers,
         paper_id: props.personData.paper_id,
+        sharedat: new Date(),
+        sharedby: "admin",
       };
-      var result = await postData("viewer/send_paper", body);
+      var result = await postData("viewer/sharedPaper_viewers", body);
       console.log("data send :-", result);
       props.handleViewerDialogClose(false);
     } catch (error) {
@@ -73,7 +76,7 @@ export default function UserSelection(props) {
         open={props.viewerDialogOpen}
         onClose={props.handleViewerDialogClose}
       >
-        <DialogTitle>Select Users</DialogTitle>
+        <DialogTitle>Select Viewers</DialogTitle>
         <IconButton
           onClick={props.handleViewerDialogClose}
           sx={{

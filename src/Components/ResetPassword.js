@@ -13,10 +13,12 @@ function UserResetPassword() {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
 
+  console.log("password",password)
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const result = await postData(`users/reset_password/${token}`, { password });
+    const result = await postData(`users/reset_password/${token}`, {password:password });
 
     if (result.status) {
         Swal.fire({

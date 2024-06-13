@@ -14,20 +14,26 @@ import ViewerDashboard from "./pages/ViewerDashboard";
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Routes>
-          <Route Component={Home} path="/" />
-          <Route Component={UserProfile} path="/UserProfile" />
-          <Route Component={ForgotPassword} path="/forgot-password" />
-          <Route Component={UserResetPassword} path="/UserResetPassword/:token" />
-          <Route Component={SignIn} path="/signin" />
-          <Route Component={SignUp} path="/SignUp" />
-          <Route Component={ArticlePage} path="/ArticlePage" />
-          <Route Component={PaperSubmissionForm} path="/PaperSubmissionForm" />
-          <Route Component={Dashboard} path="/Dashboard" />
-          <Route Component={ViewerDashboard} path="/ViewerDashboard" />
-        </Routes>
-      </Router>
+        <Router>
+          <Routes>
+            <Route Component={Home} path="/" />
+            <Route Component={UserProfile} path="/UserProfile" />
+            <Route Component={ForgotPassword} path="/forgot-password" />
+            <Route
+              Component={UserResetPassword}
+              path="/UserResetPassword/:token"
+            />
+            <Route Component={SignIn} path="/signin" />
+            <Route Component={SignUp} path="/SignUp" />
+            <Route Component={ArticlePage} path="/ArticlePage" />
+            <Route
+              Component={PaperSubmissionForm}
+              path="/PaperSubmissionForm"
+            />
+            <Route Component={Dashboard} path="/Dashboard" />
+            <Route Component={ViewerDashboard} path="/ViewerDashboard" />
+          </Routes>
+        </Router>
     </div>
   );
 }

@@ -150,15 +150,15 @@ export default function Viewer_Registration() {
   return (
     <ThemeProvider theme={defaultTheme}>
       <Paper>
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="xs" >
           <CssBaseline />
           <Box
             sx={{
-              minHeight:"100vh",
-              height: "auto" ,
+              height: mathes ? "auto" : "auto",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              paddingBottom:"5vh"
             }}
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>

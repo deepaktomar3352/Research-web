@@ -1,31 +1,59 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { getData, postData } from '../services/ServerServices';
-import '../stylesheet/Chat.css'; // Import CSS file for styling
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { getData, postData } from "../services/ServerServices";
+import "../stylesheet/Chat.css"; // Import CSS file for styling
+import { useSelector } from "react-redux";
+import SendIcon from "@mui/icons-material/Send";
+import {
+  TextField,
+  InputAdornment,
+  IconButton,
+  Paper,
+  InputBase,
+} from "@mui/material";
 
 const Chat = ({ viewers }) => {
+  const paperId = useSelector((state) => state.paper.id); // Accessing the paper ID from the Redux state
   const bottomOfChatRef = useRef(null);
   const chatMessagesRef = useRef(null);
-
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [viewerData, setViewerData] = useState([]);
   const [selectedViewerId, setSelectedViewerId] = useState(null);
 
   const addMessage = (newMessage) => {
-    setMessages(prevMessages => [...prevMessages, newMessage]);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
-
+  console.log("paperid", paperId);
   const fetchViewerData = useCallback(async () => {
-    try {
-      const result = await getData("viewer/viewer_info");
-      setViewerData(result.viewer);
-    } catch (error) {
-      console.error("Error fetching viewer data:", error);
+    if (paperId !== null) {
+      setLoading(true);
+      try {
+        const result = await postData("viewer/selectedviewer_info", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          paperId,
+        });
+        setViewerData(result.data);
+        console.log("shared viewer result", result.data);
+      } catch (error) {
+        console.error("Error fetching viewer data:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  }, []);
+  }, [paperId]);
+
+  useEffect(()=>{
+    fetchViewerData();
+  },[paperId])
 
   const fetchComments = useCallback(async (viewerId) => {
     try {
-      const result = await getData(`viewer/admin_comment?viewer_id=${viewerId}`);
+      const result = await getData(
+        `viewer/admin_comment?viewer_id=${viewerId}`
+      );
       setMessages(result.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -40,14 +68,13 @@ const Chat = ({ viewers }) => {
     if (selectedViewerId) {
       const fetchCommentsInterval = setInterval(() => {
         fetchComments(selectedViewerId);
-      }, 2000); // Fetch comments every 2 seconds
-  
-      // Fetch comments immediately when the viewer is selected
+      }, 2000);
+
       fetchComments(selectedViewerId);
-  
-      return () => clearInterval(fetchCommentsInterval); // Clean up the interval on component unmount
+
+      return () => clearInterval(fetchCommentsInterval);
     }
-  }, [selectedViewerId]); // Removed `fetchComments` from the dependency array to prevent unnecessary interval creation
+  }, [selectedViewerId]); 
 
   useEffect(() => {
     scrollToBottom();
@@ -61,19 +88,20 @@ const Chat = ({ viewers }) => {
 
   const sendMessage = async (messageText) => {
     scrollToBottom();
-    if (!selectedViewerId) {
-      console.error("No viewer selected to send message.");
-      return;
-    }
+    console.log("message", selectedViewerId);
+    // if (!selectedViewerId && selectedViewerId == null) {
+    //   console.error("No viewer selected to send message.");
+    //   return;
+    // }
 
     const comment = {
-      text: messageText
+      text: messageText,
     };
 
     const body = {
       comment: comment.text,
       is_admin_comment: "1",
-      viewer_id: selectedViewerId
+      viewer_id: selectedViewerId,
     };
 
     try {
@@ -86,12 +114,33 @@ const Chat = ({ viewers }) => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      sendMessage(e.target.value);
+      e.target.value = "";
+    }
+  };
+
+  const handleSendClick = () => {
+    const input = document.querySelector('input[type="text"]');
+    sendMessage(input.value);
+    input.value = "";
+  };
+
   return (
     <div className="chat-container">
       <div className="viewer-list">
-        {viewerData.map(viewer => (
-          <div key={viewer.id} onClick={() => setSelectedViewerId(viewer.id)} className={`viewer ${selectedViewerId === viewer.id ? 'active' : ''}`}>
-            <div>{viewer.firstname} {viewer.lastname}</div>
+        {viewerData.map((viewer) => (
+          <div
+            key={viewer.viewer_id}
+            onClick={() => setSelectedViewerId(viewer.viewer_id)}
+            className={`viewer ${
+              selectedViewerId === viewer.viewer_id ? "active" : ""
+            }`}
+          >
+            <div>
+              {viewer.firstname} {viewer.lastname}
+            </div>
           </div>
         ))}
       </div>
@@ -101,25 +150,48 @@ const Chat = ({ viewers }) => {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`message ${message.is_admin_comment === 1 ? 'sent' : 'received'}`}
+              className={`message ${
+                message.is_admin_comment === 1 ? "sent" : "received"
+              }`}
               ref={index === messages.length - 1 ? bottomOfChatRef : null}
             >
               <div className="message-content">{message.content}</div>
-              <div className="message-timestamp">{new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
+              <div className="message-timestamp">
+                {new Date(message.created_at).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </div>
             </div>
           ))}
         </div>
-        <div className="chat-input">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                sendMessage(e.target.value);
-                e.target.value = '';
-              }
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Paper
+            elevation={3}
+            component="form"
+            onKeyDown={(e) => handleKeyDown(e)}
+            sx={{
+              p: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "50px",
             }}
-          />
+          >
+            <InputBase
+              placeholder="Type a message"
+              inputProps={{ "aria-label": "Type a message" }}
+            />
+            <IconButton
+              onClick={handleSendClick}
+              type="button"
+              sx={{ p: "10px" }}
+              aria-label="search"
+            >
+              <SendIcon />
+            </IconButton>
+          </Paper>
         </div>
       </div>
     </div>
