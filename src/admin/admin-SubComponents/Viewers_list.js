@@ -37,25 +37,25 @@ export default function Viewers_list() {
           style={{ width: 50, borderRadius: "50%" }}
         />
       ),
-      editComponent: (props) => (
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              // Assuming ServerURL and a function to handle image upload are defined
-              uploadImage(file).then((newImageUrl) => {
-                props.onChange(newImageUrl);
-              });
-            };
-            if (file) {
-              reader.readAsDataURL(file);
-            }
-          }}
-        />
-      ),
+      // editComponent: (props) => (
+      //   <input
+      //     type="file"
+      //     accept="image/*"
+      //     onChange={(e) => {
+      //       const file = e.target.files[0];
+      //       const reader = new FileReader();
+      //       reader.onloadend = () => {
+            
+      //         uploadImage(file).then((newImageUrl) => {
+      //           props.onChange(newImageUrl);
+      //         });
+      //       };
+      //       if (file) {
+      //         reader.readAsDataURL(file);
+      //       }
+      //     }}
+      //   />
+      // ),
       editable:"never"
     },
   ]);

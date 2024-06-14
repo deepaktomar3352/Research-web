@@ -1,16 +1,19 @@
-import React from 'react';
-import { Avatar, Button, Grid, Paper, TextField, Typography, Select, MenuItem, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Avatar, Button, Grid, Paper, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { ServerURL } from '../services/ServerServices';
 
 const Root = styled('div')(({ theme }) => ({
-  flexGrow: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: '100vh',
   padding: theme.spacing(3),
   backgroundColor: '#f5f5f5',
 }));
 
-const Cover = styled(Paper)(({ theme }) => ({
+const Cover = styled(Paper)(({ theme, bgcolor }) => ({
   height: 200,
-  backgroundColor: '#3f51b5',
+  backgroundColor: bgcolor || '#3f51b5',
   position: 'relative',
 }));
 
@@ -26,52 +29,58 @@ const ProfilePaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   textAlign: 'center',
   color: theme.palette.text.secondary,
+  marginTop: '-50px', // Bring the ProfilePaper up
+  zIndex: 1,
+  position: 'relative',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: '50px',
+    marginRight: '15px',
+  },
+  [theme.breakpoints.down('sm')]: {
+    marginLeft: '0px',
+    marginRight: '0px',
+    marginTop: '-10px', 
+  },
 }));
 
 const ProfileAvatar = styled(Avatar)(({ theme }) => ({
-  width: theme.spacing(7),
-  height: theme.spacing(7),
+  width: theme.spacing(10),
+  height: theme.spacing(10),
   margin: 'auto',
 }));
 
 const UserProfile = () => {
+  const userString = localStorage.getItem("user");
+  const user = JSON.parse(userString);
+
+  const [coverColor, setCoverColor] = useState('#3f51b5');
+
+  useEffect(() => {
+    const savedColor = localStorage.getItem('coverColor');
+    if (savedColor) {
+      setCoverColor(savedColor);
+    }
+  }, []);
+
+  const handleChangeCover = () => {
+    const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    setCoverColor(randomColor);
+    localStorage.setItem('coverColor', randomColor);
+  };
+
   return (
     <Root>
-      <Cover>
-        <ChangeCoverButton variant="outlined">Change Cover</ChangeCoverButton>
+      <Cover bgcolor={coverColor}>
+        <ChangeCoverButton variant="outlined" onClick={handleChangeCover}>
+          Change Cover
+        </ChangeCoverButton>
       </Cover>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} style={{ flexGrow: 1 }}>
         <Grid item xs={12} sm={4}>
           <ProfilePaper>
-            <ProfileAvatar alt="Tim Cook" src="/path-to-image.jpg" />
-            <Typography variant="h6">Tim Cook</Typography>
-            <Typography variant="body2">CEO of Apple</Typography>
-            <Grid container justifyContent="center" spacing={2}>
-              <Grid item xs={4}>
-                <Typography variant="body1">32</Typography>
-                <Typography variant="body2">Opportunities applied</Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body1">26</Typography>
-                <Typography variant="body2">Opportunities won</Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body1">6</Typography>
-                <Typography variant="body2">Current opportunities</Typography>
-              </Grid>
-            </Grid>
-            <Button variant="contained" color="primary" style={{ marginTop: 10 }}>
-              View Public Profile
-            </Button>
-            <TextField
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              defaultValue="https://domain.com/user"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
+            <ProfileAvatar alt={user.firstname || 'User'} src={`${ServerURL}/images/${user.userpic}`} />
+            <Typography variant="h6">{`${user.firstname || 'First Name'} ${user.lastname || 'Last Name'}`}</Typography>
+            <Typography variant="body2">{user.email || 'Email'}</Typography>
           </ProfilePaper>
         </Grid>
         <Grid item xs={12} sm={8}>
@@ -79,48 +88,25 @@ const UserProfile = () => {
             <Typography variant="h6">Account Settings</Typography>
             <TextField
               variant="outlined"
-              margin="normal"
+              margin="dense"
               fullWidth
               label="First Name"
-              defaultValue="Tim"
+              defaultValue={user.firstname || ''}
             />
             <TextField
               variant="outlined"
-              margin="normal"
+              margin="dense"
               fullWidth
               label="Last Name"
-              defaultValue="Cook"
+              defaultValue={user.lastname || ''}
             />
             <TextField
               variant="outlined"
-              margin="normal"
-              fullWidth
-              label="Phone Number"
-              defaultValue="(408) 996-1010"
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
+              margin="dense"
               fullWidth
               label="Email Address"
-              defaultValue="tcook@apple.com"
+              defaultValue={user.email || ''}
             />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              label="City"
-              defaultValue="New York"
-            />
-            <Select
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              defaultValue="America"
-            >
-              <MenuItem value="America">America</MenuItem>
-              {/* Add other options as needed */}
-            </Select>
             <Button variant="contained" color="primary" fullWidth>
               Update
             </Button>
