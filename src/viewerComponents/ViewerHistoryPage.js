@@ -31,11 +31,9 @@ export default function ViewerHistoryPage() {
   // Function to fetch papers
   const fetchPapers = useCallback(async () => {
     try {
-      const result = await getData("viewer/shared_paper_details");
+      const result = await postData("viewer/shared_paper_details",{viewers_id:viewer_id});
       if (result) {
         setPapers(result.data);
-        console.log("shared paper result ", result);
-        console.log("shared paper ", papers);
       }
     } catch (error) {
       console.error(error);
@@ -46,35 +44,34 @@ export default function ViewerHistoryPage() {
     fetchPapers();
   }, [fetchPapers]);
 
-  // const DeletePaper = async (paperid) => {
-  //   try {
-  //     // Show confirmation message
-  //     const result = await Swal.fire({
-  //       title: "Are you sure?",
-  //       text: "You will not be able to recover this paper!",
-  //       icon: "warning",
-  //       showCancelButton: true,
-  //       confirmButtonText: "Yes, delete it!",
-  //       cancelButtonText: "No, cancel!",
-  //       reverseButtons: true,
-  //     });
+  const DeletePaper = async (paperid) => {
+    try {
+      // Show confirmation message
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You will not be able to recover this paper!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true,
+      });
 
-  //     if (result.isConfirmed) {
-  //       // viewer confirmed, proceed with deletion
-  //       await getData(`form/delete_paper?id=${paperid}`);
+      if (result.isConfirmed) {
+        // viewer confirmed, proceed with deletion
+        await postData(`form/delete_paper?id=${paperid}`);
 
-  //       Swal.fire("Deleted!", "Your paper has been deleted.", "success");
-  //     } else if (result.dismiss === Swal.DismissReason.cancel) {
-  //       // viewer cancelled, do nothing
-  //       Swal.fire("Cancelled", "Your paper is safe :)", "error");
-  //     }
-  //     fetchPapers();
-  //   } catch (error) {
-  //     console.error("Error deleting paper:", error);
-  //   }
-  // };
+        Swal.fire("Deleted!", "Your paper has been deleted.", "success");
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // viewer cancelled, do nothing
+        Swal.fire("Cancelled", "Your paper is safe :)", "error");
+      }
+      fetchPapers();
+    } catch (error) {
+      console.error("Error deleting paper:", error);
+    }
+  };
 
-  console.log("paperid", paperId);
 
   const handleComment = async (paperid) => {
     setPaperId(paperid);
@@ -132,6 +129,7 @@ export default function ViewerHistoryPage() {
                       <th>Submission Date</th>
                       <th>Comment</th>
                       <th>View Paper</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -212,7 +210,7 @@ export default function ViewerHistoryPage() {
                           </a>
                         </td>
 
-                        {/* <td>
+                        <td>
                           <center>
                             <DeleteIcon
                               style={{
@@ -225,7 +223,7 @@ export default function ViewerHistoryPage() {
                               }}
                             />
                           </center>
-                        </td> */}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

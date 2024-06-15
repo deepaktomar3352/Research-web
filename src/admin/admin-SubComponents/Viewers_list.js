@@ -6,11 +6,6 @@ export default function Viewers_list() {
   const [data, setData] = useState([]);
   const [updateData, setUpdateData] = useState([]);
   const [columns, setColumns] = useState([
-    // {
-    //   title: "Name",
-    //   field: "fullname",
-    //   render: (rowData) => `${rowData.firstname} ${rowData.lastname}`,
-    // },
     {
       title: "First Name",
       field: "firstname",
@@ -56,7 +51,7 @@ export default function Viewers_list() {
           }}
         />
       ),
-      editable:"never"
+      editable: "never",
     },
   ]);
   console.log("updted data", updateData);
@@ -103,13 +98,13 @@ export default function Viewers_list() {
         headers: {
           "Content-Type": "application/json",
         },
-          id: oldData.id, 
+        id: oldData.id,
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to delete data");
       }
-  
+
       const deletedViewer = await response.json();
       return deletedViewer;
     } catch (error) {
@@ -117,7 +112,6 @@ export default function Viewers_list() {
       throw error;
     }
   };
-  
 
   return (
     <MaterialTable
@@ -150,12 +144,12 @@ export default function Viewers_list() {
           }),
         onRowDelete: (oldData) =>
           new Promise((resolve, reject) => {
-            setTimeout(async() => {
+            setTimeout(async () => {
               const dataDelete = [...data];
               const index = oldData.tableData.id;
               dataDelete.splice(index, 1);
               setData([...dataDelete]);
-              deleteViewerData(oldData)
+              deleteViewerData(oldData);
               resolve();
             }, 1000);
           }),

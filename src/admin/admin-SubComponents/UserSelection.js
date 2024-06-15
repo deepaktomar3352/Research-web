@@ -18,16 +18,20 @@ export default function UserSelection(props) {
   const matches = useMediaQuery("(min-width:600px)");
   const [selectedUsers, setSelectedUsers] = useState([]); // State to store selected users
   const [viewerData, setViewerData] = useState([]); // State to store
-  const category = props.personData.category;
+  const category = (props.personData.category);
+  const encodedCategory = encodeURIComponent(category);
+
+  
+  
 
   const fetchViewerData = useCallback(async () => {
     try {
-      var result = await getData(`viewer//viewer_info?category=${category}`);
+      var result = await getData(`viewer/viewer_info?category=${encodedCategory}`);
       setViewerData(result.viewer);
-      // console.log(result);
+      console.log("result viewers catrogroy selection ",result);
     } catch (error) {}
   }, []);
-  console.log("user category", props.personData);
+  console.log(" category", props.personData.category);
   useEffect(() => {
     fetchViewerData();
   }, []);
