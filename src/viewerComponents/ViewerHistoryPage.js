@@ -15,6 +15,8 @@ import Swal from "sweetalert2";
 import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
+import { useDispatch,useSelector } from "react-redux";
+import { setPaperId } from "../Storage/Slices/Paper";
 
 const options = [
   { name: "Delete", action: "Delete", icon: <DeleteIcon /> },
@@ -24,10 +26,13 @@ const options = [
 const ITEM_HEIGHT = 48;
 
 export default function ViewerHistoryPage() {
+  const dispatch = useDispatch();
+  const paper_ID = useSelector((state) => state.paper.id); // Accessing the paper ID from the Redux state
+
   var itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(0);
   const [papers, setPapers] = useState([]);
-  const [paperId, setPaperId] = useState("");
+  const [paperId, setPaper_Id] = useState("");
   const [notifyCount, setNotifyCount] = useState([]);
   const viewer = localStorage.getItem("viewer");
   const viewerObject = JSON.parse(viewer);
@@ -72,6 +77,8 @@ export default function ViewerHistoryPage() {
     setAnchorEl(null);
     const paperid = data[0];
     const eventName = data[1];
+    console.log("paper id ", paperid);
+    console.log("event name ", eventName);
     if (eventName === "Delete") {
       try {
         // Show confirmation message
@@ -110,7 +117,7 @@ export default function ViewerHistoryPage() {
   };
 
   const handleComment = async (paperid) => {
-    setPaperId(paperid);
+    setPaper_Id(paperid);
     try {
       const body = {
         paperid: paperid,
@@ -170,7 +177,10 @@ export default function ViewerHistoryPage() {
                   </thead>
                   <tbody>
                     {currentPapers.map((paper) => (
-                      <tr key={paper.id}>
+                      <tr
+                        key={paper.id}
+                        onClick={() => dispatch(setPaperId(paper.id))}
+                      >
                         <td>{paper.paper_title}</td>
                         <td>{paper.research_area}</td>
                         <td>{paper.paper_abstract}</td>
@@ -279,7 +289,7 @@ export default function ViewerHistoryPage() {
                                     key={option}
                                     selected={option === "Pyxis"}
                                     onClick={() =>
-                                      eventHandler([paper.id, option.name])
+                                      eventHandler([paper_ID, option.name])
                                     }
                                   >
                                     <Box

@@ -40,7 +40,7 @@ export default function CommentSection(props) {
 
   useEffect(() => {
     fetchComments();
-    const intervalId = setInterval(fetchComments, 1000);
+    const intervalId = setInterval(fetchComments, 3000);
 
     return () => {
       clearInterval(intervalId);
@@ -126,17 +126,12 @@ export default function CommentSection(props) {
           <></>
         )}
 
+        <h3>Comments:</h3>
         <div
           style={{
             overflowY: "scroll",
-            "&::WebkitScrollbar": {
-              display: "none", // Hides scrollbar in WebKit browsers
-            },
-            msOverflowStyle: "none",
-            scrollbarWidth: "none",
           }}
         >
-          <h3>Comments:</h3>
           {showComments
             .slice()
             .reverse()
