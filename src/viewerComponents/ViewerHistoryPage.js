@@ -1,14 +1,27 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Grid, Paper } from "@mui/material";
+import { Grid, Paper, Box } from "@mui/material";
 import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
 import DeleteIcon from "@mui/icons-material/Delete";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import ClearIcon from "@mui/icons-material/Clear";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
+
+const options = [
+  { name: "Delete", action: "Delete", icon: <DeleteIcon /> },
+  { name: "Accept", action: "Accept", icon: <VerifiedIcon /> },
+  { name: "Reject", action: "Reject", icon: <ClearIcon /> },
+];
+const ITEM_HEIGHT = 48;
 
 export default function ViewerHistoryPage() {
   var itemsPerPage = 10;
@@ -22,6 +35,15 @@ export default function ViewerHistoryPage() {
 
   const offset = currentPage * itemsPerPage;
   const currentPapers = papers.slice(offset, offset + itemsPerPage);
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   // const currentArticles = articles.slice(offset, offset + itemsPerPage);
 
   const handlePageChange = (selected) => {
@@ -31,47 +53,61 @@ export default function ViewerHistoryPage() {
   // Function to fetch papers
   const fetchPapers = useCallback(async () => {
     try {
-      const result = await postData("viewer/shared_paper_details",{viewers_id:viewer_id});
+      const result = await postData("viewer/shared_paper_details", {
+        viewers_id: viewer_id,
+      });
       if (result) {
         setPapers(result.data);
       }
     } catch (error) {
       console.error(error);
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
     fetchPapers();
-  }, [fetchPapers]);
+  }, []);
 
-  const DeletePaper = async (paperid) => {
-    try {
-      // Show confirmation message
-      const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "You will not be able to recover this paper!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-      });
+  const eventHandler = async (data) => {
+    setAnchorEl(null);
+    const paperid = data[0];
+    const eventName = data[1];
+    if (eventName === "Delete") {
+      try {
+        // Show confirmation message
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "You will not be able to recover this paper!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "No, cancel!",
+          reverseButtons: true,
+        });
 
-      if (result.isConfirmed) {
-        // viewer confirmed, proceed with deletion
-        await postData(`form/delete_paper?id=${paperid}`);
+        if (result.isConfirmed) {
+          // viewer confirmed, proceed with deletion
+          await postData(`viewer/remove_viewer_id_from_sharedviewer_table`, {
+            viewers_id: viewer_id,
+            paper_id: paperid,
+          });
 
-        Swal.fire("Deleted!", "Your paper has been deleted.", "success");
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        // viewer cancelled, do nothing
-        Swal.fire("Cancelled", "Your paper is safe :)", "error");
+          Swal.fire("Deleted!", "Your paper has been deleted.", "success");
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          // viewer cancelled, do nothing
+          Swal.fire("Cancelled", "Your paper is safe :)", "error");
+        }
+        fetchPapers();
+        setAnchorEl(null);
+      } catch (error) {
+        console.error("Error deleting paper:", error);
+        setAnchorEl(null);
       }
-      fetchPapers();
-    } catch (error) {
-      console.error("Error deleting paper:", error);
+    } else {
+      // other event handlers
+      console.log("event name", eventName);
     }
   };
-
 
   const handleComment = async (paperid) => {
     setPaperId(paperid);
@@ -145,33 +181,33 @@ export default function ViewerHistoryPage() {
 
                         <td>
                           <center>
-                            {notifyCount.map((notify) => {
-                              if (notify.paper_id === paper.id) {
-                                return (
-                                  <Badge
-                                    key={notify.paper_id}
-                                    badgeContent={notify.count}
-                                    color="primary"
-                                  >
-                                    <ChatIcon
-                                      style={{
-                                        color: "#ed15d8",
-                                        cursor: "pointer",
-                                        fontSize: 25,
-                                      }}
-                                      onClick={() => {
-                                        handleComment(paper.id);
-                                      }}
-                                    />
-                                  </Badge>
-                                );
-                              }
-                              return null; // Add this line to return null when the condition is not met
-                            })}
-                            {/* If no match found, display 0 */}
-                            {notifyCount.every(
-                              (notify) => notify.id !== paper.id
-                            ) && (
+                            {notifyCount.some(
+                              (notify) => notify.paper_id === paper.id
+                            ) ? (
+                              notifyCount.map((notify) => {
+                                if (notify.paper_id === paper.id) {
+                                  return (
+                                    <Badge
+                                      key={notify.paper_id}
+                                      badgeContent={notify.count}
+                                      color="primary"
+                                    >
+                                      <ChatIcon
+                                        style={{
+                                          color: "#ed15d8",
+                                          cursor: "pointer",
+                                          fontSize: 25,
+                                        }}
+                                        onClick={() => {
+                                          handleComment(paper.id);
+                                        }}
+                                      />
+                                    </Badge>
+                                  );
+                                }
+                                return null;
+                              })
+                            ) : (
                               <Badge
                                 key={paper.id}
                                 badgeContent={0}
@@ -212,16 +248,53 @@ export default function ViewerHistoryPage() {
 
                         <td>
                           <center>
-                            <DeleteIcon
-                              style={{
-                                color: "red",
-                                cursor: "pointer",
-                                fontSize: 25,
-                              }}
-                              onClick={() => {
-                                DeletePaper(paper.id);
-                              }}
-                            />
+                            <div>
+                              <IconButton
+                                aria-label="more"
+                                id="long-button"
+                                aria-controls={open ? "long-menu" : undefined}
+                                aria-expanded={open ? "true" : undefined}
+                                aria-haspopup="true"
+                                onClick={handleClick}
+                              >
+                                <MoreVertIcon />
+                              </IconButton>
+                              <Menu
+                                id="long-menu"
+                                MenuListProps={{
+                                  "aria-labelledby": "long-button",
+                                }}
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                PaperProps={{
+                                  style: {
+                                    maxHeight: ITEM_HEIGHT * 4.5,
+                                    width: "20ch",
+                                  },
+                                }}
+                              >
+                                {options.map((option) => (
+                                  <MenuItem
+                                    key={option}
+                                    selected={option === "Pyxis"}
+                                    onClick={() =>
+                                      eventHandler([paper.id, option.name])
+                                    }
+                                  >
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      {option.icon}
+                                      <Box ml={1}>{option.action}</Box>{" "}
+                                    </Box>
+                                  </MenuItem>
+                                ))}
+                              </Menu>
+                            </div>
                           </center>
                         </td>
                       </tr>

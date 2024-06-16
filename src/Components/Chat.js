@@ -36,7 +36,7 @@ const Chat = ({ viewers }) => {
           paperId,
         });
         setViewerData(result.data);
-        console.log("shared viewer result", result.data);
+        console.log("shared view data",result.data)
       } catch (error) {
         console.error("Error fetching viewer data:", error);
       } finally {
@@ -45,20 +45,22 @@ const Chat = ({ viewers }) => {
     }
   }, [paperId]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchViewerData();
-  },[paperId])
+  }, [paperId]);
 
   const fetchComments = useCallback(async (viewerId) => {
     try {
-      const result = await getData(
-        `viewer/admin_comment?viewer_id=${viewerId}`
-      );
+      const paper_id = paperId;
+      const result = await postData(`viewer/admin_comment`, {
+        viewer_id: viewerId,
+        paper_id: paper_id,
+      });
       setMessages(result.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
-  }, []);
+  }, [paperId]);
 
   useEffect(() => {
     fetchViewerData();
@@ -74,7 +76,7 @@ const Chat = ({ viewers }) => {
 
       return () => clearInterval(fetchCommentsInterval);
     }
-  }, [selectedViewerId]); 
+  }, [selectedViewerId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -88,12 +90,11 @@ const Chat = ({ viewers }) => {
 
   const sendMessage = async (messageText) => {
     scrollToBottom();
-    console.log("message", selectedViewerId);
+    // console.log("message", selectedViewerId);
     // if (!selectedViewerId && selectedViewerId == null) {
     //   console.error("No viewer selected to send message.");
     //   return;
     // }
-
     const comment = {
       text: messageText,
     };
@@ -102,6 +103,7 @@ const Chat = ({ viewers }) => {
       comment: comment.text,
       is_admin_comment: "1",
       viewer_id: selectedViewerId,
+      paper_id: paperId,
     };
 
     try {
