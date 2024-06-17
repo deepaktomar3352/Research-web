@@ -23,7 +23,7 @@ const Chat = ({ viewers }) => {
   const addMessage = (newMessage) => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
-  console.log("paperid", paperId);
+  // console.log("paperid", paperId);
   const fetchViewerData = useCallback(async () => {
     if (paperId !== null) {
       setLoading(true);

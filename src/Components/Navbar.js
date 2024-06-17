@@ -87,7 +87,6 @@ export default function Navbar() {
     window.location.reload(); // Reload the page to reset the state
   };
 
-
   return (
     <div>
       <header className="navbar-container">
@@ -99,7 +98,7 @@ export default function Navbar() {
                 <li>
                   <Link to="/PaperSubmissionForm">Paper Submit</Link>
                 </li>
-                <li>
+                <li className="profile-menu">
                   {user.userpic ? (
                     <img
                       src={`${ServerURL}/images/${user.userpic}`}
@@ -124,27 +123,24 @@ export default function Navbar() {
                       </Avatar>
                     </div>
                   )}
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link to="/UserProfile">Profile</Link>
+                    </li>
+                    <li>
+                      <Link onClick={handleUserLogout}>Logout</Link>
+                    </li>
+                  </ul>
                 </li>
-                <div className="user-profile-details-container">
-                  <div className="user-profile-details-text">
-                    <Link to="/UserProfile">
-                      Profile
-                    </Link>
-                  </div>
-                  <div className="user-profile-details-text">
-                    <Link onClick={handleUserLogout}>Logout</Link>
-                  </div>
-                </div>
               </>
             ) : isLoggedIn && viewer ? (
               <>
-                <li>
+                <li className="profile-menu">
                   {viewer.userpic ? (
                     <img
                       src={`${ServerURL}/images/${viewer.userpic}`}
                       className="user-profile-avatar"
                       alt=""
-                      
                     />
                   ) : (
                     <div className="default-profile-avatar">
@@ -164,17 +160,15 @@ export default function Navbar() {
                       </Avatar>
                     </div>
                   )}
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link to="/UserProfile">Profile</Link>
+                    </li>
+                    <li>
+                      <Link onClick={handleViewerLogout}>Logout</Link>
+                    </li>
+                  </ul>
                 </li>
-                <div className="user-profile-details-container">
-                  <div className="user-profile-details-text">
-                    <Link to="/UserProfile">
-                      Profile
-                    </Link>
-                  </div>
-                  <div className="user-profile-details-text">
-                    <Link onClick={handleViewerLogout}>Logout</Link>
-                  </div>
-                </div>
               </>
             ) : (
               <>

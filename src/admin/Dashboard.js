@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
@@ -12,7 +12,6 @@ import Badge from "@mui/material/Badge";
 import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -22,15 +21,13 @@ import MainView from "./MainView";
 import PeopleIcon from "@mui/icons-material/People";
 import Viewer_Registration from "./admin-SubComponents/Viewer_Registration";
 import Viewers_list from "./admin-SubComponents/Viewers_list";
+import CommentCount from "./admin-SubComponents/CommentCount";
+
+// import ListItemText from '@mui/material/ListItemText';
 
 function Copyright(props) {
   return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
         Your Website
@@ -87,15 +84,13 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-
-
 export default function Dashboard() {
-  
+
   const [open, setOpen] = useState(true);
   const [activeItem, setActiveItem] = useState("dashboard"); // Track active item
+
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -105,20 +100,23 @@ export default function Dashboard() {
     setActiveItem(item);
   };
 
+
+
+
   const renderComponent = () => {
-    switch (
-      activeItem // Render component based on active item
-    ) {
+    switch (activeItem) {
       case "dashboard":
         return <MainView />;
       case "viewer_registration":
         return <Viewer_Registration />;
-        case "Viewers_list":
-          return <Viewers_list />;
+      case "Viewers_list":
+        return <Viewers_list />;
       default:
         return null;
     }
   };
+
+
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -151,11 +149,12 @@ export default function Dashboard() {
             >
               Dashboard
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+
+         
+         <CommentCount/>
+
+
+
           </Toolbar>
         </AppBar>
 
