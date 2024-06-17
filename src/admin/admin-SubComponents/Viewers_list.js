@@ -29,8 +29,8 @@ export default function Viewers_list() {
         <img
           src={`${ServerURL}/images/${rowData.userpic}`}
           alt={`${rowData.firstname} ${rowData.lastname}`}
-          style={{ width: 50, borderRadius: "50%" }}
-        />
+          style={{ width: 50,height:50, borderRadius: "50%" }}
+          />
       ),
       // editComponent: (props) => (
       //   <input

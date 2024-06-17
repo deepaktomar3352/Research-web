@@ -116,7 +116,7 @@ export default function Navbar() {
                           cursor: "pointer",
                         }}
                       >
-                        <div style={{ fontSize: "0.8em" }}>
+                        <div style={{ fontSize: "0.8rem" }}>
                           {user.firstname.charAt(0).toUpperCase()}
                           {user.lastname.charAt(0).toUpperCase()}
                         </div>

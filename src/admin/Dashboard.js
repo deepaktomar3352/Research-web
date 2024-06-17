@@ -16,6 +16,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import DnsIcon from '@mui/icons-material/Dns';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import ListItemText from "@mui/material/ListItemText";
 import MainView from "./MainView";
 import PeopleIcon from "@mui/icons-material/People";
@@ -24,6 +25,7 @@ import Viewers_list from "./admin-SubComponents/Viewers_list";
 import CommentCount from "./admin-SubComponents/CommentCount";
 
 // import ListItemText from '@mui/material/ListItemText';
+import Users_list from "./admin-SubComponents/showUsers_List";
 
 function Copyright(props) {
   return (
@@ -111,6 +113,8 @@ export default function Dashboard() {
         return <Viewer_Registration />;
       case "Viewers_list":
         return <Viewers_list />;
+        case "Users_list":
+          return <Users_list />;
       default:
         return null;
     }
@@ -200,6 +204,15 @@ export default function Dashboard() {
                 <DnsIcon />
               </ListItemIcon>
               <ListItemText primary="Viewers List" />
+            </ListItemButton>
+            <ListItemButton
+              onClick={() => handleItemClick("Users_list")} // Set active item on click
+              selected={activeItem === "Users_list"} // Check if it's active
+            >
+              <ListItemIcon>
+                <ViewListIcon />
+              </ListItemIcon>
+              <ListItemText primary="Users List" />
             </ListItemButton>
             <Divider sx={{ my: 1 }} />
 
