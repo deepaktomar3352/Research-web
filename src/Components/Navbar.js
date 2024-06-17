@@ -91,7 +91,7 @@ export default function Navbar() {
   return (
     <div>
       <header className="navbar-container">
-        <h1>Research Paper</h1>
+        <h2>Research Paper</h2>
         <nav>
           <ul>
             {isLoggedIn && user ? (

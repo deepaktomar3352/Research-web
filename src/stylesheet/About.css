@@ -1,7 +1,7 @@
 .hero {
-    background-color: #f8f8f8;
+    /* background-color: #fff; */
     overflow: hidden;
-    font-family: "Poppins";
+    font-family:sans-serif;
   }
   
   .heading-container {
@@ -9,7 +9,8 @@
   }
   
   .heading h1 {
-    color: #ff6347;
+    color: #0f0c29;
+    /* font-family:"poppins"; */
     font-size: 3vw;
     text-align: center;
     margin-top: 35px;
@@ -25,7 +26,7 @@
     bottom: 0;
     width: 100%; /* Span the underline across the width of the parent */
     height: 4px;
-    background-color: #ec1ce8;
+    background-color: #ff6347;
     animation: fadeInUp 2s ease;
   }
   
@@ -33,7 +34,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 90%;
+    /* width: 90%; */
+    padding-left: 3vw;
+    padding-right: 4vw;
     margin: 65px auto;
   }
   .hero-content {
@@ -42,30 +45,34 @@
     margin: 0px 25px;
     animation: fadeInUp 2s ease;
   }
-  .hero-content h2 {
-    font-size: 2.5vw;
+  .hero-content h1 {
+    font-size: 2.9vw;
+    width: 35vw;
     margin-bottom: 20px;
+    font-family: sans-serif;
     color: #333;
   }
   .hero-content p {
-    font-size: 1.6vw;
-    line-height: 1.5;
+    font-size: 1.4vw;
+    line-height: 1.6;
     margin-bottom: 40px;
+    font-family: sans-serif;
     color: #666;
   }
   .hero-content button {
     display: inline-block;
-    background-color: #ff4500;
+    background-color: #0f0c29;
     color: #fff;
-    padding: 12px 24px;
-    border-radius: 5px;
+    padding: 12px 22px;
+    border-radius: 7px;
     font-size: 1.5vw;
+    font-family: sans-serif;
     border: none;
     cursor: pointer;
     transition: 0.3s ease;
   }
   .hero-content button:hover {
-    background-color: #ff6347;
+    /* background-color: #ff6347; */
     transform: scale(1.1);
   }
   .hero-image {
