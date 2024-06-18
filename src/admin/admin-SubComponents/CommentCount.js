@@ -4,9 +4,11 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import ListItemText from "@mui/material/ListItemText";
+import List from "@mui/material/List";
 import Popover from "@mui/material/Popover";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
+import { ListItemButton } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { getData } from "../../services/ServerServices";
@@ -80,49 +82,59 @@ export default function CommentCount() {
           horizontal: "right",
         }}
       >
-        <Box sx={{ p: 2, maxWidth: 360 }}>
-          {sortedComments.map((message, index) => (
-            <ListItem key={index} alignItems="flex-start">
-              <ListItemAvatar>
-                <Avatar alt={message.viewerName || message.userName} />
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <React.Fragment>
-                   <Typography sx={{ display: "flex",justifyContent:"space-between",alignItems:"center" }}>
-                   <Typography>
-                      {message.viewerName ||
-                        message.userName + "" + message.lastName ||
-                        message.lastName}
-                    </Typography>
-                    <Typography sx={{marginRight:"auto",fontSize:12}}>
-                    {'('+message.commentType+')'}
-                   </Typography>
-                   <Typography sx={{fontSize:10}} >
-                   {` ${formatDistanceToNow(
-                      new Date(message.created_at)
-                    )} ago`}
-                   </Typography>
-                   </Typography>
-                   
-                  </React.Fragment>
-                }
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      sx={{ display: "inline" }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {message.content}
-                    </Typography>
-                   
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-          ))}
+        <Box sx={{ p: 1, maxWidth: 360 }}>
+          <List>
+            {sortedComments.map((message, index) => (
+              <ListItemButton>
+                <ListItem key={index} alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar alt={message.viewerName || message.userName} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography>
+                            {message.viewerName ||
+                              message.userName + "" + message.lastName ||
+                              message.lastName}
+                          </Typography>
+                          {/* <Typography
+                            sx={{ marginRight: "auto", fontSize: 12 }}
+                          >
+                            {"(" + message.commentType + ")"}
+                          </Typography> */}
+                          <Typography sx={{ fontSize: 10 }}>
+                            {` ${formatDistanceToNow(
+                              new Date(message.created_at)
+                            )} ago`}
+                          </Typography>
+                        </Typography>
+                      </React.Fragment>
+                    }
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {message.content}
+                        </Typography>
+                      </React.Fragment>
+                    }
+                  />
+                </ListItem>
+              </ListItemButton>
+            ))}
+          </List>
         </Box>
       </Popover>
     </div>
