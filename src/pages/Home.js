@@ -59,6 +59,7 @@ const Home = () => {
 
   return (
     <div className="home-page">
+      <div className="childDiv">
       {/* ----------------------------------NavBar Section------------------------------ */}
       <div>
         <Navbar setRender={setRenderType} />
@@ -86,6 +87,7 @@ const Home = () => {
       {/* ------------------------------------Footer section---------------------------- */}
       <div className="footer">
         <Footer />
+      </div>
       </div>
     </div>
   );

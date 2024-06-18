@@ -22,7 +22,7 @@ export default function Contact() {
             </div>
           </div>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{marginTop:"7vh"}}>
           <form style={{ padding: 10 }}>
             <Grid container spacing={2}>
               <Grid item xs={matches ? 6 : 12}>

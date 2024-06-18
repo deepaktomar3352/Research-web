@@ -11,7 +11,7 @@ export default function About() {
           </div>
           <div className="container">
             <div className="hero-content">
-              <h2>Welcome To Our Website</h2>
+              <h1>Welcome To Our Website hello bussy</h1>
               <p>
                 Discover the latest trends and innovations in technology,
                 design, and more. Our team of experts brings you the best

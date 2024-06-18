@@ -213,7 +213,7 @@ const UserList = () => {
                   variant="text"
                   onClick={() => handleReply(person)}
                 >
-                  <ReplyIcon />
+                  <ReplyIcon sx={{color:"#0f0c29"}}/>
                 </Button>
 
                 <Button
@@ -226,13 +226,13 @@ const UserList = () => {
                     href={`${ServerURL}/images/${person.paper_uploaded}`}
                     target="_blank"
                   >
-                    <CloudDownloadIcon />
+                    <CloudDownloadIcon sx={{color:"#ff6347"}} />
                   </a>
                   {/* View */}
                 </Button>
 
                 <Button
-                  sx={{ marginRight: "2%" }}
+                  sx={{ marginRight: "2%", background:"#0f0c29"}}
                   onClick={() => handleViewerSelection(person)}
                   variant="contained"
                 >

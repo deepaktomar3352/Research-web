@@ -1,14 +1,15 @@
 .ContactMain-Container {
-  background-color: #f8f8f8;
   margin: 0.5% 0px;
   padding: 10px;
+  padding-left: 4vh;
+  padding-right: 4vh;
 }
 
 .Contact-heading {
   font-size: 3vw;
-  font-weight: 800;
-  /* font-family: "Poppins"; */
-  color: #ff4500;
+  font-weight: 600;
+  font-family:sans-serif;
+  color: #0f0c29;
   position: relative;
   display: inline-block;
 }
@@ -21,7 +22,7 @@
   transform: translateX(-50%);
   width: calc(100% - 40px);
   height: 4px;
-  background-color: #ec1ce8;
+  background-color: #ff4500;
 }
 
 .color-contact {

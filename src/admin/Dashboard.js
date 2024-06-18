@@ -124,9 +124,9 @@ export default function Dashboard() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex"}}>
         {/* <CssBaseline /> */}
-        <AppBar position="absolute" open={open}>
+        <AppBar sx={{background:"#0f0c29"}} position="absolute" open={open}>
           <Toolbar
             sx={{
               pr: "24px", // keep right padding when drawer closed
