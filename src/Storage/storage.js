@@ -1,7 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import  paperSlice  from './Slices/Paper';
-export const store = configureStore({
+import { paperReducer } from './Slices/Paper';
+import { commentReducer } from './Slices/Comment';
+
+const store = configureStore({
   reducer: {
-    paper:paperSlice
+    paper: paperReducer,
+    comments: commentReducer,
   },
-})
+});
+
+export default store;

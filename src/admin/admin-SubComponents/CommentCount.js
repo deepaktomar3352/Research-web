@@ -11,39 +11,41 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import { ListItemButton } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { getData } from "../../services/ServerServices";
+import { ServerURL, getData } from "../../services/ServerServices";
 import { formatDistanceToNow } from "date-fns";
+import { useSelector, useDispatch } from "react-redux";
+import { setComments, markCommentAsRead } from "../../Storage/Slices/Comment";
+import ReplyUser from "./ReplyUser";
 
 export default function CommentCount() {
-  const [messages, setMessages] = useState({
-    userComments: [],
-    viewerComments: [],
-  });
-  const [userCommentCount, setUserCommentCount] = useState(0);
-  const [viewerCommentCount, setViewerCommentCount] = useState(0);
+  const dispatch = useDispatch();
+  const { userComments, viewerComments, userCommentCount, viewerCommentCount } =
+    useSelector((state) => state.comments);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [replyDialogOpen, setReplyDialogOpen] = useState(false); // State to control reply dialog open/close
+  const [personData, setPersonData] = useState("");
 
   const fetchCommentCounts = async () => {
-    var result = await getData("admin/admin_messages_count");
-    console.log(result);
-    setUserCommentCount(result.userCommentCount);
-    setViewerCommentCount(result.viewerCommentCount);
-    setMessages({
-      userComments: result.userComments || [],
-      viewerComments: result.viewerComments || [],
-    });
+    const result = await getData("admin/admin_messages_count");
+    dispatch(
+      setComments({
+        userComments: result.userComments || [],
+        viewerComments: result.viewerComments || [],
+        userCommentCount: result.userCommentCount,
+        viewerCommentCount: result.viewerCommentCount,
+      })
+    );
   };
 
   useEffect(() => {
     fetchCommentCounts();
     const intervalId = setInterval(fetchCommentCounts, 5000); // Fetch comments every 5 seconds
     return () => clearInterval(intervalId); // Clean up the interval on component unmount
-  }, []);
-
-  console.log("messages", messages);
+  }, [dispatch]);
 
   const openPopover = Boolean(anchorEl);
   const popoverId = openPopover ? "notifications-popover" : undefined;
+
 
   const handleNotificationsClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -53,9 +55,19 @@ export default function CommentCount() {
     setAnchorEl(null);
   };
 
+  const handleCommentClick = (id, type, person) => {
+    dispatch(markCommentAsRead({ id, type }));
+    setReplyDialogOpen(true);
+    if (type === "user") {
+      setPersonData(person);
+    }
+  };
+
+  console.log("person", personData);
+
   // Sort comments by created_at in descending order
-  const sortedComments = messages.userComments
-    .concat(messages.viewerComments)
+  const sortedComments = userComments
+    .concat(viewerComments)
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   return (
@@ -81,41 +93,80 @@ export default function CommentCount() {
           vertical: "top",
           horizontal: "right",
         }}
+        sx={{}}
       >
-        <Box sx={{ p: 1, maxWidth: 360 }}>
+        <Box
+          sx={{
+            p: 1,
+            maxWidth: 360,
+            maxHeight: 600, // Adjust height as needed
+            overflowY: "auto",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            msOverflowStyle: "none", // IE and Edge
+            scrollbarWidth: "none", // Firefox
+          }}
+        >
           <List>
             {sortedComments.map((message, index) => (
-              <ListItemButton>
-                <ListItem key={index} alignItems="flex-start">
+              <ListItemButton
+                key={index}
+                onClick={() =>
+                  handleCommentClick(message.id, message.commentType, message)
+                }
+                sx={{
+                  bgcolor: (message.commentType === "user"
+                    ? userComments
+                    : viewerComments
+                  ).find((comment) => comment.id === message.id && comment.read)
+                    ? "inherit"
+                    : "rgba(0, 0, 255, 0.1)", // Light blue background for new comments
+                }}
+              >
+                <Badge
+                  variant="dot"
+                  color="primary"
+                  invisible={(message.commentType === "user"
+                    ? userComments
+                    : viewerComments
+                  ).find(
+                    (comment) => comment.id === message.id && comment.read
+                  )}
+                ></Badge>
+                <ListItem alignItems="flex-start">
                   <ListItemAvatar>
-                    <Avatar alt={message.viewerName || message.userName} />
+                    <Avatar
+                      alt={message.viewerName || message.firstname}
+                      src={`${ServerURL}/images/${message.userpic}`}
+                      sx={{ width: 40, height: 40, objectFit: "cover" }}
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     primary={
                       <React.Fragment>
-                        <Typography
+                        <Box
                           sx={{
                             display: "flex",
                             justifyContent: "space-between",
                             alignItems: "center",
                           }}
                         >
-                          <Typography>
+                          <Typography component="span" variant="body1">
                             {message.viewerName ||
-                              message.userName + "" + message.lastName ||
+                              `${message.firstname} ${message.lastname}` ||
                               message.lastName}
                           </Typography>
-                          {/* <Typography
-                            sx={{ marginRight: "auto", fontSize: 12 }}
+                          <Typography
+                            component="span"
+                            variant="caption"
+                            sx={{ fontSize: 10, marginLeft: 1 }}
                           >
-                            {"(" + message.commentType + ")"}
-                          </Typography> */}
-                          <Typography sx={{ fontSize: 10 }}>
-                            {` ${formatDistanceToNow(
+                            {`${formatDistanceToNow(
                               new Date(message.created_at)
                             )} ago`}
                           </Typography>
-                        </Typography>
+                        </Box>
                       </React.Fragment>
                     }
                     secondary={
@@ -123,7 +174,7 @@ export default function CommentCount() {
                         <Typography
                           sx={{ display: "inline" }}
                           component="span"
-                          variant="body2"
+                          variant="caption"
                           color="text.primary"
                         >
                           {message.content}
@@ -137,6 +188,13 @@ export default function CommentCount() {
           </List>
         </Box>
       </Popover>
+      {replyDialogOpen && (
+        <ReplyUser
+          person={personData}
+          replyDialogOpen={replyDialogOpen}
+          handleReplyDialogClose={() => setReplyDialogOpen(false)}
+        />
+      )}
     </div>
   );
 }
