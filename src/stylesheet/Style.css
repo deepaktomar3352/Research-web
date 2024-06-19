@@ -1,15 +1,14 @@
 .home-page {
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
-  min-height: 100vh;
   justify-content: center;
   align-items: center;
    /* Ensure the content stretches to at least the height of the viewport */
 }
-.childDiv{
-  width: 100vw;
+/* .childDiv{
+  width: 90vw;
+} */
 
-}
 
 .content {
   flex: 1; /* This will push the footer to the bottom */
@@ -26,8 +25,8 @@
   color: #fff;
   padding-top: 1.7rem;
   padding-bottom: 1.2rem;
-  padding-left: 4vw;
-  padding-right: 4vw;
+  padding-left: 5vw;
+  padding-right: 5vw;
   display: flex;
   font-family:sans-serif;
   justify-content: space-between;
@@ -41,7 +40,7 @@ p {
 
 header h1 {
   /* margin: 0; */
-  font-size: 2.7vw;
+  /* font-size: 2.7vw; */
   font-weight: 600;
   font-family:sans-serif;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Adjust the values as needed */
@@ -103,9 +102,10 @@ nav ul li .user-profile-avatar {
 /* main {
     padding: 2rem 0;
   } */
-
+ 
 .paper-card {
   display: flex;
+  justify-content: center;
   align-items: center;
   background: #0f0c29;
   /* background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29); */
@@ -113,7 +113,13 @@ nav ul li .user-profile-avatar {
   padding: 2%;
   /* margin-bottom: 0.5rem; */
 }
-
+.paper-cardChild{
+  width: 90vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
 .paper-details {
   /* margin-bottom: 4rem; */
   flex: 1;
@@ -121,6 +127,7 @@ nav ul li .user-profile-avatar {
   animation: fadeInUp 2s ease;
   /* background-color: grey; */
   margin-right: 1em;
+  width: 30vw;
 }
 
 .paper-details span {

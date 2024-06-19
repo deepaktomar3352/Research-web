@@ -87,6 +87,20 @@ export default function Navbar() {
     window.location.reload(); // Reload the page to reset the state
   };
 
+  const SmoothScrollLink = ({ href, children }) => {
+    const handleClick = (event) => {
+      event.preventDefault();
+      document.querySelector(href).scrollIntoView({
+        behavior: "smooth",
+      });
+    };
+
+    return (
+      <a href={href} onClick={handleClick}>
+        {children}
+      </a>
+    );
+  };
 
   return (
     <div>
@@ -127,9 +141,7 @@ export default function Navbar() {
                 </li>
                 <div className="user-profile-details-container">
                   <div className="user-profile-details-text">
-                    <Link to="/UserProfile">
-                      Profile
-                    </Link>
+                    <Link to="/UserProfile">Profile</Link>
                   </div>
                   <div className="user-profile-details-text">
                     <Link onClick={handleUserLogout}>Logout</Link>
@@ -144,7 +156,6 @@ export default function Navbar() {
                       src={`${ServerURL}/images/${viewer.userpic}`}
                       className="user-profile-avatar"
                       alt=""
-                      
                     />
                   ) : (
                     <div className="default-profile-avatar">
@@ -167,9 +178,7 @@ export default function Navbar() {
                 </li>
                 <div className="user-profile-details-container">
                   <div className="user-profile-details-text">
-                    <Link to="/UserProfile">
-                      Profile
-                    </Link>
+                    <Link to="/UserProfile">Profile</Link>
                   </div>
                   <div className="user-profile-details-text">
                     <Link onClick={handleViewerLogout}>Logout</Link>
@@ -179,13 +188,15 @@ export default function Navbar() {
             ) : (
               <>
                 <li>
-                  <Link to="/">Home</Link>
+                  <SmoothScrollLink href="/">Home</SmoothScrollLink>
                 </li>
                 <li>
-                  <Link to="/">About Us</Link>
+                  <SmoothScrollLink href="#aboutPage">
+                    About Us
+                  </SmoothScrollLink>
                 </li>
                 <li>
-                  <Link to="/">Contact</Link>
+                  <SmoothScrollLink href="#contact">Contact</SmoothScrollLink>
                 </li>
               </>
             )}

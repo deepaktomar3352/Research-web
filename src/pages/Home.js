@@ -70,15 +70,15 @@ const Home = () => {
         ) : (
           <>
             {/* ----------------------------------Starter Section------------------------------ */}
-            <div>
+            <div id="home" >
               <StarterPage />
             </div>
             {/* ----------------------------------About Section------------------------------ */}
-            <div>
+            <div id="aboutPage" >
               <AboutPage />
             </div>
             {/* ------------------------------------Contact section---------------------------- */}
-            <div>
+            <div id="contact">
               <ContactPage />
             </div>
           </>

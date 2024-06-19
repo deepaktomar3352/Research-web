@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from "react";
 import "../stylesheet/Style.css";
-import img from "../Images/Research.png";
+import img from "../Images/Research.svg";
 import { Link } from "react-router-dom";
 
 export default function StarterComponent() {
@@ -12,7 +12,7 @@ export default function StarterComponent() {
         <div className="paper-list">
           {/* Featured paper components can be dynamically rendered here */}
           <div className="paper-card">
-           
+            <div className="paper-cardChild">
             <div className="paper-details">
               <div>
                 <span
@@ -20,7 +20,7 @@ export default function StarterComponent() {
                     color: "#fff",
                     fontFamily: "sans-serif",
                     fontSize: "2.7rem",
-                                      }}
+                  }}
                 >
                   Empowering Minds Through{" "}
                 </span>
@@ -55,6 +55,7 @@ export default function StarterComponent() {
             </div>
             <div className="paper-image">
               <img src={img} alt="Paper" />
+            </div>
             </div>
           </div>
         </div>
