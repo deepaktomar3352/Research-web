@@ -46,7 +46,7 @@ const UserList = () => {
   const [peopleData, setPeopleData] = useState([]);
   const [replyDialogOpen, setReplyDialogOpen] = useState(false); // State to control reply dialog open/close
   const [viewerDialogOpen, setViewerDialogOpen] = useState(false); // State to control reply dialog open/close
-  const [openView, setOpenView] = useState(false); // State to control view dialog open/close
+  // const [openView, setOpenView] = useState(false); // State to control view dialog open/close
   const [personData, setPersonData] = useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -65,23 +65,23 @@ const UserList = () => {
         setPeopleData(result.papers);
       }
     } catch (error) {
-      colors.error(error);
+      console.error(error);
     }
   }, []);
 
   // Function to generate a random color from an array of colors
 
-  const colors = [
-    deepOrange[500],
-    deepPurple[500],
-    green[500],
-    pink[500],
-    red[500],
-    purple[500],
-    orange[500],
-    indigo[500],
-    brown[500],
-  ];
+  // const colors = [
+  //   deepOrange[500],
+  //   deepPurple[500],
+  //   green[500],
+  //   pink[500],
+  //   red[500],
+  //   purple[500],
+  //   orange[500],
+  //   indigo[500],
+  //   brown[500],
+  // ];
 
   // console.log("peopledata", peopleData);
 
@@ -120,26 +120,26 @@ const UserList = () => {
 
           Swal.fire("Deleted!", "Your paper has been deleted.", "success");
 
-          fetchUsers();
+          fetchusers()
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           Swal.fire("Cancelled", "Your paper is safe :)", "error");
         }
       } catch (error) {
         console.error("There was an error deleting the paper!", error);
-        enqueueSnackbar("Error deleting paper", { variant: "error" });
+        console.log("Error deleting paper", { variant: "error" });
       }
     } else {
       console.log("event name ", eventName);
     }
   };
 
-  const handleReject = (paperId) => {
-    // Filter out the rejected user from the list based on paper_id
-    const updatedPeopleData = peopleData.filter(
-      (person) => person.paper_id !== paperId
-    );
-    setPeopleData(updatedPeopleData);
-  };
+  // const handleReject = (paperId) => {
+  //   // Filter out the rejected user from the list based on paper_id
+  //   const updatedPeopleData = peopleData.filter(
+  //     (person) => person.paper_id !== paperId
+  //   );
+  //   setPeopleData(updatedPeopleData);
+  // };
 
   const handleViewerSelection = (person) => {
     setOpenDialog(true); // Open the dialog when sending message

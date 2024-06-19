@@ -181,6 +181,44 @@ nav ul li .user-profile-avatar {
   transform: scale(1.1);
 }
 
+.user-profile-avatar,
+.default-profile-avatar {
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.profile-menu:hover .dropdown-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.1rem); /* Adjust this value as needed to place the dropdown just below the avatar */
+  left: 50%;
+  transform: translateX(-35%);
+  background-color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  z-index: 1000;
+  border-radius: 5%;
+}
+
+.dropdown-menu li {
+  padding: 0.5rem 1rem;
+}
+
+.dropdown-menu li a {
+  text-decoration: none;
+  color: #333;
+}
+
+.user-profile-details-container {
+  display: none;
+}
+
+
 footer {
   background: #0f0c29;  /* fallback for old browsers */
   /* background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  Chrome 10-25, Safari 5.1-6 */

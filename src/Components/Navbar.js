@@ -87,21 +87,6 @@ export default function Navbar() {
     window.location.reload(); // Reload the page to reset the state
   };
 
-  const SmoothScrollLink = ({ href, children }) => {
-    const handleClick = (event) => {
-      event.preventDefault();
-      document.querySelector(href).scrollIntoView({
-        behavior: "smooth",
-      });
-    };
-
-    return (
-      <a href={href} onClick={handleClick}>
-        {children}
-      </a>
-    );
-  };
-
   return (
     <div>
       <header className="navbar-container">
@@ -113,7 +98,7 @@ export default function Navbar() {
                 <li>
                   <Link to="/PaperSubmissionForm">Paper Submit</Link>
                 </li>
-                <li>
+                <li className="profile-menu">
                   {user.userpic ? (
                     <img
                       src={`${ServerURL}/images/${user.userpic}`}
@@ -138,19 +123,19 @@ export default function Navbar() {
                       </Avatar>
                     </div>
                   )}
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link to="/UserProfile">Profile</Link>
+                    </li>
+                    <li>
+                      <Link onClick={handleUserLogout}>Logout</Link>
+                    </li>
+                  </ul>
                 </li>
-                <div className="user-profile-details-container">
-                  <div className="user-profile-details-text">
-                    <Link to="/UserProfile">Profile</Link>
-                  </div>
-                  <div className="user-profile-details-text">
-                    <Link onClick={handleUserLogout}>Logout</Link>
-                  </div>
-                </div>
               </>
             ) : isLoggedIn && viewer ? (
               <>
-                <li>
+                <li className="profile-menu">
                   {viewer.userpic ? (
                     <img
                       src={`${ServerURL}/images/${viewer.userpic}`}
@@ -175,15 +160,15 @@ export default function Navbar() {
                       </Avatar>
                     </div>
                   )}
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link to="/UserProfile">Profile</Link>
+                    </li>
+                    <li>
+                      <Link onClick={handleViewerLogout}>Logout</Link>
+                    </li>
+                  </ul>
                 </li>
-                <div className="user-profile-details-container">
-                  <div className="user-profile-details-text">
-                    <Link to="/UserProfile">Profile</Link>
-                  </div>
-                  <div className="user-profile-details-text">
-                    <Link onClick={handleViewerLogout}>Logout</Link>
-                  </div>
-                </div>
               </>
             ) : (
               <>

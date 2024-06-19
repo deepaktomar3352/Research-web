@@ -23,10 +23,10 @@ export default function ReplyUser(props) {
   };
 
   const fetchComments = useCallback(async () => {
-    if (props.person.user_id && props.person.paper_id) {
+    if ((props.person.user_id || props.person.id) && props.person.paper_id) {
       try {
         const paper_id = props.person.paper_id;
-        const user_id = props.person.user_id;
+        const user_id = (props.person.user_id || props.person.id);
         setUserId(user_id);
         const result = await getData(
           `form/admin_comment?user_id=${user_id}&paper_id=${paper_id}`
@@ -64,7 +64,7 @@ export default function ReplyUser(props) {
       const newComment = { text: comment, date: new Date() };
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
-      await handleCommentSubmit(newComment, user_id); // Pass user_id to handleCommentSubmit
+      await handleCommentSubmit(newComment, (user_id || props.person.id)); // Pass user_id to handleCommentSubmit
     }
   };
 
@@ -146,6 +146,8 @@ export default function ReplyUser(props) {
               </Button>
             </div>
           </div>
+
+
           <div
             style={{
               overflowY: "scroll",
