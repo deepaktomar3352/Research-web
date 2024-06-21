@@ -1,13 +1,14 @@
 import React from "react";
 import "../stylesheet/About.css";
 import image from "../Images/aboutImage.jpg";
+import { motion } from "framer-motion";
 export default function About() {
   return (
     <div>
       <section className="hero">
         <div className="heading-container">
           <div className="heading">
-            <h1>About Us</h1>
+            <h1> <motion.div initial={{translateX:-500}} animate={{translateX:0}} transition={{duration:0.6}}>About Us</motion.div></h1>
           </div>
         </div>
         <div  className="containerAbout">

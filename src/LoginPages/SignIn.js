@@ -19,6 +19,7 @@ import PersonPinIcon from "@mui/icons-material/PersonPin";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import {motion} from "framer-motion";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -109,6 +110,7 @@ export default function SignIn() {
   };
 
   return (
+    <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.3}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
@@ -230,5 +232,6 @@ export default function SignIn() {
         </Grid>
       </Grid>
     </ThemeProvider>
+    </motion.div>
   );
 }

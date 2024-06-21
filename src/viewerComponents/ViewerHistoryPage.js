@@ -17,6 +17,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
 import { useDispatch,useSelector } from "react-redux";
 import { setPaperId } from "../Storage/Slices/Paper";
+import {motion} from "framer-motion"
 
 const options = [
   { name: "Delete", action: "Delete", icon: <DeleteIcon /> },
@@ -143,7 +144,7 @@ export default function ViewerHistoryPage() {
   }, []);
 
   return (
-    <div>
+    <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.3}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
       <Grid container spacing={0.5}>
         {/* paper and articles HistoryPage */}
         <Grid item xs={12} md={8} lg={8}>
@@ -341,6 +342,6 @@ export default function ViewerHistoryPage() {
           />
         </Grid>
       </Grid>
-    </div>
+    </motion.div>
   );
 }

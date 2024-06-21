@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
+import {motion} from "framer-motion"
 
 export default function HistoryPage() {
   const [papers, setPapers] = useState([]);
@@ -103,7 +104,7 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <div>
+    <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.3}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
       <Grid container spacing={0.5}>
         {/* paper and articles HistoryPage */}
         <Grid item xs={12} md={8} lg={8}>
@@ -259,6 +260,6 @@ export default function HistoryPage() {
           />
         </Grid>
       </Grid>
-    </div>
+    </motion.div>
   );
 }

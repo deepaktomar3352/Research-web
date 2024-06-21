@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import { ServerURL } from "../services/ServerServices";
+import { motion } from "framer-motion";
 import {
   deepOrange,
   deepPurple,
@@ -87,10 +88,27 @@ export default function Navbar() {
     window.location.reload(); // Reload the page to reset the state
   };
 
+  const SmoothScrollLink = ({ href, children }) => {
+    const handleClick = (event) => {
+      event.preventDefault();
+      document.querySelector(href).scrollIntoView({
+        behavior: "smooth",
+      });
+    };
+
+    return (
+      <a href={href} onClick={handleClick}>
+        {children}
+      </a>
+    );
+  };
+
   return (
     <div>
       <header className="navbar-container">
-        <h2>Research Paper</h2>
+        <h2>
+          <motion.div initial={{translateX:-50}} animate={{translateX:0}} transition={{duration:0.3}}>Research Paper</motion.div>
+        </h2>
         <nav>
           <ul>
             {isLoggedIn && user ? (
@@ -172,6 +190,7 @@ export default function Navbar() {
               </>
             ) : (
               <>
+              <motion.div initial={{translateX:50}} animate={{translateX:0}} transition={{duration:0.3}}>
                 <li>
                   <SmoothScrollLink href="/">Home</SmoothScrollLink>
                 </li>
@@ -183,6 +202,7 @@ export default function Navbar() {
                 <li>
                   <SmoothScrollLink href="#contact">Contact</SmoothScrollLink>
                 </li>
+                </motion.div>
               </>
             )}
           </ul>

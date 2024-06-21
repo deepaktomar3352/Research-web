@@ -1,6 +1,8 @@
 import React from "react";
 import { Grid, TextField, Button, Typography } from "@mui/material";
-import { styled } from "@mui/system";
+import { motion } from "framer-motion";
+
+
 import "../stylesheet/Contact.css";
 
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -17,8 +19,8 @@ export default function Contact() {
               // variant="h3"
               // align="center"
             >
-              Get in
-              <span className="color-contact"> touch</span>
+             
+              <motion.div initial={{translateX:-200}} animate={{translateX:0}} transition={{duration:0.6}} className="color-contact"> Get in touch</motion.div>
             </div>
           </div>
         </Grid>

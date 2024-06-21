@@ -20,6 +20,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { postData } from "../services/ServerServices";
 import SimpleSnackbar from "../Components/snackBar";
+import {motion} from "framer-motion";
 
 function FileNamePreview({ fileName }) {
   return (
@@ -118,6 +119,8 @@ export default function SignUp() {
   });
 
   return (
+    <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.2}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
+
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -264,5 +267,6 @@ export default function SignUp() {
         </Box>
       </Container>
     </ThemeProvider>
+    </motion.div>
   );
 }

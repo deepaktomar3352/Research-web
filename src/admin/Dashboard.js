@@ -26,6 +26,7 @@ import CommentCount from "./admin-SubComponents/CommentCount";
 
 // import ListItemText from '@mui/material/ListItemText';
 import Users_list from "./admin-SubComponents/showUsers_List";
+import {motion} from "framer-motion";
 
 function Copyright(props) {
   return (
@@ -123,6 +124,8 @@ export default function Dashboard() {
 
 
   return (
+    <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.3}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
+
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: "flex"}}>
         {/* <CssBaseline /> */}
@@ -236,5 +239,6 @@ export default function Dashboard() {
         </Box>
       </Box>
     </ThemeProvider>
+    </motion.div>
   );
 }
