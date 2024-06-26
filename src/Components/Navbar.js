@@ -107,7 +107,7 @@ export default function Navbar() {
     <div>
       <header className="navbar-container">
         <h2>
-          <motion.div initial={{translateX:-50}} animate={{translateX:0}} transition={{duration:0.3}}>Research Paper</motion.div>
+          <motion.div whileInView={{translateX:0}}  initial={{translateX:-50}}  transition={{duration:0.3}}>Research Paper</motion.div>
         </h2>
         <nav>
           <ul>
@@ -190,7 +190,7 @@ export default function Navbar() {
               </>
             ) : (
               <>
-              <motion.div initial={{translateX:50}} animate={{translateX:0}} transition={{duration:0.3}}>
+              <motion.div initial={{translateX:50}} whileInView={{translateX:0}} transition={{duration:0.3}}>
                 <li>
                   <SmoothScrollLink href="/">Home</SmoothScrollLink>
                 </li>
