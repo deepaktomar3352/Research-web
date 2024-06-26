@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { getData, postData } from "../services/ServerServices";
+import { getData, postData, ServerURL } from "../services/ServerServices";
 import "../stylesheet/Chat.css"; // Import CSS file for styling
 import { useSelector } from "react-redux";
 import SendIcon from "@mui/icons-material/Send";
@@ -10,20 +10,21 @@ import {
   Paper,
   InputBase,
 } from "@mui/material";
+import io from "socket.io-client";
 
-const Chat = ({ viewers }) => {
+let socket;
+
+const Chat = () => {
   const paperId = useSelector((state) => state.paper.id); // Accessing the paper ID from the Redux state
   const bottomOfChatRef = useRef(null);
   const chatMessagesRef = useRef(null);
+  const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [viewerData, setViewerData] = useState([]);
   const [selectedViewerId, setSelectedViewerId] = useState(null);
 
-  const addMessage = (newMessage) => {
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-  };
-  // console.log("paperid", paperId);
+  console.log("chat viewer id", selectedViewerId);
   const fetchViewerData = useCallback(async () => {
     if (paperId !== null) {
       setLoading(true);
@@ -36,7 +37,7 @@ const Chat = ({ viewers }) => {
           paperId,
         });
         setViewerData(result.data);
-        console.log("shared view data",result.data)
+        console.log("shared view data", result.data);
       } catch (error) {
         console.error("Error fetching viewer data:", error);
       } finally {
@@ -49,38 +50,47 @@ const Chat = ({ viewers }) => {
     fetchViewerData();
   }, [paperId]);
 
-  const fetchComments = useCallback(async (viewerId) => {
-    try {
-      const paper_id = paperId;
-      const result = await postData(`viewer/admin_comment`, {
-        viewer_id: viewerId,
-        paper_id: paper_id,
-      });
-      setMessages(result.data);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  }, [paperId]);
-
+  
   useEffect(() => {
     fetchViewerData();
   }, [fetchViewerData]);
 
   useEffect(() => {
-    if (selectedViewerId) {
-      const fetchCommentsInterval = setInterval(() => {
-        fetchComments(selectedViewerId);
-      }, 2000);
+    // Initialize socket connection
+    socket = io(`${ServerURL}/viewer-namespace`);
 
-      fetchComments(selectedViewerId);
-
-      return () => clearInterval(fetchCommentsInterval);
-    }
-  }, [selectedViewerId]);
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]); // Scroll to bottom when messages change
+    if (selectedViewerId) {
+      socket.emit("fetch_comments", {
+        viewer_id: selectedViewerId,
+        paper_id: paperId,
+        user: "admin",
+      });
+    }
+  }, [selectedViewerId, paperId]);
+
+  useEffect(() => {
+    socket.on("comments", (msg) => {
+      console.log("newComment", msg);
+      const updatedComments = [...messages, ...msg];
+      setMessages(updatedComments);
+      scrollToBottom();
+    });
+
+    return () => {
+      socket.off("comments");
+    };
+  }, []);
+
+
+
 
   const scrollToBottom = () => {
     if (chatMessagesRef.current) {
@@ -88,45 +98,40 @@ const Chat = ({ viewers }) => {
     }
   };
 
-  const sendMessage = async (messageText) => {
-    scrollToBottom();
-    // console.log("message", selectedViewerId);
-    // if (!selectedViewerId && selectedViewerId == null) {
-    //   console.error("No viewer selected to send message.");
-    //   return;
-    // }
-    const comment = {
-      text: messageText,
-    };
+  console.log("viewervdata", viewerData);
 
+  const sendMessage = (messageText) => {
+    if (!selectedViewerId) return;
+
+    scrollToBottom();
     const body = {
-      comment: comment.text,
+      comment: messageText,
       is_admin_comment: "1",
       viewer_id: selectedViewerId,
       paper_id: paperId,
+      user: "admin",
     };
 
     try {
-      const response = await postData("viewer/send_admin_comment", body);
-      if (response.status) {
-        await fetchComments(selectedViewerId);
-      }
+      socket.emit("new_comment", body);
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      sendMessage(e.target.value);
-      e.target.value = "";
+    if (e.key === "Enter" && inputRef.current.value.trim()) {
+      e.preventDefault();
+      sendMessage(inputRef.current.value);
+      inputRef.current.value = "";
     }
   };
 
   const handleSendClick = () => {
-    const input = document.querySelector('input[type="text"]');
-    sendMessage(input.value);
-    input.value = "";
+    if (inputRef.current.value.trim()) {
+      sendMessage(inputRef.current.value);
+      inputRef.current.value = "";
+    }
   };
 
   return (
@@ -158,6 +163,7 @@ const Chat = ({ viewers }) => {
               ref={index === messages.length - 1 ? bottomOfChatRef : null}
             >
               <div className="message-content">{message.content}</div>
+              
               <div className="message-timestamp">
                 {new Date(message.created_at).toLocaleTimeString([], {
                   hour: "2-digit",
@@ -169,10 +175,10 @@ const Chat = ({ viewers }) => {
           ))}
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <Paper
+        <Paper
             elevation={3}
             component="form"
-            onKeyDown={(e) => handleKeyDown(e)}
+            onKeyDown={handleKeyDown}
             sx={{
               p: "8px",
               display: "flex",
@@ -184,12 +190,13 @@ const Chat = ({ viewers }) => {
             <InputBase
               placeholder="Type a message"
               inputProps={{ "aria-label": "Type a message" }}
+              inputRef={inputRef}
             />
             <IconButton
               onClick={handleSendClick}
               type="button"
               sx={{ p: "10px" }}
-              aria-label="search"
+              aria-label="send"
             >
               <SendIcon />
             </IconButton>

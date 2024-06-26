@@ -158,7 +158,7 @@ export default function Dashboard() {
             </Typography>
 
          
-         <CommentCount/>
+         {/* <CommentCount/> */}
 
 
 
