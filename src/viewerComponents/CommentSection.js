@@ -4,6 +4,9 @@ import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
 import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import io from "socket.io-client";
+
+let socket 
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -26,26 +29,27 @@ export default function CommentSection(props) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
 
-  const fetchComments = useCallback(async () => {
-    try {
-      const result = await postData(`viewer/viewer_comment`, {
-        viewer_id: props.viewer_id,
-        paper_id: props.paperId,
-      });
-      setShowComments(result.data);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  }, [props.viewer_id, props.paperId]);
 
   useEffect(() => {
-    fetchComments();
-    const intervalId = setInterval(fetchComments, 3000);
+    // Initialize socket connection
+    socket = io(`${ServerURL}/viewer-namespace`);
+    socket.emit('fetch_comments', { viewer_id: props.viewer_id, paper_id: props.paperId,user:"viewer" });
+
+
+    // Event listener for new comments from the server
+    socket.on("comments", (msg) => {
+      console.log("newComment", msg);
+      const updatedComments = [...showComments, ...msg];
+      setShowComments(updatedComments);
+    });
+
 
     return () => {
-      clearInterval(intervalId);
+      if (socket) {
+        socket.disconnect();
+      }
     };
-  }, [props.paperId, fetchComments]);
+  }, [props.paperId, props.viewer_id]);
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
@@ -57,7 +61,7 @@ export default function CommentSection(props) {
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
       await handleCommentSubmit(newComment); // Send the latest comment
-      fetchComments();
+      // fetchComments();
     }
   };
 
@@ -68,9 +72,11 @@ export default function CommentSection(props) {
         is_admin_comment: "0",
         viewer_id: props.viewer_id,
         paper_id: props.paperId,
+        user:"viewer"
       };
-      const response = await postData("viewer/send_comment", body);
-      console.log("Response:", response.data);
+      socket.emit('new_comment',body)
+      // const response = await postData("viewer/send_comment", body);
+      // console.log("Response:", response.data);
     } catch (error) {
       console.error("Error submitting comment:", error);
     }

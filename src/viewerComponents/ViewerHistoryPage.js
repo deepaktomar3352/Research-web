@@ -129,18 +129,18 @@ export default function ViewerHistoryPage() {
   };
 
   useEffect(() => {
-    const fetchNewAdminCommentsCount = async () => {
-      try {
-        const results = await getData(`viewer/new_count`);
-        setNotifyCount(results.counts);
-      } catch (error) {
-        console.error("Error fetching new admin comments count:", error);
-      }
-    };
+    // const fetchNewAdminCommentsCount = async () => {
+    //   try {
+    //     const results = await getData(`viewer/new_count`);
+    //     setNotifyCount(results.counts);
+    //   } catch (error) {
+    //     console.error("Error fetching new admin comments count:", error);
+    //   }
+    // };
 
-    fetchNewAdminCommentsCount();
-    const interval = setInterval(fetchNewAdminCommentsCount, 3000);
-    return () => clearInterval(interval);
+    // fetchNewAdminCommentsCount();
+    // const interval = setInterval(fetchNewAdminCommentsCount, 3000);
+    // return () => clearInterval(interval);
   }, []);
 
   return (

@@ -11,6 +11,10 @@ import "../../stylesheet/UserList.css"; // Import the CSS file for styling
 import CloseIcon from "@mui/icons-material/Close";
 import { ServerURL, getData, postData } from "../../services/ServerServices";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import io from "socket.io-client";
+
+let socket;
+
 
 export default function ReplyUser(props) {
   const [comment, setComment] = useState(""); // Current comment text
@@ -22,21 +26,32 @@ export default function ReplyUser(props) {
     setComment(e.target.value);
   };
 
-  const fetchComments = useCallback(async () => {
-    if ((props.person.user_id || props.person.id) && props.person.paper_id) {
-      try {
-        const paper_id = props.person.paper_id;
-        const user_id = (props.person.user_id || props.person.id);
-        setUserId(user_id);
-        const result = await getData(
-          `form/admin_comment?user_id=${user_id}&paper_id=${paper_id}`
-        );
-        setShowComments(result.data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
+
+
+
+  useEffect(() => {
+    // Initialize socket connection
+    socket = io(`${ServerURL}/user-namespace`);
+    socket.emit('fetch_comments', { user_id: props.person.user_id || props.person.id, paper_id: props.person.paper_id,user:"admin" });
+
+    const user_id = (props.person.user_id || props.person.id);
+    setUserId(user_id);
+    // Event listener for new comments from the server
+    socket.on("comments", (msg) => {
+      console.log("newComment", msg);
+      const updatedComments = [...showComments, ...msg];
+      setShowComments(updatedComments);
+    });
+
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
       }
-    }
-  }, [props.person]);
+    };
+  }, [props.person.user_id || props.person.id,props.person.paper_id]);
+
+
 
   const handleCommentSubmit = async (comment, user_id) => {
     console.log(comment.text);
@@ -45,15 +60,17 @@ export default function ReplyUser(props) {
       is_admin_comment: "1",
       user_id: user_id,
       paper_id: props.person.paper_id,
-      
+      user:"admin"
     };
 
     try {
-      const response = await postData("form/send_admin_comment", body);
-      if (response.status) {
-        await fetchComments({ user_id });
-        // console.log("Response:", response.status);
-      }
+
+      socket.emit('new_comment',body)
+      // const response = await postData("form/send_admin_comment", body);
+      // if (response.status) {
+      //   await fetchComments({ user_id });
+      //   // console.log("Response:", response.status);
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -68,11 +85,11 @@ export default function ReplyUser(props) {
     }
   };
 
-  useEffect(() => {
-    fetchComments(); // Fetch
-    const intervalId = setInterval(fetchComments, 5000); // Fetch comments every 5 seconds
-    return () => clearInterval(intervalId); // Clean up the interval on component unmount
-  }, [fetchComments]); // Add fetchComments to the dependency array
+  // useEffect(() => {
+  //   fetchComments(); // Fetch
+  //   const intervalId = setInterval(fetchComments, 5000); // Fetch comments every 5 seconds
+  //   return () => clearInterval(intervalId); // Clean up the interval on component unmount
+  // }, [fetchComments]); // Add fetchComments to the dependency array
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

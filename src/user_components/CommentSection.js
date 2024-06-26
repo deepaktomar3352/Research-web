@@ -4,6 +4,9 @@ import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
 import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import io from "socket.io-client";
+
+let socket;
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -26,28 +29,29 @@ export default function CommentSection(props) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
 
-  const fetchComments = useCallback(
-    async () => {
-      try {
-        const result = await getData(
-          `form/user_comment?user_id=${props.user_id}&paper_id=${props.paperId}`
-        );
-        setShowComments(result.data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
+  
+
+  useEffect(() => {
+    // Initialize socket connection
+    socket = io(`${ServerURL}/user-namespace`);
+    socket.emit('fetch_comments', { user_id: props.user_id, paper_id: props.paperId,user:"user" });
+
+
+    // Event listener for new comments from the server
+    socket.on("comments", (msg) => {
+      console.log("newComment", msg);
+      const updatedComments = [...showComments, ...msg];
+      setShowComments(updatedComments);
+    });
+
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
       }
-    },
-    [props.user_id,props.paperId]
-  );
+    };
+  }, [props.paperId, props.user_id]);
 
-  useEffect(()=>{
-    fetchComments()
-    const intervalId = setInterval(fetchComments, 5000);
-
-     return () => {
-      clearInterval(intervalId);
-   };
-  },[props.paperId,fetchComments])
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
@@ -59,11 +63,10 @@ export default function CommentSection(props) {
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
       await handleCommentSubmit(newComment); // Send the latest comment
-      props.UnCount(props.paperId)
-      fetchComments();
+      props.UnCount(props.paperId);
+      // fetchComments();
     }
   };
-
 
   const handleCommentSubmit = async (comment) => {
     try {
@@ -71,16 +74,16 @@ export default function CommentSection(props) {
         comment: comment.text,
         is_admin_comment: "0",
         user_id: props.user_id,
-        paper_id: props.paperId
+        paper_id: props.paperId,
+        user:"user"
       };
-      const response = await postData("form/send_comment", body);
-      console.log("Response:", response.data);
+      socket.emit('new_comment',body)
+      // const response = await postData("form/send_comment", body);
+      // console.log("Response:", response.data);
     } catch (error) {
       console.error("Error submitting comment:", error);
     }
   };
-
-
 
   return (
     <div>
@@ -93,40 +96,44 @@ export default function CommentSection(props) {
           m: "3%",
         }}
       >
-       {props.paperId ? <>
-        <div>
-          <h2>Send a comment to Admin</h2>
-          <TextField
-            autoFocus
-            autoComplete="off"
-            margin="dense"
-            label="Type Your Message..."
-            type="text"
-            sx={{ width: "100%" }}
-            value={comment}
-            autoCapitalize="words"
-            onChange={handleCommentChange}
-          />
-          <div
-            style={{
-              justifyContent: "end",
-              display: "flex",
-              padding: "5px 0px",
-            }}
-          >
-            <Button
-              variant="contained"
-              onClick={handleCommentSend}
-              // color="primary"
-              sx={{ backgroundColor: "#0f0c29" }}
-              // endIcon={}
-            >
-              {/* comment */}
-              <SendIcon />
-            </Button>
-          </div>
-        </div>
-       </>:<></>}
+        {props.paperId ? (
+          <>
+            <div>
+              <h2>Send a comment to Admin</h2>
+              <TextField
+                autoFocus
+                autoComplete="off"
+                margin="dense"
+                label="Type Your Message..."
+                type="text"
+                sx={{ width: "100%" }}
+                value={comment}
+                autoCapitalize="words"
+                onChange={handleCommentChange}
+              />
+              <div
+                style={{
+                  justifyContent: "end",
+                  display: "flex",
+                  padding: "5px 0px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={handleCommentSend}
+                  // color="primary"
+                  sx={{ backgroundColor: "#0f0c29" }}
+                  // endIcon={}
+                >
+                  {/* comment */}
+                  <SendIcon />
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
 
         <div
           style={{
@@ -167,6 +174,9 @@ export default function CommentSection(props) {
                             height: 30,
                             borderRadius: 50,
                             marginRight: 10,
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat",
+                            backgroundSize:"cover"
                           }}
                         />
                       </>
@@ -188,7 +198,9 @@ export default function CommentSection(props) {
                     <h3 style={{ marginRight: "auto" }}>
                       {c.is_admin_comment === 1
                         ? "Admin"
-                        : props.userObject.firstname + " " + props.userObject.lastname}
+                        : props.userObject.firstname +
+                          " " +
+                          props.userObject.lastname}
                     </h3>
 
                     <div>
@@ -207,7 +219,9 @@ export default function CommentSection(props) {
                   </div>
                 </ul>
                 {c.paper_id &&
-                  props.papers.some((paper) => paper.paper_id === c.paper_id) && (
+                  props.papers.some(
+                    (paper) => paper.paper_id === c.paper_id
+                  ) && (
                     <div
                       style={{
                         marginTop: 10,
