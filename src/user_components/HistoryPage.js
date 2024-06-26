@@ -153,7 +153,7 @@ export default function HistoryPage() {
             }}
           >
             <div>
-              <h1>Your Papers</h1>
+              <h2 className="mainHeading">Your Papers</h2>
               <div style={{ overflowX: "auto" }}>
                 {" "}
                 {/* Wrapper for horizontal scrolling */}
@@ -172,14 +172,30 @@ export default function HistoryPage() {
                   <tbody>
                     {currentPapers.map((paper) => (
                       <tr key={paper.paper_id}>
-                        <td>{paper.paper_title}</td>
-                        <td>{paper.research_area}</td>
-                        <td>
+                        <td data-label="Title">{paper.paper_title}</td>
+                        <td data-label="Research Area">
+                          {paper.research_area}
+                        </td>
+                        <td data-label="Submission Date">
                           {new Date(paper.submission_date).toLocaleDateString()}
                         </td>
-
-                        <td>{paper.paper_status}</td>
-                        <td>
+                        <td data-label="Status">
+                          <span
+                            style={{
+                              color:
+                                paper.paper_status === "accept"
+                                  ? "green"
+                                  : paper.paper_status === "reject"
+                                  ? "red"
+                                  : "black",
+                              textTransform: "capitalize",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {paper.paper_status}
+                          </span>
+                        </td>
+                        <td data-label="View Paper">
                           <a
                             href={`${ServerURL}/images/${paper.paper_uploaded}`}
                             target="_blank"
@@ -188,7 +204,7 @@ export default function HistoryPage() {
                             <center>
                               <CloudDownloadIcon
                                 style={{
-                                  // color: "red",
+                                  color: "#0f0c29",
                                   cursor: "pointer",
                                   fontSize: 25,
                                 }}
@@ -196,7 +212,7 @@ export default function HistoryPage() {
                             </center>
                           </a>
                         </td>
-                        <td>
+                        <td data-label="Comment">
                           <center>
                             {notifyCount.map((notify) => {
                               if (notify.paper_id === paper.paper_id) {
@@ -204,11 +220,11 @@ export default function HistoryPage() {
                                   <Badge
                                     key={notify.paper_id}
                                     badgeContent={notify.count}
-                                    color="primary"
+                                    color="success"
                                   >
                                     <ChatIcon
                                       style={{
-                                        color: "#ed15d8",
+                                        color: "#ff6347",
                                         cursor: "pointer",
                                         fontSize: 25,
                                       }}
@@ -228,11 +244,11 @@ export default function HistoryPage() {
                               <Badge
                                 key={paper.paper_id}
                                 badgeContent={0}
-                                color="primary"
+                                color="success"
                               >
                                 <ChatIcon
                                   style={{
-                                    color: "#ed15d8",
+                                    color: "#ff6347",
                                     cursor: "pointer",
                                     fontSize: 25,
                                   }}
@@ -244,10 +260,18 @@ export default function HistoryPage() {
                             )}
                           </center>
                         </td>
-
-                        <td>
+                        <td data-label="Action">
                           <center>
-                            <div>
+                            <div
+                              style={{
+                                fontWeight: "bold",
+                                fontSize: "0.8rem",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
                               <input
                                 type="file"
                                 onChange={(event) =>
@@ -258,12 +282,13 @@ export default function HistoryPage() {
                               />
                               <CloudSyncIcon
                                 style={{
-                                  color: "red",
+                                  // color: "red",
                                   cursor: "pointer",
                                   fontSize: 25,
                                 }}
                                 onClick={handleIconClick}
                               />
+                              {paper.paperupload_status}
                             </div>
                           </center>
                         </td>

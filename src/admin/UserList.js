@@ -97,41 +97,79 @@ const UserList = () => {
 
   const eventHandler = async (data) => {
     setAnchorEl(null);
-    const paperId = data[0];
+    const paperid = data[0];
     const eventName = data[1];
-    if (eventName === "Delete") {
+    console.log("paper id ", paperid);
+    console.log("event name ", eventName);
+  
+    if (eventName === "Accept") {
       try {
         // Show confirmation message
         const result = await Swal.fire({
           title: "Are you sure?",
-          text: "You will not be able to recover this paper!",
-          icon: "warning",
+          text: "Do you want to accept this paper?",
+          icon: "question",
           showCancelButton: true,
-          confirmButtonText: "Yes, delete it!",
+          confirmButtonText: "Yes, accept it!",
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-
+  
         if (result.isConfirmed) {
-          const response = await postData("form/deleteAdmin_paper", {
-            paper_id: paperId,
+          // Viewer confirmed, proceed with acceptance
+          await postData(`form/updateAdminPaperStatus`, {
+            paper_id: paperid,
+            status:"accept"
           });
-          console.log("Paper deleted successfully:", response.data);
-
-          Swal.fire("Deleted!", "Your paper has been deleted.", "success");
-
-          fetchusers()
+  
+          Swal.fire("Accepted!", "The paper has been accepted.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          Swal.fire("Cancelled", "Your paper is safe :)", "error");
+          // Viewer cancelled, do nothing
+          Swal.fire("Cancelled", "The paper was not accepted.", "error");
         }
+        fetchPapers();
+        setAnchorEl(null);
       } catch (error) {
-        console.error("There was an error deleting the paper!", error);
-        console.log("Error deleting paper", { variant: "error" });
+        console.error("Error accepting paper:", error);
+        setAnchorEl(null);
+      }
+    } else if (eventName === "Reject") {
+      try {
+        // Show confirmation message
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to reject this paper?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, reject it!",
+          cancelButtonText: "No, cancel!",
+          reverseButtons: true,
+        });
+  
+        if (result.isConfirmed) {
+          // Viewer confirmed, proceed with rejection
+          await postData(`form/updateAdminPaperStatus`, {
+            paper_id: paperid,
+            status:"reject"
+          });
+  
+          Swal.fire("Rejected!", "The paper has been rejected.", "success");
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          // Viewer cancelled, do nothing
+          Swal.fire("Cancelled", "The paper was not rejected.", "error");
+        }
+        fetchPapers();
+        setAnchorEl(null);
+      } catch (error) {
+        console.error("Error rejecting paper:", error);
+        setAnchorEl(null);
       }
     } else {
-      console.log("event name ", eventName);
+      // other event handlers
+      console.log("event name", eventName);
     }
   };
+  
 
   // const handleReject = (paperId) => {
   //   // Filter out the rejected user from the list based on paper_id
@@ -203,8 +241,11 @@ const UserList = () => {
                     </span>
                   </div>
                 </div>
-                <span style={{ marginLeft: "3rem", fontSize: 12 }}>
+                <span style={{ marginLeft: "3rem", fontSize: 12, display:'flex',flexDirection:"column"}}>
                   {person.paper_title}
+                <span style={{fontSize: 12 ,fontWeight:"bold",textTransform:"capitalize"}}>
+                  {person.paperupload_status}
+                </span>
                 </span>
               </div>
               <div className="button-container">

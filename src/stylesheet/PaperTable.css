@@ -1,7 +1,9 @@
+/* General styles */
 .styled-table {
   width: 100%;
   border-collapse: collapse; /* Removes gaps between table cells */
   background-color: #f7f7f7; /* Light gray background for table */
+  font-size: 1rem; /* Default font size */
 }
 
 .styled-table th,
@@ -22,19 +24,6 @@
 
 .styled-table tbody tr:hover {
   background-color: #e1e1e1; /* Hover effect for rows */
-}
-
-.delete-button {
-  background-color: #f44336; /* Red background for delete button */
-  color: white; /* White text */
-  padding: 8px 16px; /* Padding for the button */
-  border: none; /* No border */
-  border-radius: 4px; /* Rounded corners */
-  cursor: pointer; /* Cursor change on hover */
-}
-
-.delete-button:hover {
-  background-color: #d32f2f; /* Darker red on hover */
 }
 
 /* Styles for pagination container */
@@ -82,19 +71,96 @@
 }
 
 /* Responsive adjustments using media queries */
-@media (max-width: 600px) {
-  /* On smaller screens, reduce padding and margin */
+@media (max-width: 1200px) {
+  .styled-table {
+    font-size: 0.9rem; /* Reduce font size */
+  }
+
   .pagination a {
-    padding: 0.4rem 0.8rem;
-    margin: 0 0.3rem;
+    padding: 8px 12px; /* Reduce padding */
+    margin: 0 3px; /* Reduce margin */
   }
 
   .pagination {
-    justify-content: center; /* Align left for smaller screens */
+    justify-content: center; /* Center for smaller screens */
+  }
+}
+
+@media (max-width: 992px) {
+  .styled-table {
+    font-size: 0.85rem; /* Further reduce font size */
   }
 
-  /* Optionally, adjust active class for better visibility */
-  .active {
-    background-color: #ccc; /* Lighter background for better visibility */
+  .pagination a {
+    padding: 6px 10px; /* Further reduce padding */
+    margin: 0 2px; /* Further reduce margin */
+  }
+
+  .pagination {
+    justify-content: center; /* Center for smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .styled-table {
+    font-size: 0.8rem; /* Further reduce font size */
+  }
+
+  .pagination a {
+    padding: 5px 8px; /* Further reduce padding */
+    margin: 0 1px; /* Further reduce margin */
+  }
+
+  .pagination {
+    justify-content: center; /* Center for smaller screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .styled-table {
+    font-size: 0.75rem; /* Further reduce font size */
+  }
+
+  .styled-table th,
+  .styled-table td {
+    padding: 8px; /* Reduce padding inside table cells */
+  }
+  .mainHeading{
+    display: flex;
+    justify-content: center;
+  }
+
+  .pagination a {
+    padding: 4px 6px; /* Further reduce padding */
+    margin: 0 0.5px; /* Further reduce margin */
+  }
+
+  .pagination {
+    justify-content: center; /* Center for smaller screens */
+  }
+
+  .styled-table thead {
+    display: none; /* Hide table header for very small screens */
+  }
+
+  .styled-table tbody tr {
+    display: block; /* Display each row as block */
+    margin-bottom: 10px; /* Space between rows */
+  }
+
+  .styled-table tbody tr td {
+    display: flex; /* Flex display for cells */
+    justify-content: space-between; /* Space between label and value */
+    padding-left: 50%; /* Align content to the right */
+    position: relative; /* Position relative for labels */
+  }
+
+  .styled-table tbody tr td::before {
+    content: attr(data-label); /* Display label */
+    position: absolute; /* Absolute position for labels */
+    left: 0; /* Align labels to the left */
+    padding-left: 10px; /* Padding for labels */
+    font-weight: bold; /* Bold labels */
+    text-transform: capitalize; /* Capitalize labels */
   }
 }

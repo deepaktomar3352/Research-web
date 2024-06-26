@@ -37,7 +37,7 @@ export default function About() {
               and more. Our team of experts brings you the best content and
               insights to help you stay ahead of the curve
             </p>{" "}
-            <div style={{ display: "flex", justifyContent: "end" }}>
+            <div className="learnMoreButton">
               <button className="cta-button">Learn More</button>
             </div>
           </motion.div>

@@ -20,7 +20,6 @@ import { setPaperId } from "../Storage/Slices/Paper";
 import {motion} from "framer-motion"
 
 const options = [
-  { name: "Delete", action: "Delete", icon: <DeleteIcon /> },
   { name: "Accept", action: "Accept", icon: <VerifiedIcon /> },
   { name: "Reject", action: "Reject", icon: <ClearIcon /> },
 ];
@@ -80,35 +79,67 @@ export default function ViewerHistoryPage() {
     const eventName = data[1];
     console.log("paper id ", paperid);
     console.log("event name ", eventName);
-    if (eventName === "Delete") {
+  
+    if (eventName === "Accept") {
       try {
         // Show confirmation message
         const result = await Swal.fire({
           title: "Are you sure?",
-          text: "You will not be able to recover this paper!",
-          icon: "warning",
+          text: "Do you want to accept this paper?",
+          icon: "question",
           showCancelButton: true,
-          confirmButtonText: "Yes, delete it!",
+          confirmButtonText: "Yes, accept it!",
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-
+  
         if (result.isConfirmed) {
-          // viewer confirmed, proceed with deletion
-          await postData(`viewer/remove_viewer_id_from_sharedviewer_table`, {
-            viewers_id: viewer_id,
+          // Viewer confirmed, proceed with acceptance
+          await postData(`viewer/accept_paper`, {
             paper_id: paperid,
+            status:"accept"
           });
-
-          Swal.fire("Deleted!", "Your paper has been deleted.", "success");
+  
+          Swal.fire("Accepted!", "The paper has been accepted.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-          // viewer cancelled, do nothing
-          Swal.fire("Cancelled", "Your paper is safe :)", "error");
+          // Viewer cancelled, do nothing
+          Swal.fire("Cancelled", "The paper was not accepted.", "error");
         }
         fetchPapers();
         setAnchorEl(null);
       } catch (error) {
-        console.error("Error deleting paper:", error);
+        console.error("Error accepting paper:", error);
+        setAnchorEl(null);
+      }
+    } else if (eventName === "Reject") {
+      try {
+        // Show confirmation message
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to reject this paper?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, reject it!",
+          cancelButtonText: "No, cancel!",
+          reverseButtons: true,
+        });
+  
+        if (result.isConfirmed) {
+          // Viewer confirmed, proceed with rejection
+          await postData(`viewer/reject_paper`, {
+            paper_id: paperid,
+            status:"reject"
+          });
+  
+          Swal.fire("Rejected!", "The paper has been rejected.", "success");
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          // Viewer cancelled, do nothing
+          Swal.fire("Cancelled", "The paper was not rejected.", "error");
+        }
+        fetchPapers();
+        setAnchorEl(null);
+      } catch (error) {
+        console.error("Error rejecting paper:", error);
         setAnchorEl(null);
       }
     } else {
@@ -116,6 +147,7 @@ export default function ViewerHistoryPage() {
       console.log("event name", eventName);
     }
   };
+  
 
   const handleComment = async (paperid) => {
     setPaper_Id(paperid);
@@ -128,26 +160,26 @@ export default function ViewerHistoryPage() {
     } catch (error) {}
   };
 
-  useEffect(() => {
-    // const fetchNewAdminCommentsCount = async () => {
-    //   try {
-    //     const results = await getData(`viewer/new_count`);
-    //     setNotifyCount(results.counts);
-    //   } catch (error) {
-    //     console.error("Error fetching new admin comments count:", error);
-    //   }
-    // };
+  // useEffect(() => {
+  //   // const fetchNewAdminCommentsCount = async () => {
+  //   //   try {
+  //   //     const results = await getData(`viewer/new_count`);
+  //   //     setNotifyCount(results.counts);
+  //   //   } catch (error) {
+  //   //     console.error("Error fetching new admin comments count:", error);
+  //   //   }
+  //   // };
 
-    // fetchNewAdminCommentsCount();
-    // const interval = setInterval(fetchNewAdminCommentsCount, 3000);
-    // return () => clearInterval(interval);
-  }, []);
+  //   // fetchNewAdminCommentsCount();
+  //   // const interval = setInterval(fetchNewAdminCommentsCount, 3000);
+  //   // return () => clearInterval(interval);
+  // }, []);
 
   return (
     <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.3}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
-      <Grid container spacing={0.5}>
+      <Grid style={{display:"flex",justifyContent:'center',alignItems:"center"}} container spacing={0.5}>
         {/* paper and articles HistoryPage */}
-        <Grid item xs={12} md={8} lg={8}>
+        <Grid  item xs={12} md={11} lg={11}>
           <Paper
             sx={{
               p: 2,
@@ -174,6 +206,7 @@ export default function ViewerHistoryPage() {
                       <th>Comment</th>
                       <th>View Paper</th>
                       <th>Status</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -182,7 +215,9 @@ export default function ViewerHistoryPage() {
                         key={paper.id}
                         onClick={() => dispatch(setPaperId(paper.id))}
                       >
-                        <td>{paper.paper_title}</td>
+                        <td>{paper.paper_title}
+                         <div style={{fontWeight:"bold",textTransform:"capitalize"}}>{paper.paperupload_status}</div> 
+                        </td>
                         <td>{paper.research_area}</td>
                         <td>{paper.paper_abstract}</td>
                         <td>{paper.category}</td>
@@ -256,7 +291,7 @@ export default function ViewerHistoryPage() {
                             </center>
                           </a>
                         </td>
-
+                        <td>{paper.paper_status}</td>
                         <td>
                           <center>
                             <div>
@@ -332,8 +367,7 @@ export default function ViewerHistoryPage() {
         </Grid>
 
         {/* comment box start from here... */}
-        <Grid item xs={12} md={4} lg={4}>
-          {" "}
+        <Grid item xs={12} md={11} lg={11}>
           <CommentSection
             viewer_id={viewer_id}
             papers={papers}
