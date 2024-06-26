@@ -1,8 +1,8 @@
 .home-page {
-  /* display: flex; */
+  display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: center; */
+  /* align-items: center; */
    /* Ensure the content stretches to at least the height of the viewport */
 }
 /* .childDiv{
@@ -231,6 +231,38 @@ footer {
   width: 100%;
   margin-top: 5vh;
 }
+
+#progress {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  transform: rotate(-90deg);
+}
+circle {
+  stroke-dashoffset: 10;
+  stroke-width: 15%;
+  fill: green;
+}
+
+.bg {
+  stroke: var(--accent);
+  opacity: 0.3;
+}
+
+#progress .indicator {
+  stroke: var(--accent);
+}
+
+li {
+  flex: 0 0 200px;
+  background: var(--accent);
+  margin: 0 20px 0 0;
+}
+
+li:last-of-type {
+  margin: 0;
+}
+
 
 @media screen and (max-width: 768px) {
   .heading h1 {

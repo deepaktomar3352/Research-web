@@ -1,21 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { Grid, Paper } from "@mui/material";
 import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
-import DeleteIcon from "@mui/icons-material/Delete";
+import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
 
 export default function HistoryPage() {
   const [papers, setPapers] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [paperId, setPaperId] = useState("");
   const [notifyCount, setNotifyCount] = useState([]);
+  const [selectedFile, setSelectedFile] = useState([]);
+  const fileInputRef = useRef(null);
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user);
   const user_id = userObject.id;
@@ -44,36 +46,32 @@ export default function HistoryPage() {
     fetchPapers();
   }, [fetchPapers]);
 
-  const DeletePaper = async (paperid) => {
+  const handleIconClick = async () => {
     try {
       // Show confirmation message
       const result = await Swal.fire({
         title: "Are you sure?",
-        text: "You will not be able to recover this paper!",
+        text: "Do you want to re-upload this paper?",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
+        confirmButtonText: "Yes, re-upload it!",
         cancelButtonText: "No, cancel!",
         reverseButtons: true,
       });
 
       if (result.isConfirmed) {
-        // User confirmed, proceed with deletion
-        await getData(`form/delete_paper?id=${paperid}`);
-
-        Swal.fire("Deleted!", "Your paper has been deleted.", "success");
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        fileInputRef.current.click();
+      } else {
         // User cancelled, do nothing
-        Swal.fire("Cancelled", "Your paper is safe :)", "error");
+        Swal.fire("Cancelled", "Your paper has not been re-uploaded.", "error");
       }
       fetchPapers();
     } catch (error) {
-      console.error("Error deleting paper:", error);
+      console.error("Error re-uploading paper:", error);
     }
   };
 
-
-  const handleUnCount =async(paperid)=>{
+  const handleUnCount = async (paperid) => {
     try {
       const body = {
         paperid: paperid,
@@ -81,11 +79,11 @@ export default function HistoryPage() {
       var result = await postData("form/reset_count", body);
       console.log("reset", result);
     } catch (error) {}
-  }
+  };
 
   const handleComment = async (paperid) => {
     setPaperId(paperid);
-    handleUnCount(paperid)
+    handleUnCount(paperid);
   };
 
   useEffect(() => {
@@ -103,8 +101,44 @@ export default function HistoryPage() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleFileChange = async (event, paperID) => {
+    const file = event.target.files[0];
+    console.log("paperID", paperID);
+    console.log("file", file);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("paper_id", paperID);
+
+    try {
+      const response = await postData("form/reupload_paper", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("response", response);
+
+      Swal.fire({
+        icon: "success",
+        title: "Upload Successful",
+        text: "Your file has been uploaded successfully!",
+      });
+    } catch (error) {
+      console.error("There was an error uploading the file!", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Upload Failed",
+        text: "There was an error uploading your file. Please try again.",
+      });
+    }
+  };
   return (
-    <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.3}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
+    <motion.div
+      initial={{ width: 0 }}
+      animate={{ width: "100%", transition: { duration: 0.3 } }}
+      exit={{ x: window.innerWidth, transition: { duration: 0.2 } }}
+    >
       <Grid container spacing={0.5}>
         {/* paper and articles HistoryPage */}
         <Grid item xs={12} md={8} lg={8}>
@@ -213,16 +247,24 @@ export default function HistoryPage() {
 
                         <td>
                           <center>
-                            <DeleteIcon
-                              style={{
-                                color: "red",
-                                cursor: "pointer",
-                                fontSize: 25,
-                              }}
-                              onClick={() => {
-                                DeletePaper(paper.paper_id);
-                              }}
-                            />
+                            <div>
+                              <input
+                                type="file"
+                                onChange={(event) =>
+                                  handleFileChange(event, paper.paper_id)
+                                }
+                                ref={fileInputRef}
+                                style={{ display: "none" }}
+                              />
+                              <CloudSyncIcon
+                                style={{
+                                  color: "red",
+                                  cursor: "pointer",
+                                  fontSize: 25,
+                                }}
+                                onClick={handleIconClick}
+                              />
+                            </div>
                           </center>
                         </td>
                       </tr>

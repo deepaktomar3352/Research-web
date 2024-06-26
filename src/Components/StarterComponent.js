@@ -2,6 +2,7 @@ import { React, useEffect, useState } from "react";
 import "../stylesheet/Style.css";
 import img from "../Images/Research.svg";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function StarterComponent() {
   const userLoggedIn = localStorage.getItem("user");

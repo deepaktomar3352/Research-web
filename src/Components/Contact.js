@@ -10,7 +10,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 export default function Contact() {
   const matches = useMediaQuery("(min-width:600px)");
   return (
-    <div className="ContactMain-Container">
+    <div 
+   className="ContactMain-Container">
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <div style={{ textAlign: "center" }}>
@@ -20,11 +21,18 @@ export default function Contact() {
               // align="center"
             >
              
-              <motion.div initial={{translateX:-200}} animate={{translateX:0}} transition={{duration:0.6}} className="color-contact"> Get in touch</motion.div>
+              <motion.div initial={{translateX:-200}} whileInView={{translateX:0}} transition={{duration:0.6}} className="color-contact"> Get in touch</motion.div>
             </div>
           </div>
         </Grid>
-        <Grid item xs={12} style={{marginTop:"7vh"}}>
+        <Grid
+        
+         item xs={12} style={{marginTop:"7vh"}}>
+          <motion.div
+           initial={{ translateY: 100, opacity: 0 }}
+           whileInView={{ translateY: 0, opacity: 1 }}
+           transition={{ duration: 1 }} 
+          >
           <form style={{ padding: 10 }}>
             <Grid container spacing={2}>
               <Grid item xs={matches ? 6 : 12}>
@@ -68,8 +76,9 @@ export default function Contact() {
               </Grid>
             </Grid>
           </form>
-        </Grid>
+          </motion.div>
       </Grid>
+        </Grid>
     </div>
   );
 }
