@@ -1,10 +1,28 @@
 import { useEffect, useState } from "react";
 import MaterialTable from "material-table";
+import { Avatar, Button, TextField } from "@mui/material";
 import { getData, postData, ServerURL } from "../../services/ServerServices";
+
+// Custom component for editing the password field
+function PasswordField({ value, onChange }) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+      <TextField
+        type={showPassword ? "text" : "password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <Button type="button" onClick={() => setShowPassword(!showPassword)}>
+        {showPassword ? "Hide" : "Show"}
+      </Button>
+    </div>
+  );
+}
 
 export default function Viewers_list() {
   const [data, setData] = useState([]);
-  const [updateData, setUpdateData] = useState([]);
   const [columns, setColumns] = useState([
     {
       title: "First Name",
@@ -21,40 +39,27 @@ export default function Viewers_list() {
       field: "email",
       initialEditValue: "initial edit value",
     },
+    {
+      title: "Password",
+      field: "password",
+      render: (rowData) => "******",
+      editComponent: (props) => <PasswordField {...props} />,
+    },
     { title: "Category", field: "category", type: "text" },
     {
       title: "Picture",
       field: "userPic",
       render: (rowData) => (
-        <img
+        <Avatar
           src={`${ServerURL}/images/${rowData.userpic}`}
           alt={`${rowData.firstname} ${rowData.lastname}`}
-          style={{ width: 50,height:50, borderRadius: "50%" }}
-          />
+          style={{ width: 50, height: 50, borderRadius: "50%",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat: "no-repeat"}}
+        />
       ),
-      // editComponent: (props) => (
-      //   <input
-      //     type="file"
-      //     accept="image/*"
-      //     onChange={(e) => {
-      //       const file = e.target.files[0];
-      //       const reader = new FileReader();
-      //       reader.onloadend = () => {
-            
-      //         uploadImage(file).then((newImageUrl) => {
-      //           props.onChange(newImageUrl);
-      //         });
-      //       };
-      //       if (file) {
-      //         reader.readAsDataURL(file);
-      //       }
-      //     }}
-      //   />
-      // ),
-      editable:"never"
+      editable: "never",
     },
   ]);
-  console.log("updted data", updateData);
+
   const fetchViewers = async () => {
     try {
       const result = await getData("viewer/fetchViewers");
@@ -63,7 +68,7 @@ export default function Viewers_list() {
       console.error("Error fetching viewers:", error);
     }
   };
-  console.log("viewrs list", data);
+
   useEffect(() => {
     fetchViewers();
   }, []);
@@ -119,14 +124,6 @@ export default function Viewers_list() {
       columns={columns}
       data={data}
       editable={{
-        // onRowAdd: (newData) =>
-        //   new Promise((resolve, reject) => {
-        //     setTimeout(() => {
-        //       setData([...data, newData]);
-
-        //       resolve();
-        //     }, 1000);
-        //   }),
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve, reject) => {
             setTimeout(async () => {
@@ -135,7 +132,7 @@ export default function Viewers_list() {
                 const index = oldData.tableData.id;
                 dataUpdate[index] = newData;
                 setData([...dataUpdate]);
-                updateViewerData(newData, oldData);
+                await updateViewerData(newData, oldData);
                 resolve();
               } catch (error) {
                 reject(error);
@@ -149,7 +146,7 @@ export default function Viewers_list() {
               const index = oldData.tableData.id;
               dataDelete.splice(index, 1);
               setData([...dataDelete]);
-              deleteViewerData(oldData);
+              await deleteViewerData(oldData);
               resolve();
             }, 1000);
           }),
