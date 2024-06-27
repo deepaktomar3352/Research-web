@@ -51,7 +51,7 @@ export default function ReplyUser(props) {
     setUserId(user_id);
     // Event listener for new comments from the server
     socket.on("comments", (msg) => {
-      console.log("newComment", msg);
+      // console.log("newComment", msg);
       const updatedComments = [...showComments, ...msg];
       setShowComments(updatedComments);
     });
@@ -64,7 +64,7 @@ export default function ReplyUser(props) {
   }, [props.person.user_id || props.person.id, props.person.paper_id]);
 
   const handleCommentSubmit = async (comment, user_id) => {
-    console.log(comment.text);
+    // console.log(comment.text);
     const body = {
       comment: comment.text,
       is_admin_comment: "1",
@@ -116,7 +116,7 @@ export default function ReplyUser(props) {
     return `${day}/${month}/${year} ${displayHours}:${minutes} ${ampm}`;
   };
 
-  console.log("props", props.person);
+  // console.log("props", props.person);
   return (
     <div>
       {/****************** Reply Dialog Box Start ******************************/}
