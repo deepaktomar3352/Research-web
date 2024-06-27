@@ -200,7 +200,7 @@ export default function SignIn() {
               >
                 Sign In
               </Button>
-              <Grid container>
+              {!value?(<><Grid container>
                 <Grid item xs>
                   <Link
                     to="/forgot-password"
@@ -214,7 +214,7 @@ export default function SignIn() {
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
-              </Grid>
+              </Grid></>):(<></>)}
               <Typography variant="body2" color="text.secondary" align="center">
                 {"Copyright "}
                 <Link

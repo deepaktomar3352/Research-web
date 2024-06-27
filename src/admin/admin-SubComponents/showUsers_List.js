@@ -40,6 +40,7 @@ export default function Users_list() {
       data={data}
       options={{
         exportButton: true,
+        pageSize: 10,  // Set the default number of rows to 10
       }}
     />
   );

@@ -16,6 +16,10 @@ import { formatDistanceToNow } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
 import { setComments, markCommentAsRead } from "../../Storage/Slices/Comment";
 import ReplyUser from "./ReplyUser";
+import io from "socket.io-client";
+
+let socket;
+
 
 export default function CommentCount() {
   const dispatch = useDispatch();
@@ -38,10 +42,20 @@ export default function CommentCount() {
   };
 
   useEffect(() => {
-    fetchCommentCounts();
-    const intervalId = setInterval(fetchCommentCounts, 5000); // Fetch comments every 5 seconds
-    return () => clearInterval(intervalId); // Clean up the interval on component unmount
-  }, [dispatch]);
+    socket = io('http://localhost:5000/admin-namespace');
+    console.log("socket");
+
+    socket.on("counter", (count) => {
+      console.log("counter", count);
+    });
+    socket.on("comments", (count) => {
+      console.log("comments", count);
+    });
+
+    // fetchCommentCounts();
+    // const intervalId = setInterval(fetchCommentCounts, 5000); // Fetch comments every 5 seconds
+    // return () => clearInterval(intervalId); // Clean up the interval on component unmount
+  }, []);
 
   const openPopover = Boolean(anchorEl);
   const popoverId = openPopover ? "notifications-popover" : undefined;
