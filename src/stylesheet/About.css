@@ -93,6 +93,10 @@
   height: auto;
   border-radius: 10px;
 }
+.learnMoreButton {
+  display: flex;
+  justify-content: end;
+}
 
 @media screen and (max-width: 768px) {
   .heading h1 {
@@ -110,7 +114,9 @@
   .hero-content button {
     font-size: 3vw;
   }
-
+  .learnMoreButton{
+    justify-content: center;
+  }
   .containerAbout {
     flex-direction: column;
     align-items: center;
@@ -129,6 +135,9 @@
 @media screen and (max-width: 600px) {
   .hero {
     margin: 0px;
+  }
+  .learnMoreButton {
+    justify-content: center;
   }
 
   .heading h1 {
