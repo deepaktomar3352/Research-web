@@ -53,9 +53,9 @@
   .icon {
     margin-left: 5px;
   }
-.userlist-dialog-box-container{
-  /* background-color: red; */
-}
+/* .userlist-dialog-box-container{
+   background-color: red; 
+} */
 .dialog-title {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

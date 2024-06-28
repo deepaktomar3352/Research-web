@@ -309,6 +309,8 @@ export default function Dashboard() {
               <Divider sx={{ my: 1 }} />
             </List>
           </Drawer>
+         
+         <CommentCount/>
 
           <Box
             component="main"

@@ -12,21 +12,6 @@ import { formatDistanceToNow } from "date-fns";
 let socket;
 
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  let hours = date.getHours();
-  const isPM = hours >= 12; // Determine if it's PM
-  const displayHours = hours % 12 || 12; // Convert to 12-hour format
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const ampm = isPM ? "PM" : "AM"; // Determine AM or PM
-
-  return `${day}/${month}/${year} ${displayHours}:${minutes} ${ampm}`;
-};
 
 export default function CommentSection(props) {
   const [showComments, setShowComments] = useState([]);
@@ -52,7 +37,7 @@ export default function CommentSection(props) {
 
     // Event listener for new comments from the server
     socket.on("comments", (msg) => {
-      console.log("newComment", msg);
+      // console.log("newComment", msg);
       const updatedComments = [...showComments, ...msg];
       setShowComments(updatedComments);
     });

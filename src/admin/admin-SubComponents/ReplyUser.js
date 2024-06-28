@@ -51,7 +51,7 @@ export default function ReplyUser(props) {
     setUserId(user_id);
     // Event listener for new comments from the server
     socket.on("comments", (msg) => {
-      console.log("newComment", msg);
+      // console.log("newComment", msg);
       const updatedComments = [...showComments, ...msg];
       setShowComments(updatedComments);
     });
@@ -64,7 +64,7 @@ export default function ReplyUser(props) {
   }, [props.person.user_id || props.person.id, props.person.paper_id]);
 
   const handleCommentSubmit = async (comment, user_id) => {
-    console.log(comment.text);
+    // console.log(comment.text);
     const body = {
       comment: comment.text,
       is_admin_comment: "1",
@@ -75,11 +75,6 @@ export default function ReplyUser(props) {
 
     try {
       socket.emit("new_comment", body);
-      // const response = await postData("form/send_admin_comment", body);
-      // if (response.status) {
-      //   await fetchComments({ user_id });
-      //   // console.log("Response:", response.status);
-      // }
     } catch (error) {
       console.log(error);
     }
@@ -94,29 +89,9 @@ export default function ReplyUser(props) {
     }
   };
 
-  // useEffect(() => {
-  //   fetchComments(); // Fetch
-  //   const intervalId = setInterval(fetchComments, 5000); // Fetch comments every 5 seconds
-  //   return () => clearInterval(intervalId); // Clean up the interval on component unmount
-  // }, [fetchComments]); // Add fetchComments to the dependency array
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
 
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    let hours = date.getHours();
-    const isPM = hours >= 12; // Determine if it's PM
-    const displayHours = hours % 12 || 12; // Convert to 12-hour format
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const ampm = isPM ? "PM" : "AM"; // Determine AM or PM
-
-    return `${day}/${month}/${year} ${displayHours}:${minutes} ${ampm}`;
-  };
-
-  console.log("props", props.person);
+  // console.log("props", props.person);
   return (
     <div>
       {/****************** Reply Dialog Box Start ******************************/}

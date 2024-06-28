@@ -8,7 +8,13 @@ function PasswordField({ value, onChange }) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <TextField
         type={showPassword ? "text" : "password"}
         value={value}
@@ -53,7 +59,14 @@ export default function Viewers_list() {
         <Avatar
           src={`${ServerURL}/images/${rowData.userpic}`}
           alt={`${rowData.firstname} ${rowData.lastname}`}
-          style={{ width: 50, height: 50, borderRadius: "50%",backgroundSize:"cover",backgroundPosition:"center",backgroundRepeat: "no-repeat"}}
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: "50%",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
         />
       ),
       editable: "never",
@@ -123,6 +136,10 @@ export default function Viewers_list() {
       title="Viewers List"
       columns={columns}
       data={data}
+      options={{
+        // exportButton: true,
+        pageSize: 10, // Set the default number of rows to 10
+      }}
       editable={{
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve, reject) => {

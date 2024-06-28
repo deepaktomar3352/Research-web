@@ -24,7 +24,7 @@ const Chat = () => {
   const [viewerData, setViewerData] = useState([]);
   const [selectedViewerId, setSelectedViewerId] = useState(null);
 
-  console.log("chat viewer id", selectedViewerId);
+  // console.log("chat viewer id", selectedViewerId);
   const fetchViewerData = useCallback(async () => {
     if (paperId !== null) {
       setLoading(true);
@@ -94,7 +94,7 @@ const Chat = () => {
     }
   };
 
-  console.log("viewervdata", viewerData);
+  // console.log("viewervdata", viewerData);
 
   const sendMessage = (messageText) => {
     if (!selectedViewerId) return;

@@ -10,6 +10,7 @@ import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
 import { motion } from "framer-motion";
+import PaperDialog from "./PaperDialog";
 
 export default function HistoryPage() {
   const [papers, setPapers] = useState([]);
@@ -17,6 +18,8 @@ export default function HistoryPage() {
   const [paperId, setPaperId] = useState("");
   const [notifyCount, setNotifyCount] = useState([]);
   const [selectedFile, setSelectedFile] = useState([]);
+  const [replyDialogOpen, setReplyDialogOpen] = useState(false);
+  const [personData, setPersonData] = useState([]);
   const fileInputRef = useRef(null);
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user);
@@ -35,6 +38,7 @@ export default function HistoryPage() {
     try {
       const result = await getData(`form/user_paper?user_id=${user_id}`);
       if (result) {
+        console.log("paper details aa gyi bhaiyo", result);
         setPapers(result.papers);
       }
     } catch (error) {
@@ -133,6 +137,12 @@ export default function HistoryPage() {
       });
     }
   };
+
+  const handleOpenDocument = (person) => {
+    setReplyDialogOpen(true);
+    setPersonData(person);
+  };
+
   return (
     <motion.div
       initial={{ width: 0 }}
@@ -171,7 +181,7 @@ export default function HistoryPage() {
                   </thead>
                   <tbody>
                     {currentPapers.map((paper) => (
-                      <tr key={paper.paper_id}>
+                      <tr key={paper.id}>
                         <td data-label="Title">{paper.paper_title}</td>
                         <td data-label="Research Area">
                           {paper.research_area}
@@ -260,7 +270,7 @@ export default function HistoryPage() {
                             )}
                           </center>
                         </td>
-                        <td data-label="Action">
+                        {/* <td data-label="Action">
                           <center>
                             <div
                               style={{
@@ -289,6 +299,21 @@ export default function HistoryPage() {
                                 onClick={handleIconClick}
                               />
                               {paper.paperupload_status}
+                            </div>
+                          </center>
+                        </td> */}
+                        <td data-label="Action">
+                          <center>
+                            <div
+                              style={{
+                                fontWeight: "bold",
+                                fontSize: "0.8rem",
+                                color: "red",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => handleOpenDocument(paper)}
+                            >
+                              View all
                             </div>
                           </center>
                         </td>
@@ -327,6 +352,11 @@ export default function HistoryPage() {
           />
         </Grid>
       </Grid>
+      <PaperDialog
+       person={personData}
+       replyDialogOpen={replyDialogOpen}
+       handleReplyDialogClose={() => setReplyDialogOpen(false)}
+      />
     </motion.div>
   );
 }

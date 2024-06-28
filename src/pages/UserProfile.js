@@ -81,7 +81,7 @@ const UserProfile = () => {
     if (user) {
       result = await postData("users/fetch_user_profile", { id: user.id });
     } else if (viewer) {
-      result = await postData("viewer/fetch_user_profile", { id: viewer.id });
+      result = await postData("viewer/fetch_viewer_profile", { id: viewer.id });
     }
     if (result) {
       setProfile(result.data[0]);
@@ -136,7 +136,22 @@ const UserProfile = () => {
         });
       }
     } else if (viewer) {
-      result = await postData("viewer/user_profile_update", formData, true);
+      result = await postData("viewer/viewer_profile_update", formData, true);
+      if (result) {
+        Swal.fire({
+          icon: "success",
+          title: result.message,
+          showConfirmButton: true,
+          timer: 1500,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: result.message,
+          text: result.message || "Unknown error",
+          timer: 1500,
+        });
+      }
     }
 
     console.log(result);
