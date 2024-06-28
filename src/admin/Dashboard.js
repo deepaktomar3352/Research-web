@@ -23,18 +23,14 @@ import PeopleIcon from "@mui/icons-material/People";
 import Viewer_Registration from "./admin-SubComponents/Viewer_Registration";
 import Viewers_list from "./admin-SubComponents/Viewers_list";
 import CommentCount from "./admin-SubComponents/CommentCount";
-
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
-import Logout from "@mui/icons-material/Logout";
-// import ListItemText from '@mui/material/ListItemText';
 import Users_list from "./admin-SubComponents/showUsers_List";
 import { motion } from "framer-motion";
 import { ServerURL } from "../services/ServerServices";
+import { useNavigate } from "react-router-dom";
 
 function Copyright(props) {
   return (
@@ -105,9 +101,10 @@ const defaultTheme = createTheme();
 export default function Dashboard() {
   const [open, setOpen] = useState(true);
   const adminString = localStorage.getItem("admin");
-  const adminData=JSON.parse(adminString)
-  console.log("admin local",adminData)
-  const [activeItem, setActiveItem] = useState("dashboard"); // Track active item
+  const adminData = JSON.parse(adminString);
+  const [activeItem, setActiveItem] = useState("dashboard");
+  const navigate = useNavigate();
+  // Track active item
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const Open = Boolean(anchorEl);
@@ -138,6 +135,14 @@ export default function Dashboard() {
       default:
         return null;
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("viewer");
+    localStorage.removeItem("admin");
+    navigate("/");
+    window.location.reload(); // Adjust the path to your login or home page
   };
 
   return (
@@ -198,7 +203,16 @@ export default function Dashboard() {
                     aria-haspopup="true"
                     aria-expanded={open ? "true" : undefined}
                   >
-                    <Avatar src={`${ServerURL}/images/${adminData.admin_profile}`} sx={{ width: 32, height: 32 }}>M</Avatar>
+                    <Avatar
+                      src={`${ServerURL}/images/${adminData[0].admin_profile}`}
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {adminData[0].admin_name.charAt(0)}
+                    </Avatar>
                   </IconButton>
                 </Tooltip>
               </Box>
@@ -237,19 +251,11 @@ export default function Dashboard() {
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> Profile
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> My account
-                </MenuItem>
+                <Link sx={{textDecoration:"none",color:"black"}} href="/AdminProfile">
+                  <MenuItem>Profile</MenuItem>
+                </Link>
                 <Divider />
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  Logout
-                </MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </Toolbar>
           </AppBar>
@@ -309,8 +315,8 @@ export default function Dashboard() {
               <Divider sx={{ my: 1 }} />
             </List>
           </Drawer>
-         
-         <CommentCount/>
+
+          <CommentCount />
 
           <Box
             component="main"

@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { styled } from "@mui/material/styles";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import { ServerURL, postData } from "../services/ServerServices";
 
 const Root = styled("div")(({ theme }) => ({
@@ -44,11 +44,11 @@ const ProfilePaper = styled(Paper)(({ theme }) => ({
   position: "relative",
 }));
 
-const ProfileAvatarContainer = styled('div')(({ theme }) => ({
-  position: 'relative',
-  display: 'inline-block',
-  margin: 'auto',
-  marginTop: '-70px',
+const ProfileAvatarContainer = styled("div")(({ theme }) => ({
+  position: "relative",
+  display: "inline-block",
+  margin: "auto",
+  marginTop: "-70px",
 }));
 
 const ProfileAvatar = styled(Avatar)(({ theme }) => ({
@@ -57,88 +57,70 @@ const ProfileAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const EditIconButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
+  position: "absolute",
   bottom: 0,
   right: 0,
-  backgroundColor: 'white',
+  backgroundColor: "white",
   padding: theme.spacing(0.5),
-  borderRadius: '50%',
-  '&:hover': {
-    backgroundColor: '#E8E8E8',
+  borderRadius: "50%",
+  "&:hover": {
+    backgroundColor: "#E8E8E8",
   },
 }));
 
-const UserProfile = () => {
-  const [profile, setProfile] = useState(null);
-  const userString = localStorage.getItem("user");
-  const viewerString = localStorage.getItem("viewer");
-  const adminString=localStorage.getItem("admin")
-  const adminData=JSON.parse(adminString);
-
-  const user = userString ? JSON.parse(userString) : null;
-  const viewer = viewerString ? JSON.parse(viewerString) : null;
+const AdminProfile = () => {
+  const [profile, setProfile] = useState([]);
+  const adminString = localStorage.getItem("admin");
+  const adminData = JSON.parse(adminString);
 
   const fetchProfile = useCallback(async () => {
-    let result;
-    if (user) {
-      result = await postData("users/fetch_user_profile", { id: user.id });
-    } else if (viewer) {
-      result = await postData("viewer/fetch_viewer_profile", { id: viewer.id });
+    if (adminData) {
+      const result = await postData("admin/fetch_admin_profile", {
+        id: adminData[0].id,
+      });
+      console.log("admin fetch data", result);
+      setProfile(result.data);
+      console.log("admin profile", profile);
     }
-    if (result) {
-      setProfile(result.data[0]);
-    }
-  }, [user, viewer]);
+  }, [adminData]);
 
   useEffect(() => {
     fetchProfile();
   }, []);
+  
 
   useEffect(() => {
     if (profile) {
-      setFirstName(profile.firstname);
-      setLastName(profile.lastname);
-      setEmail(profile.email);
-      setUserpicPreview(profile.userpic ? `${ServerURL}/images/${profile.userpic}` : "");
+      setFirstName(profile.admin_name);
+      setEmail(profile.admin_email);
+      setNumber(profile.admin_number);
+      setUserpicPreview(
+        profile.admin_profile
+          ? `${ServerURL}/images/${profile.admin_profile}`
+          : ""
+      );
     }
   }, [profile]);
 
   const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [number, setNumber] = useState("");
   const [userpic, setUserpic] = useState(null);
   const [userpicPreview, setUserpicPreview] = useState("");
 
   const handleUpdateData = async () => {
     const formData = new FormData();
-    formData.append('id', profile.id);
-    formData.append('firstName', firstName);
-    formData.append('lastName', lastName);
-    formData.append('email', email);
+    formData.append("id", profile.id);
+    formData.append("name", firstName);
+    formData.append("email", email);
+    formData.append("number", number);
     if (userpic) {
-      formData.append('userpic', userpic);
+      formData.append("userpic", userpic);
     }
 
     let result;
-    if (user) {
-      result = await postData("users/user_profile_update", formData, true);
-      if (result) {
-        Swal.fire({
-          icon: "success",
-          title: result.message,
-          showConfirmButton: true,
-          timer: 1500,
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: result.message,
-          text: result.message || "Unknown error",
-          timer: 1500,
-        });
-      }
-    } else if (viewer) {
-      result = await postData("viewer/viewer_profile_update", formData, true);
+    if (adminData) {
+      result = await postData("admin/admin_profile_update", formData, true);
       if (result) {
         Swal.fire({
           icon: "success",
@@ -184,6 +166,7 @@ const UserProfile = () => {
       setCoverColor(savedColor);
     }
   }, []);
+  
 
   if (!profile) {
     return (
@@ -210,33 +193,32 @@ const UserProfile = () => {
         <Grid item xs={12} sm={8}>
           <ProfilePaper>
             <ProfileAvatarContainer>
-              <ProfileAvatar
-                alt={profile.firstname}
-                src={userpicPreview}
-              />
-              <EditIconButton
+              <ProfileAvatar alt={profile.admin_name} src={userpicPreview} />
+              {/* <EditIconButton
                 color="primary"
                 aria-label="upload picture"
                 component="label"
               >
                 <input hidden accept="image/*" type="file" onChange={handleUserpicChange} />
                 <EditIcon />
-              </EditIconButton>
+              </EditIconButton> */}
             </ProfileAvatarContainer>
             <Typography
               sx={{ fontWeight: 500 }}
               variant="h6"
-            >{`${firstName} ${lastName}`}</Typography>
+            >{`${profile.admin_name}`}</Typography>
             <Typography style={{ marginBottom: "5%" }} variant="body2">
-              {email}
+              {profile.admin_email}
             </Typography>
-
             <Typography variant="h6">Account Settings</Typography>
             <TextField
               variant="outlined"
               margin="dense"
               fullWidth
-              label="First Name"
+              label="Name"
+              InputProps={{
+                readOnly: true,
+              }}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
@@ -244,26 +226,32 @@ const UserProfile = () => {
               variant="outlined"
               margin="dense"
               fullWidth
-              label="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              label="Email Address"
+              InputProps={{
+                readOnly: true,
+              }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
               variant="outlined"
               margin="dense"
               fullWidth
-              label="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              label="Phone Number"
+              value={number}
+              InputProps={{
+                readOnly: true,
+              }}
+              onChange={(e) => setNumber(e.target.value)}
             />
-            <Button
+            {/* <Button
               onClick={handleUpdateData}
               variant="contained"
               color="primary"
               fullWidth
             >
               Update
-            </Button>
+            </Button> */}
           </ProfilePaper>
         </Grid>
       </Grid>
@@ -271,4 +259,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default AdminProfile;
