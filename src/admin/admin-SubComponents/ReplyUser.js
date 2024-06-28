@@ -6,35 +6,48 @@ import {
   DialogContent,
   TextField,
   IconButton,
+  Avatar,
 } from "@mui/material";
 import "../../stylesheet/UserList.css"; // Import the CSS file for styling
 import CloseIcon from "@mui/icons-material/Close";
 import { ServerURL, getData, postData } from "../../services/ServerServices";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { formatDistanceToNow } from "date-fns";
 import io from "socket.io-client";
+import admin from "../../Images/admin.png";
 
 let socket;
-
 
 export default function ReplyUser(props) {
   const [comment, setComment] = useState(""); // Current comment text
   const [comments, setComments] = useState([]); // All comments
   const [showComments, setShowComments] = useState([]);
   const [user_id, setUserId] = useState("");
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
   };
 
-
-
-
   useEffect(() => {
     // Initialize socket connection
     socket = io(`${ServerURL}/user-namespace`);
-    socket.emit('fetch_comments', { user_id: props.person.user_id || props.person.id, paper_id: props.person.paper_id,user:"admin" });
+    socket.emit("fetch_comments", {
+      user_id: props.person.user_id || props.person.id,
+      paper_id: props.person.paper_id,
+      user: "admin",
+    });
 
-    const user_id = (props.person.user_id || props.person.id);
+    const user_id = props.person.user_id || props.person.id;
     setUserId(user_id);
     // Event listener for new comments from the server
     socket.on("comments", (msg) => {
@@ -43,15 +56,12 @@ export default function ReplyUser(props) {
       setShowComments(updatedComments);
     });
 
-
     return () => {
       if (socket) {
         socket.disconnect();
       }
     };
-  }, [props.person.user_id || props.person.id,props.person.paper_id]);
-
-
+  }, [props.person.user_id || props.person.id, props.person.paper_id]);
 
   const handleCommentSubmit = async (comment, user_id) => {
     console.log(comment.text);
@@ -60,12 +70,11 @@ export default function ReplyUser(props) {
       is_admin_comment: "1",
       user_id: user_id,
       paper_id: props.person.paper_id,
-      user:"admin"
+      user: "admin",
     };
 
     try {
-
-      socket.emit('new_comment',body)
+      socket.emit("new_comment", body);
       // const response = await postData("form/send_admin_comment", body);
       // if (response.status) {
       //   await fetchComments({ user_id });
@@ -81,7 +90,7 @@ export default function ReplyUser(props) {
       const newComment = { text: comment, date: new Date() };
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
-      await handleCommentSubmit(newComment, (user_id || props.person.id)); // Pass user_id to handleCommentSubmit
+      await handleCommentSubmit(newComment, user_id || props.person.id); // Pass user_id to handleCommentSubmit
     }
   };
 
@@ -164,7 +173,6 @@ export default function ReplyUser(props) {
             </div>
           </div>
 
-
           <div
             style={{
               overflowY: "scroll",
@@ -195,28 +203,30 @@ export default function ReplyUser(props) {
                     >
                       {c.is_admin_comment === 1 ? (
                         <>
-                          <img
-                            src={
-                              "https://pluspng.com/img-png/png-user-icon-icons-logos-emojis-users-2400.png"
-                            }
+                          <Avatar
+                            src={admin}
                             alt={"Admin icon"}
                             style={{
                               width: 30,
                               height: 30,
-                              borderRadius: 50,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                              backgroundRepeat: "no-repeat",
                               marginRight: 10,
                             }}
                           />
                         </>
                       ) : (
                         <>
-                          <img
+                          <Avatar
                             src={`${ServerURL}/images/${props.person.userpic}`}
                             alt={"User icon"}
                             style={{
                               width: 30,
                               height: 30,
-                              borderRadius: 50,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                              backgroundRepeat: "no-repeat",
                               marginRight: 10,
                             }}
                           />
@@ -233,7 +243,7 @@ export default function ReplyUser(props) {
 
                       <div>
                         <p style={{ fontSize: 12 }}>
-                          {formatDate(c.created_at)}
+                        {formatDistanceToNow(new Date(c.created_at), { addSuffix: true, baseDate: currentTime })}
                         </p>
                       </div>
                     </li>
@@ -248,7 +258,7 @@ export default function ReplyUser(props) {
                       </p>
                     </div>
                   </ul>
-                  {c.is_admin_comment === 1 ? (
+                  {/* {c.is_admin_comment === 1 ? (
                     <>
                       <div
                         style={{
@@ -276,7 +286,7 @@ export default function ReplyUser(props) {
                     </>
                   ) : (
                     <></>
-                  )}
+                  )} */}
                 </div>
               ))}
           </div>

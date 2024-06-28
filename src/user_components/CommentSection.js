@@ -1,12 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Paper, TextField, Button } from "@mui/material";
+import { Paper, TextField, Button, Avatar } from "@mui/material";
 import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
 import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import io from "socket.io-client";
+import admin from "../Images/admin.png"
+import { formatDistanceToNow } from "date-fns";
+
 
 let socket;
+
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -28,6 +32,15 @@ export default function CommentSection(props) {
   const [showComments, setShowComments] = useState([]);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
 
   
 
@@ -164,10 +177,8 @@ export default function CommentSection(props) {
                   >
                     {c.is_admin_comment === 1 ? (
                       <>
-                        <img
-                          src={
-                            "https://pluspng.com/img-png/png-user-icon-icons-logos-emojis-users-2400.png"
-                          }
+                        <Avatar
+                          src={admin}
                           alt={"Admin icon"}
                           style={{
                             width: 30,
@@ -182,7 +193,7 @@ export default function CommentSection(props) {
                       </>
                     ) : (
                       <>
-                        <img
+                        <Avatar
                           src={`${ServerURL}/images/${props.userObject.userpic}`}
                           alt={"User icon"}
                           style={{
@@ -190,6 +201,9 @@ export default function CommentSection(props) {
                             height: 30,
                             borderRadius: 50,
                             marginRight: 10,
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat",
+                            backgroundSize:"cover"
                           }}
                         />
                       </>
@@ -204,7 +218,9 @@ export default function CommentSection(props) {
                     </h3>
 
                     <div>
-                      <p style={{ fontSize: 12 }}>{formatDate(c.created_at)}</p>
+                    <p style={{ fontSize: 12 }}>
+                          {formatDistanceToNow(new Date(c.created_at), { addSuffix: true, baseDate: currentTime })}
+                          </p>
                     </div>
                   </li>
                   <div style={{ marginLeft: 50, marginTop: -10 }}>
@@ -218,7 +234,7 @@ export default function CommentSection(props) {
                     </p>
                   </div>
                 </ul>
-                {c.paper_id &&
+                {/* {c.paper_id &&
                   props.papers.some(
                     (paper) => paper.paper_id === c.paper_id
                   ) && (
@@ -249,7 +265,7 @@ export default function CommentSection(props) {
                         </a>
                       </div>
                     </div>
-                  )}
+                  )} */}
               </div>
             ))}
         </div>

@@ -5,8 +5,10 @@ import "../stylesheet/PaperTable.css";
 import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import io from "socket.io-client";
+import { formatDistanceToNow } from "date-fns";
+import admin from "../Images/admin.png"
 
-let socket 
+let socket;
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -28,13 +30,25 @@ export default function CommentSection(props) {
   const [showComments, setShowComments] = useState([]);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
 
 
   useEffect(() => {
     // Initialize socket connection
     socket = io(`${ServerURL}/viewer-namespace`);
-    socket.emit('fetch_comments', { viewer_id: props.viewer_id, paper_id: props.paperId,user:"viewer" });
-
+    socket.emit("fetch_comments", {
+      viewer_id: props.viewer_id,
+      paper_id: props.paperId,
+      user: "viewer",
+    });
 
     // Event listener for new comments from the server
     socket.on("comments", (msg) => {
@@ -42,7 +56,6 @@ export default function CommentSection(props) {
       const updatedComments = [...showComments, ...msg];
       setShowComments(updatedComments);
     });
-
 
     return () => {
       if (socket) {
@@ -72,9 +85,9 @@ export default function CommentSection(props) {
         is_admin_comment: "0",
         viewer_id: props.viewer_id,
         paper_id: props.paperId,
-        user:"viewer"
+        user: "viewer",
       };
-      socket.emit('new_comment',body)
+      socket.emit("new_comment", body);
       // const response = await postData("viewer/send_comment", body);
       // console.log("Response:", response.data);
     } catch (error) {
@@ -136,6 +149,11 @@ export default function CommentSection(props) {
         <div
           style={{
             overflowY: "scroll",
+            "&::WebkitScrollbar": {
+              display: "none", // Hides scrollbar in WebKit browsers
+            },
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
           }}
         >
           {showComments
@@ -156,16 +174,17 @@ export default function CommentSection(props) {
                   >
                     {c.is_admin_comment === 1 ? (
                       <>
-                        <img
-                          src={
-                            "https://pluspng.com/img-png/png-user-icon-icons-logos-emojis-users-2400.png"
-                          }
+                        <Avatar
+                          src={admin}
                           alt={"Admin icon"}
                           style={{
                             width: 30,
                             height: 30,
                             borderRadius: 50,
                             marginRight: 10,
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat",
+                            backgroundSize:"cover"
                           }}
                         />
                       </>
@@ -179,6 +198,9 @@ export default function CommentSection(props) {
                             height: 30,
                             borderRadius: 50,
                             marginRight: 10,
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat",
+                            backgroundSize:"cover"
                           }}
                         />
                       </>
@@ -193,7 +215,9 @@ export default function CommentSection(props) {
                     </h3>
 
                     <div>
-                      <p style={{ fontSize: 12 }}>{formatDate(c.created_at)}</p>
+                      <p style={{ fontSize: 12 }}>
+                      {formatDistanceToNow(new Date(c.created_at), { addSuffix: true, baseDate: currentTime })}
+                      </p>
                     </div>
                   </li>
                   <div style={{ marginLeft: 50, marginTop: -10 }}>
