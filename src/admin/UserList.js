@@ -127,7 +127,7 @@ const UserList = () => {
           // Viewer cancelled, do nothing
           Swal.fire("Cancelled", "The paper was not accepted.", "error");
         }
-        fetchPapers();
+        // fetchPapers();
         setAnchorEl(null);
       } catch (error) {
         console.error("Error accepting paper:", error);
@@ -158,7 +158,7 @@ const UserList = () => {
           // Viewer cancelled, do nothing
           Swal.fire("Cancelled", "The paper was not rejected.", "error");
         }
-        fetchPapers();
+        // fetchPapers();
         setAnchorEl(null);
       } catch (error) {
         console.error("Error rejecting paper:", error);
