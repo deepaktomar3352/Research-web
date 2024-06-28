@@ -30,6 +30,7 @@ import {
   brown,
 } from "@mui/material/colors";
 import UserSelection from "./admin-SubComponents/UserSelection";
+import { useSelector } from "react-redux";
 // import IosShareIcon from "@mui/icons-material/IosShare";
 const options = [
   { name: "Delete", action: "Delete", icon: <DeleteIcon /> },
@@ -40,6 +41,7 @@ const options = [
 const ITEM_HEIGHT = 48;
 
 const UserList = () => {
+  const PAPER_ID = useSelector((state) => state.paper.id);
   const dispatch = useDispatch();
   const [openDialog, setOpenDialog] = useState(false); // State to control dialog open/close
 
@@ -97,11 +99,11 @@ const UserList = () => {
 
   const eventHandler = async (data) => {
     setAnchorEl(null);
-    const paperid = data[0];
-    const eventName = data[1];
-    console.log("paper id ", paperid);
-    console.log("event name ", eventName);
-  
+    const paperid = PAPER_ID;
+    const eventName = data;
+    // console.log("PaperIDDDDD ", PAPER_ID);
+    // console.log("event name ", eventName);
+
     if (eventName === "Accept") {
       try {
         // Show confirmation message
@@ -114,20 +116,20 @@ const UserList = () => {
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-  
+
         if (result.isConfirmed) {
           // Viewer confirmed, proceed with acceptance
           await postData(`form/updateAdminPaperStatus`, {
             paper_id: paperid,
-            status:"accept"
+            status: "accept",
           });
-  
+
           Swal.fire("Accepted!", "The paper has been accepted.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           // Viewer cancelled, do nothing
           Swal.fire("Cancelled", "The paper was not accepted.", "error");
         }
-        // fetchPapers();
+        fetchusers();
         setAnchorEl(null);
       } catch (error) {
         console.error("Error accepting paper:", error);
@@ -145,20 +147,20 @@ const UserList = () => {
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-  
+
         if (result.isConfirmed) {
           // Viewer confirmed, proceed with rejection
           await postData(`form/updateAdminPaperStatus`, {
             paper_id: paperid,
-            status:"reject"
+            status: "reject",
           });
-  
+
           Swal.fire("Rejected!", "The paper has been rejected.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           // Viewer cancelled, do nothing
           Swal.fire("Cancelled", "The paper was not rejected.", "error");
         }
-        // fetchPapers();
+        fetchusers();
         setAnchorEl(null);
       } catch (error) {
         console.error("Error rejecting paper:", error);
@@ -169,7 +171,6 @@ const UserList = () => {
       console.log("event name", eventName);
     }
   };
-  
 
   // const handleReject = (paperId) => {
   //   // Filter out the rejected user from the list based on paper_id
@@ -241,11 +242,24 @@ const UserList = () => {
                     </span>
                   </div>
                 </div>
-                <span style={{ marginLeft: "3rem", fontSize: 12, display:'flex',flexDirection:"column"}}>
+                <span
+                  style={{
+                    marginLeft: "3rem",
+                    fontSize: 12,
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
                   {person.paper_title}
-                <span style={{fontSize: 12 ,fontWeight:"bold",textTransform:"capitalize"}}>
-                  {person.paperupload_status}
-                </span>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: "bold",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {person.paperupload_status}
+                  </span>
                 </span>
               </div>
               <div className="button-container">
@@ -254,7 +268,7 @@ const UserList = () => {
                   variant="text"
                   onClick={() => handleReply(person)}
                 >
-                  <ReplyIcon sx={{color:"#0f0c29"}}/>
+                  <ReplyIcon sx={{ color: "#0f0c29" }} />
                 </Button>
 
                 <Button
@@ -267,13 +281,13 @@ const UserList = () => {
                     href={`${ServerURL}/images/${person.paper_uploaded}`}
                     target="_blank"
                   >
-                    <CloudDownloadIcon sx={{color:"#ff6347"}} />
+                    <CloudDownloadIcon sx={{ color: "#ff6347" }} />
                   </a>
                   {/* View */}
                 </Button>
 
                 <Button
-                  sx={{ marginRight: "2%", background:"#0f0c29"}}
+                  sx={{ marginRight: "2%", background: "#0f0c29" }}
                   onClick={() => handleViewerSelection(person)}
                   variant="contained"
                 >
@@ -328,9 +342,7 @@ const UserList = () => {
                       <MenuItem
                         key={option.name}
                         selected={option.name === "Pyxis"}
-                        onClick={() =>
-                          eventHandler([person.paper_id, option.name])
-                        }
+                        onClick={() => eventHandler(option.name)}
                       >
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                           {option.icon}

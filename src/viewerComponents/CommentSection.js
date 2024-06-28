@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Paper, TextField, Button, Avatar } from "@mui/material";
+import { Paper, TextField, Button, Avatar, ButtonGroup } from "@mui/material";
 import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
 import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import io from "socket.io-client";
 import { formatDistanceToNow } from "date-fns";
-import admin from "../Images/admin.png"
+import admin from "../Images/admin.png";
 
 let socket;
 
@@ -40,7 +40,6 @@ export default function CommentSection(props) {
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
 
-
   useEffect(() => {
     // Initialize socket connection
     socket = io(`${ServerURL}/viewer-namespace`);
@@ -68,13 +67,26 @@ export default function CommentSection(props) {
     setComment(e.target.value);
   };
 
-  const handleCommentSend = async () => {
-    if (comment.trim()) {
-      const newComment = { text: comment, date: new Date() };
+  const handleCommentSend = async (action) => {
+    console.log("actions ", action);
+    if (action === "Accept") {
+      const newComment = { text: "AcceptPaper", date: new Date() };
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
-      await handleCommentSubmit(newComment); // Send the latest comment
-      // fetchComments();
+      await handleCommentSubmit(newComment);
+    } else if (action === "Reject") {
+      const newComment = { text: "RejectPaper", date: new Date() };
+      setComments([...comments, newComment]);
+      setComment(""); // Clear the input field
+      await handleCommentSubmit(newComment);
+    } else {
+      if (comment.trim()) {
+        const newComment = { text: comment, date: new Date() };
+        setComments([...comments, newComment]);
+        setComment(""); // Clear the input field
+        await handleCommentSubmit(newComment); // Send the latest comment
+        // fetchComments();
+      }
     }
   };
 
@@ -126,8 +138,32 @@ export default function CommentSection(props) {
                   justifyContent: "end",
                   display: "flex",
                   padding: "5px 0px",
+                  gap: "20px",
                 }}
               >
+                <ButtonGroup
+                  // variant=""
+                  aria-label="Basic button group"
+                >
+                  <Button
+                    variant="contained"
+                    onClick={() => handleCommentSend("Accept")}
+                    // color="primary"
+                    sx={{ backgroundColor: "#0f0c29" }}
+                    // endIcon={}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleCommentSend("Reject")}
+                    // color="primary"
+                    sx={{ backgroundColor: "#0f0c29" }}
+                    // endIcon={}
+                  >
+                    Reject
+                  </Button>
+                </ButtonGroup>
                 <Button
                   variant="contained"
                   onClick={handleCommentSend}
@@ -184,7 +220,7 @@ export default function CommentSection(props) {
                             marginRight: 10,
                             backgroundPosition: "center",
                             backgroundRepeat: "no-repeat",
-                            backgroundSize:"cover"
+                            backgroundSize: "cover",
                           }}
                         />
                       </>
@@ -200,7 +236,7 @@ export default function CommentSection(props) {
                             marginRight: 10,
                             backgroundPosition: "center",
                             backgroundRepeat: "no-repeat",
-                            backgroundSize:"cover"
+                            backgroundSize: "cover",
                           }}
                         />
                       </>
@@ -216,7 +252,10 @@ export default function CommentSection(props) {
 
                     <div>
                       <p style={{ fontSize: 12 }}>
-                      {formatDistanceToNow(new Date(c.created_at), { addSuffix: true, baseDate: currentTime })}
+                        {formatDistanceToNow(new Date(c.created_at), {
+                          addSuffix: true,
+                          baseDate: currentTime,
+                        })}
                       </p>
                     </div>
                   </li>

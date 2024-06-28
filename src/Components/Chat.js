@@ -50,7 +50,6 @@ const Chat = () => {
     fetchViewerData();
   }, [paperId]);
 
-  
   useEffect(() => {
     fetchViewerData();
   }, [fetchViewerData]);
@@ -88,9 +87,6 @@ const Chat = () => {
       socket.off("comments");
     };
   }, []);
-
-
-
 
   const scrollToBottom = () => {
     if (chatMessagesRef.current) {
@@ -152,7 +148,7 @@ const Chat = () => {
         ))}
       </div>
       <div className="chat">
-        <div className="chat-header">Comment Reply</div>
+        <div className="chat-header">Conversation</div>
         <div ref={chatMessagesRef} className="chat-messages">
           {messages.map((message, index) => (
             <div
@@ -160,10 +156,32 @@ const Chat = () => {
               className={`message ${
                 message.is_admin_comment === 1 ? "sent" : "received"
               }`}
+             
               ref={index === messages.length - 1 ? bottomOfChatRef : null}
             >
-              <div className="message-content">{message.content}</div>
-              
+              <div
+                className="message-content"
+                style={{
+                  fontWeight:
+                    message.content === "AcceptPaper"
+                      ? "bold"
+                      : message.content === "RejectPaper"
+                      ? "bold"
+                      : "normal",
+
+                  textAlign: "left",
+                  color:
+                    message.content === "AcceptPaper"
+                      ? "green"
+                      : message.content === "RejectPaper"
+                      ? "red"
+                      : "black",
+                 
+                }}
+              >
+                {message.content}
+              </div>
+
               <div className="message-timestamp">
                 {new Date(message.created_at).toLocaleTimeString([], {
                   hour: "2-digit",
@@ -175,7 +193,7 @@ const Chat = () => {
           ))}
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
-        <Paper
+          <Paper
             elevation={3}
             component="form"
             onKeyDown={handleKeyDown}
