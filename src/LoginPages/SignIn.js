@@ -19,6 +19,7 @@ import PersonPinIcon from "@mui/icons-material/PersonPin";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { motion } from "framer-motion";
 
 const validationSchema = Yup.object({
@@ -43,6 +44,7 @@ export default function SignIn() {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      console.log("values", value);
       try {
         const body = {
           email: values.email,
@@ -61,6 +63,28 @@ export default function SignIn() {
               timer: 500,
             });
             navigate("/ViewerDashboard");
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Login failed",
+              text: result?.message || "please check your credentials",
+              timer: 1500,
+            });
+            console.warn("Login failed:", result?.message || "Unknown error");
+          }
+        } else if (value === 2) {
+          const result = await postData("admin/admin_login", body);
+          if (result && result.status) {
+            console.log("result:-", result);
+            localStorage.setItem("admin", JSON.stringify(result.admin));
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Login successful!",
+              showConfirmButton: false,
+              timer: 500,
+            });
+            navigate("/Dashboard");
           } else {
             Swal.fire({
               icon: "error",
@@ -167,6 +191,8 @@ export default function SignIn() {
                 >
                   <Tab icon={<PersonPinIcon />} label="user" />
                   <Tab icon={<PersonSearchIcon />} label="Viewer" />
+                  <Tab icon={<AdminPanelSettingsIcon />} label="Admin" />
+
                 </Tabs>
               </Typography>
               <Box
