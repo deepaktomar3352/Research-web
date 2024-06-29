@@ -186,7 +186,7 @@ export default function Dashboard() {
                 Research Paper
               </Typography>
 
-              {/* <CommentCount/> */}
+            
               <Box
                 sx={{
                   display: "flex",
@@ -216,6 +216,7 @@ export default function Dashboard() {
                   </IconButton>
                 </Tooltip>
               </Box>
+                <CommentCount/>
               <Menu
                 anchorEl={anchorEl}
                 id="account-menu"
