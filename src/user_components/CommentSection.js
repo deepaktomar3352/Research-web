@@ -83,6 +83,8 @@ export default function CommentSection(props) {
     }
   };
 
+  // console.log("dfgdf",props);
+
   return (
     <div>
       <Paper
