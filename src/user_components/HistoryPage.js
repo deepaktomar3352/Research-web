@@ -11,6 +11,10 @@ import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
 import { motion } from "framer-motion";
 import PaperDialog from "./PaperDialog";
+import { io } from "socket.io-client";
+
+let socket;
+
 
 export default function HistoryPage() {
   const [papers, setPapers] = useState([]);
@@ -25,6 +29,8 @@ export default function HistoryPage() {
   const userObject = JSON.parse(user);
   const user_id = userObject.id;
 
+
+
   var itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
   const currentPapers = papers.slice(offset, offset + itemsPerPage);
@@ -38,7 +44,7 @@ export default function HistoryPage() {
     try {
       const result = await getData(`form/user_paper?user_id=${user_id}`);
       if (result) {
-        console.log("paper details aa gyi bhaiyo", result);
+        // console.log("paper details aa gyi bhaiyo", result);
         setPapers(result.papers);
       }
     } catch (error) {
@@ -50,30 +56,6 @@ export default function HistoryPage() {
     fetchPapers();
   }, [fetchPapers]);
 
-  const handleIconClick = async () => {
-    try {
-      // Show confirmation message
-      const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "Do you want to re-upload this paper?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, re-upload it!",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-      });
-
-      if (result.isConfirmed) {
-        fileInputRef.current.click();
-      } else {
-        // User cancelled, do nothing
-        Swal.fire("Cancelled", "Your paper has not been re-uploaded.", "error");
-      }
-      fetchPapers();
-    } catch (error) {
-      console.error("Error re-uploading paper:", error);
-    }
-  };
 
   const handleUnCount = async (paperid) => {
     try {
@@ -91,52 +73,21 @@ export default function HistoryPage() {
   };
 
   useEffect(() => {
-    const fetchNewAdminCommentsCount = async () => {
-      try {
-        const results = await getData(`form/new_count`);
-        setNotifyCount(results.counts);
-      } catch (error) {
-        console.error("Error fetching new admin comments count:", error);
-      }
+
+    socket = io(`${ServerURL}/user-namespace`)
+
+    socket.on('comment_count',(data)=>{
+      setNotifyCount(data)
+      console.log('Received comment count:', data);
+      // setCommentCount(data);
+    })
+
+    return () => {
+      socket.disconnect();
     };
 
-    fetchNewAdminCommentsCount();
-    const interval = setInterval(fetchNewAdminCommentsCount, 3000);
-    return () => clearInterval(interval);
   }, []);
 
-  const handleFileChange = async (event, paperID) => {
-    const file = event.target.files[0];
-    console.log("paperID", paperID);
-    console.log("file", file);
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("paper_id", paperID);
-
-    try {
-      const response = await postData("form/reupload_paper", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("response", response);
-
-      Swal.fire({
-        icon: "success",
-        title: "Upload Successful",
-        text: "Your file has been uploaded successfully!",
-      });
-    } catch (error) {
-      console.error("There was an error uploading the file!", error);
-
-      Swal.fire({
-        icon: "error",
-        title: "Upload Failed",
-        text: "There was an error uploading your file. Please try again.",
-      });
-    }
-  };
 
   const handleOpenDocument = (person) => {
     setReplyDialogOpen(true);
@@ -181,7 +132,7 @@ export default function HistoryPage() {
                   </thead>
                   <tbody>
                     {currentPapers.map((paper) => (
-                      <tr key={paper.id}>
+                      <tr key={paper.paper_id}>
                         <td data-label="Title">{paper.paper_title}</td>
                         <td data-label="Research Area">
                           {paper.research_area}
@@ -270,38 +221,7 @@ export default function HistoryPage() {
                             )}
                           </center>
                         </td>
-                        {/* <td data-label="Action">
-                          <center>
-                            <div
-                              style={{
-                                fontWeight: "bold",
-                                fontSize: "0.8rem",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                            >
-                              <input
-                                type="file"
-                                onChange={(event) =>
-                                  handleFileChange(event, paper.paper_id)
-                                }
-                                ref={fileInputRef}
-                                style={{ display: "none" }}
-                              />
-                              <CloudSyncIcon
-                                style={{
-                                  // color: "red",
-                                  cursor: "pointer",
-                                  fontSize: 25,
-                                }}
-                                onClick={handleIconClick}
-                              />
-                              {paper.paperupload_status}
-                            </div>
-                          </center>
-                        </td> */}
+                        
                         <td data-label="Action">
                           <center>
                             <div

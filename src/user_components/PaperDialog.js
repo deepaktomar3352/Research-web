@@ -17,26 +17,15 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { postData } from "../services/ServerServices";
-import CloudSyncIcon from "@mui/icons-material/CloudSync";
+import { Snackbar, SnackbarContent } from '@mui/material';
+
 
 export default function PaperDialog(props) {
   const fileInputRef = useRef(null);
-  const [open, setOpen] = useState(false);
-  const[message,setMessage]=useState('')
-
-  const handleClick = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const {
-    user_id = "",
+    submitted_by = "",
     address_line_one = "",
     address_line_two = "",
     author_college = "",
@@ -46,7 +35,7 @@ export default function PaperDialog(props) {
     author_number = "",
     category = "",
     city = "",
-    id = "",
+    paper_id = "",
     idauthor = "",
     paper_abstract = "",
     paper_keywords = "",
@@ -57,7 +46,7 @@ export default function PaperDialog(props) {
   } = props.person || {}; // Destructure with default values
 
   const [formData, setFormData] = useState({
-    id: id,
+    id: paper_id,
     paperTitle: paper_title,
     researchArea: research_area,
     uploadPaper: paper_uploaded,
@@ -83,7 +72,7 @@ export default function PaperDialog(props) {
   useEffect(() => {
     // Update formData when props.person changes
     setFormData({
-      Id: id,
+      Id: paper_id,
       paperTitle: paper_title,
       researchArea: research_area,
       uploadPaper: paper_uploaded,
@@ -111,32 +100,13 @@ export default function PaperDialog(props) {
     setFormData({ ...formData, category: newValue });
   };
 
-  const EmptyData = () => {
-    setFormData({
-      Id: id,
-      paperTitle: "",
-      researchArea: "",
-      uploadPaper: "",
-      keywords: "",
-      abstract: "",
-      category: "",
-      authors: [],
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      postalCode: "",
-    });
-  };
+
 
   const handleInputChange = (event) => {
     const { id, value } = event.target;
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    setFormData({ ...formData, uploadPaper: selectedFile });
-  };
 
   const handleAddAuthor = () => {
     const updatedAuthors = [...formData.authors, {}];
@@ -164,19 +134,14 @@ export default function PaperDialog(props) {
       authors: JSON.stringify(formData.authors),
       user_id: user_id,
     };
-
-    console.log("data h bhai", JSON.stringify(data));
+  // Prepare the data object
+   // console.log("data h bhai",JSON.stringify(data));
 
     try {
       const result = await postData("form/Re_upload_paper", data);
       if (result.status) {
-        Swal.fire({
-          icon: "success",
-          text: result.message,
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        // EmptyData();
+        setSnackbarMessage(result.message);
+        setSnackbarOpen(true);
         console.log("Upload result:", result);
       } else {
         Swal.fire({
@@ -223,6 +188,10 @@ export default function PaperDialog(props) {
     }
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <div>
       <Dialog
@@ -256,6 +225,7 @@ export default function PaperDialog(props) {
               },
               msOverflowStyle: "none",
               scrollbarWidth: "none",
+              padding:10
             }}
           >
             <form onSubmit={handleSubmit} encType="multipart/form-data">
@@ -534,11 +504,15 @@ export default function PaperDialog(props) {
         </DialogContent>
       </Dialog>
       <Snackbar
-          open={open}
-          autoHideDuration={5000}
-          onClose={handleClose}
-          message={message}
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+      >
+        <SnackbarContent
+          message={snackbarMessage}
+          sx={{ backgroundColor: '#0f0c29' }}
         />
+      </Snackbar>
     </div>
   );
 }
