@@ -107,7 +107,7 @@ export default function Navbar() {
     <div>
       <header className="navbar-container">
         <h2>
-          <motion.div whileInView={{translateX:0}}  initial={{translateX:-50}}  transition={{duration:0.3}}>Research Paper</motion.div>
+          <motion.div  whileInView={{translateX:0}}  initial={{translateX:-50}}  transition={{duration:0.3}}><Link style={{textDecoration:"none",color:"white"}} to="/">Research Paper</Link></motion.div>
         </h2>
         <nav>
           <ul>

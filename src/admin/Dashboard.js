@@ -115,7 +115,7 @@ export default function Dashboard() {
     setAnchorEl(null);
   };
   const toggleDrawer = () => {
-    setOpen(!Open);
+    setOpen(!open);
   };
 
   const handleItemClick = (item) => {
@@ -183,7 +183,7 @@ export default function Dashboard() {
                 noWrap
                 sx={{ flexGrow: 1 }}
               >
-                Dashboard
+                Research Paper
               </Typography>
 
               {/* <CommentCount/> */}
