@@ -8,7 +8,6 @@ import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
 import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -22,12 +21,12 @@ import MainView from "./MainView";
 import PeopleIcon from "@mui/icons-material/People";
 import Viewer_Registration from "./admin-SubComponents/Viewer_Registration";
 import Viewers_list from "./admin-SubComponents/Viewers_list";
+import Users_list from "./admin-SubComponents/showUsers_List";
 import CommentCount from "./admin-SubComponents/CommentCount";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
-import Users_list from "./admin-SubComponents/showUsers_List";
 import { motion } from "framer-motion";
 import { ServerURL } from "../services/ServerServices";
 import { useNavigate } from "react-router-dom";
@@ -144,6 +143,19 @@ export default function Dashboard() {
     navigate("/");
     window.location.reload(); // Adjust the path to your login or home page
   };
+
+  useEffect(() => {
+    // Check if user is logged in
+    const isLoggedIn = adminData && adminData.length > 0;
+    if (!isLoggedIn) {
+      // Redirect to login page if not logged in
+      navigate("/");
+    }
+  }, [adminData, navigate]);
+
+  if (!adminData || adminData.length === 0) {
+    return null; // Render nothing if user not logged in (or loading)
+  }
 
   return (
     <motion.div

@@ -13,11 +13,11 @@ import {
   TextareaAutosize,
   Autocomplete,
   Snackbar,
+  SnackbarContent
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { postData } from "../services/ServerServices";
-import { Snackbar, SnackbarContent } from '@mui/material';
 
 
 export default function PaperDialog(props) {
@@ -132,7 +132,7 @@ export default function PaperDialog(props) {
     const data = {
       ...formData,
       authors: JSON.stringify(formData.authors),
-      user_id: user_id,
+      user_id: submitted_by,
     };
   // Prepare the data object
    // console.log("data h bhai",JSON.stringify(data));
@@ -141,8 +141,16 @@ export default function PaperDialog(props) {
       const result = await postData("form/Re_upload_paper", data);
       if (result.status) {
         setSnackbarMessage(result.message);
-        setSnackbarOpen(true);
-        console.log("Upload result:", result);
+        // setSnackbarOpen(true);
+        props.handleReplyDialogClose()
+        Swal.fire({
+          icon: "success",
+          title: "updated Paper Succesfully",
+          text: result.message || "Unknown error",
+          timer: 1500,
+        });
+        props.fetchPapers()
+        // console.log("Upload result:", result);
       } else {
         Swal.fire({
           icon: "error",

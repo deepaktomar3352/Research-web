@@ -16,10 +16,10 @@ export default function About() {
             <h1>
               {" "}
               <motion.div
+                initial={{ translateX: -200 }}
                 whileInView={{ translateX: 0 }}
-                initial={{ translateX: -500 }}
-                // animate={{ translateX: 0 }}
                 transition={{ duration: 0.6 }}
+                className="color-contact"
               >
                 About Us
               </motion.div>
@@ -36,11 +36,11 @@ export default function About() {
             <img alt="About Image" src={image} />
           </div>
           <motion.div className="hero-content">
-            <h1>Welcome To Our Website hello bussy</h1>
+            <h1>Welcome to Our Dynamic and Innovative Hub</h1>
             <p>
-              Discover the latest trends and innovations in technology, design,
-              and more. Our team of experts brings you the best content and
-              insights to help you stay ahead of the curve.
+            Discover the latest trends and innovations in technology, design, and more. 
+            Our team of experts brings you the best content and insights to help you stay ahead of the curve. 
+            
               <AnimatePresence>
                 {isExpanded && (
                   <motion.span
@@ -50,8 +50,8 @@ export default function About() {
                     transition={{ duration: 0.5 }}
                     style={{ display: "block" }}
                   >
-                    Here is some more content that will be shown when "Learn
-                    More" is clicked. This part is expandable.
+                    Dive into our comprehensive analyses and expert opinions that shape the future. 
+                    Join our community to engage with thought leaders and industry pioneers.
                   </motion.span>
                 )}
               </AnimatePresence>

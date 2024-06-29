@@ -97,11 +97,13 @@
 .learnMoreButton {
   display: flex;
   justify-content: end;
+  margin-right: 3vw;
+  margin-bottom: 2vh;
 }
 
 @media screen and (max-width: 768px) {
   .heading h1 {
-    font-size: 6vw;
+    font-size: 5vw;
   }
 
   .hero-content h1 {
@@ -119,6 +121,7 @@
     justify-content: center;
   }
   .containerAbout {
+    margin-top: 8vh;
     flex-direction: column;
     align-items: center;
   }
@@ -142,13 +145,13 @@
   }
 
   .heading h1 {
-    font-size: 8vw;
+    font-size: 5vw;
   }
 
   .containerAbout {
     width: 100%;
     flex-direction: column;
-    margin: 0px;
+    margin-top: 8vh;
   }
 
   .hero-content {
