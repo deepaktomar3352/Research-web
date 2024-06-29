@@ -188,17 +188,20 @@ export default function PaperDialog(props) {
     formData.append("paper_id", paperID);
 
     try {
-      const response = await postData("form/reupload_paper", formData, {
+      const response = await postData("form/reupload_paper_file", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("response", response);
-      alert(response.message);
+    
+      if (response && response.message) {
+        alert(response.message);
+      } else {
+        alert("Unexpected error occurred. Please try again.");
+      }
     } catch (error) {
-      console.error("There was an error uploading the file!", error);
-
-      alert(error);
+      console.error("Error:", error);
+      alert("An error occurred during the upload. Please check the console for more details.");
     }
   };
 
