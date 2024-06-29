@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import "../stylesheet/About.css";
 import image from "../Images/aboutImage.jpg";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 export default function About() {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
   return (
     <div style={{ position: "relative" }}>
       <section className="hero">
@@ -35,10 +40,26 @@ export default function About() {
             <p>
               Discover the latest trends and innovations in technology, design,
               and more. Our team of experts brings you the best content and
-              insights to help you stay ahead of the curve
-            </p>{" "}
+              insights to help you stay ahead of the curve.
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.span
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{ display: "block" }}
+                  >
+                    Here is some more content that will be shown when "Learn
+                    More" is clicked. This part is expandable.
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </p>
             <div className="learnMoreButton">
-              <button className="cta-button">Learn More</button>
+              <button className="cta-button" onClick={toggleExpand}>
+                {isExpanded ? "Show Less" : "Learn More"}
+              </button>
             </div>
           </motion.div>
         </motion.div>

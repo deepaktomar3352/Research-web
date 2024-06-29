@@ -46,6 +46,7 @@
   margin: 0px 35px;
   padding-left: 5vw;
   animation: fadeInUp 2s ease;
+  overflow: hidden;
 }
 
 .hero-content h1 {
