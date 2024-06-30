@@ -14,6 +14,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { ServerURL, getData, postData } from "../../services/ServerServices";
 import { formatDistanceToNow } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
+import { setViewerId } from "../../Storage/Slices/viewer";
 import { setComments, markCommentAsRead } from "../../Storage/Slices/Comment";
 import ReplyUser from "./ReplyUser";
 import io from "socket.io-client";
@@ -21,6 +22,7 @@ import io from "socket.io-client";
 let socket;
 
 export default function CommentCount() {
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
   const [replyDialogOpen, setReplyDialogOpen] = useState(false); // State to control reply dialog open/close
   const [personData, setPersonData] = useState("");
@@ -71,6 +73,12 @@ export default function CommentCount() {
       setReplyDialogOpen(true);
       console.log("clicked",person)
       setPersonData(person);
+      socket.emit("uncount_admin_notification",person)
+      // const body = person;
+      // var result = await postData(`admin/uncount_admin_notification`, body);
+    }
+    if (person.commentType === "viewer") {
+      dispatch(setViewerId(person))
       socket.emit("uncount_admin_notification",person)
       // const body = person;
       // var result = await postData(`admin/uncount_admin_notification`, body);
@@ -169,6 +177,9 @@ export default function CommentCount() {
                             )} ago`}
                           </Typography>
                         </Box>
+                        <span  style={{ fontSize: 13,color:"#ff6347" }} >
+                            {`${message.commentType}`}
+                          </span>
                       </React.Fragment>
                     }
                     secondary={

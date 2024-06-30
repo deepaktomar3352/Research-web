@@ -44,7 +44,7 @@ export default function ReplyUser(props) {
     socket.emit("fetch_comments", {
       user_id: props.person.user_id || props.person.id,
       paper_id: props.person.paper_id,
-      user: "admin",
+      user: "user",
     });
 
     const user_id = props.person.user_id || props.person.id;
@@ -73,6 +73,7 @@ export default function ReplyUser(props) {
       comment: comment.text,
       user_id: user_id,
       paper_id: props.person.paper_id,
+      user:"user"
     };
 
     try {

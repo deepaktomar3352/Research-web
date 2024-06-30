@@ -16,17 +16,27 @@ let socket;
 
 const Chat = () => {
   const paperId = useSelector((state) => state.paper.id); // Accessing the paper ID from the Redux state
+  const viewerKiId = useSelector((data)=> data.viewer.id)
   const bottomOfChatRef = useRef(null);
   const chatMessagesRef = useRef(null);
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [viewerData, setViewerData] = useState([]);
+  const[notificationPaperId,setNotificationPaperId] = useState("");
   const [selectedViewerId, setSelectedViewerId] = useState(null);
+
+  if (viewerKiId && viewerKiId.Viewer_id !== selectedViewerId) {
+    setSelectedViewerId(viewerKiId.Viewer_id);
+    setNotificationPaperId(viewerKiId.paper_id)
+    console.log(viewerKiId)
+  }
+  
 
   // console.log("chat viewer id", selectedViewerId);
   const fetchViewerData = useCallback(async () => {
-    if (paperId !== null) {
+    if (paperId || notificationPaperId !== null) {
+      const paper_id = paperId || notificationPaperId;
       setLoading(true);
       try {
         const result = await postData("viewer/selectedviewer_info", {
@@ -34,21 +44,21 @@ const Chat = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          paperId,
+          paper_id
         });
         setViewerData(result.data);
-        console.log("shared view data", result.data);
+        // console.log("shared view data", result.data);
       } catch (error) {
         console.error("Error fetching viewer data:", error);
       } finally {
         setLoading(false);
       }
     }
-  }, [paperId]);
+  }, [paperId || notificationPaperId]);
 
   useEffect(() => {
     fetchViewerData();
-  }, [paperId]);
+  }, [paperId || notificationPaperId]);
 
   useEffect(() => {
     fetchViewerData();
@@ -56,7 +66,7 @@ const Chat = () => {
 
   useEffect(() => {
     // Initialize socket connection
-    socket = io(`${ServerURL}/viewer-namespace`);
+    socket = io(`${ServerURL}/admin-namespace`);
 
     return () => {
       if (socket) {
@@ -69,8 +79,8 @@ const Chat = () => {
     if (selectedViewerId) {
       socket.emit("fetch_comments", {
         viewer_id: selectedViewerId,
-        paper_id: paperId,
-        user: "admin",
+        paper_id: paperId || notificationPaperId,
+        user: "viewer",
       });
     }
   }, [selectedViewerId, paperId]);
@@ -104,8 +114,8 @@ const Chat = () => {
       comment: messageText,
       is_admin_comment: "1",
       viewer_id: selectedViewerId,
-      paper_id: paperId,
-      user: "admin",
+      paper_id: paperId || notificationPaperId,
+      user: "viewer",
     };
 
     try {
@@ -136,7 +146,7 @@ const Chat = () => {
         {viewerData.map((viewer) => (
           <div
             key={viewer.viewer_id}
-            onClick={() => setSelectedViewerId(viewer.viewer_id)}
+            onClick={() => setSelectedViewerId(viewer.viewer_id || selectedViewerId)}
             className={`viewer ${
               selectedViewerId === viewer.viewer_id ? "active" : ""
             }`}
