@@ -120,7 +120,7 @@ export default function CommentSection(props) {
         {props.paperId ? (
           <>
             <div>
-              <h2>Send a comment to Admin</h2>
+              <h2>Comment To Admin on <span style={{color:"#ff6347",textTransform:"capitalize"}}>{props.paper_Title}</span></h2>
               <TextField
                 autoFocus
                 autoComplete="off"

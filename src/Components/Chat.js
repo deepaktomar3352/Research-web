@@ -35,8 +35,9 @@ const Chat = () => {
 
   // console.log("chat viewer id", selectedViewerId);
   const fetchViewerData = useCallback(async () => {
-    if (paperId || notificationPaperId !== null) {
-      const paper_id = paperId || notificationPaperId;
+    const paper_id = paperId || notificationPaperId;
+  
+    if (paper_id) {
       setLoading(true);
       try {
         const result = await postData("viewer/selectedviewer_info", {
@@ -44,18 +45,22 @@ const Chat = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          paper_id
+          body: JSON.stringify({ paper_id }),
         });
-        setViewerData(result.data);
-        // console.log("shared view data", result.data);
+  
+        if (result && result.data) {
+          setViewerData(result.data);
+        } else {
+          throw new Error("No data found in the response");
+        }
       } catch (error) {
         console.error("Error fetching viewer data:", error);
       } finally {
         setLoading(false);
       }
     }
-  }, [paperId || notificationPaperId]);
-
+  }, [paperId, notificationPaperId]);
+  
   useEffect(() => {
     fetchViewerData();
   }, [paperId || notificationPaperId]);
@@ -87,10 +92,10 @@ const Chat = () => {
 
   useEffect(() => {
     socket.on("comments", (msg) => {
-      console.log("newComment", msg);
+      // console.log("newComment", msg);
       const updatedComments = [...messages, ...msg];
       setMessages(updatedComments);
-      scrollToBottom();
+      // scrollToBottom();
     });
 
     return () => {
@@ -126,6 +131,7 @@ const Chat = () => {
   };
 
   const handleKeyDown = (e) => {
+    scrollToBottom();
     if (e.key === "Enter" && inputRef.current.value.trim()) {
       e.preventDefault();
       sendMessage(inputRef.current.value);
@@ -134,6 +140,7 @@ const Chat = () => {
   };
 
   const handleSendClick = () => {
+    scrollToBottom();
     if (inputRef.current.value.trim()) {
       sendMessage(inputRef.current.value);
       inputRef.current.value = "";
@@ -208,17 +215,20 @@ const Chat = () => {
             component="form"
             onKeyDown={handleKeyDown}
             sx={{
-              p: "8px",
+              marginLeft: 2.5,
+              p: "3px",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "50px",
+              justifyContent: "space-between",
+              borderRadius: "10px",
+              width:"100%"
             }}
           >
             <InputBase
               placeholder="Type a message"
               inputProps={{ "aria-label": "Type a message" }}
               inputRef={inputRef}
+              sx={{ paddingLeft: "10px" }}
             />
             <IconButton
               onClick={handleSendClick}

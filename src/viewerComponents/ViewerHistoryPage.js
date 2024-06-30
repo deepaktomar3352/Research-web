@@ -32,6 +32,7 @@ export default function ViewerHistoryPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [papers, setPapers] = useState([]);
   const [paperId, setPaper_Id] = useState("");
+  const [paper_Title,setPaper_Title] = useState("")
   const [notifyCount, setNotifyCount] = useState([]);
   const viewer = localStorage.getItem("viewer");
   const viewerObject = JSON.parse(viewer);
@@ -148,10 +149,11 @@ export default function ViewerHistoryPage() {
   // };
 
   const handleComment = async (paperid) => {
-    setPaper_Id(paperid);
+    setPaper_Id(paperid[0]);
+    setPaper_Title(paperid[1]);
     try {
       const body = {
-        paperid: paperid,
+        paperid: paperid[0],
       };
       var result = await postData("viewer/reset_count", body);
       console.log("reset", result);
@@ -248,7 +250,7 @@ export default function ViewerHistoryPage() {
                                           fontSize: 25,
                                         }}
                                         onClick={() => {
-                                          handleComment(paper.id);
+                                          handleComment([paper.id,paper.paper_title]);
                                         }}
                                       />
                                     </Badge>
@@ -269,7 +271,7 @@ export default function ViewerHistoryPage() {
                                     fontSize: 25,
                                   }}
                                   onClick={() => {
-                                    handleComment(paper.id);
+                                    handleComment([paper.id,paper.paper_title]);
                                   }}
                                 />
                               </Badge>
@@ -376,6 +378,7 @@ export default function ViewerHistoryPage() {
             papers={papers}
             viewerObject={viewerObject}
             paperId={paperId}
+            paper_Title={paper_Title}
           />
         </Grid>
       </Grid>
