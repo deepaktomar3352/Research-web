@@ -40,6 +40,9 @@
   margin: 0px;
 } */
 @media screen and (max-width: 600px) {
+  #contact{
+    margin-top: -20vh;
+  }
   .Contact-heading {
     font-size: 8vw;
   }

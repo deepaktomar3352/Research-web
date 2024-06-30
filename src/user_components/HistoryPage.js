@@ -12,6 +12,8 @@ import Badge from "@mui/material/Badge";
 import { motion } from "framer-motion";
 import PaperDialog from "./PaperDialog";
 import { io } from "socket.io-client";
+import Paper_AcceptedSection from "./Paper_AcceptedSection";
+import Paper_RejectedSection from "./Paper_RejectedSection"
 
 let socket;
 
@@ -99,6 +101,7 @@ export default function HistoryPage() {
     initial={{  opacity: 0 }}
     animate={{ opacity: 1, transition: { duration: 1.5 } }}
     exit={{  opacity: 0, transition: { duration: 0.2 } }}
+    
   >
       <Grid container spacing={0.5}>
         {/* paper and articles HistoryPage */}
@@ -114,7 +117,7 @@ export default function HistoryPage() {
             }}
           >
             <div>
-              <h2 className="mainHeading">Your Papers</h2>
+              <h2 className="mainHeading">Current Papers</h2>
               <div style={{ overflowX: "auto" }}>
                 {" "}
                 {/* Wrapper for horizontal scrolling */}
@@ -279,6 +282,8 @@ export default function HistoryPage() {
         fetchPapers={fetchPapers}
         handleReplyDialogClose={() => setReplyDialogOpen(false)}
       />
+      <Paper_AcceptedSection/>
+      <Paper_RejectedSection/>
     </motion.div>
   );
 }
