@@ -68,7 +68,6 @@ export default function CommentSection(props) {
   };
 
   const handleCommentSend = async (action) => {
-    console.log("actions ", action);
     if (action === "Accept") {
       const newComment = { text: "Paper Accepted", date: new Date() };
       setComments([...comments, newComment]);

@@ -2,28 +2,27 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Grid, Paper, Box } from "@mui/material";
 import { ServerURL, getData, postData } from "../services/ServerServices";
 import "../stylesheet/PaperTable.css";
-import DeleteIcon from "@mui/icons-material/Delete";
-import VerifiedIcon from "@mui/icons-material/Verified";
-import ClearIcon from "@mui/icons-material/Clear";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+// import VerifiedIcon from "@mui/icons-material/Verified";
+// import ClearIcon from "@mui/icons-material/Clear";
+// import IconButton from "@mui/material/IconButton";
+// import Menu from "@mui/material/Menu";
+// import MenuItem from "@mui/material/MenuItem";
+// import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ReactPaginate from "react-paginate";
 import Swal from "sweetalert2";
 import CommentSection from "./CommentSection";
 import ChatIcon from "@mui/icons-material/Chat";
 import Badge from "@mui/material/Badge";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setPaperId } from "../Storage/Slices/Paper";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
 
-const options = [
-  { name: "Accept", action: "Accept", icon: <VerifiedIcon /> },
-  { name: "Reject", action: "Reject", icon: <ClearIcon /> },
-];
-const ITEM_HEIGHT = 48;
+// const options = [
+//   { name: "Accept", action: "Accept", icon: <VerifiedIcon /> },
+//   { name: "Reject", action: "Reject", icon: <ClearIcon /> },
+// ];
+// const ITEM_HEIGHT = 48;
 
 export default function ViewerHistoryPage() {
   const dispatch = useDispatch();
@@ -43,12 +42,12 @@ export default function ViewerHistoryPage() {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  // const handleClick = (event) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
   // const currentArticles = articles.slice(offset, offset + itemsPerPage);
 
   const handlePageChange = (selected) => {
@@ -73,81 +72,80 @@ export default function ViewerHistoryPage() {
     fetchPapers();
   }, []);
 
-  const eventHandler = async (data) => {
-    setAnchorEl(null);
-    const paperid = data[0];
-    const eventName = data[1];
-    console.log("paper id ", paperid);
-    console.log("event name ", eventName);
-  
-    if (eventName === "Accept") {
-      try {
-        // Show confirmation message
-        const result = await Swal.fire({
-          title: "Are you sure?",
-          text: "Do you want to accept this paper?",
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonText: "Yes, accept it!",
-          cancelButtonText: "No, cancel!",
-          reverseButtons: true,
-        });
-  
-        if (result.isConfirmed) {
-          // Viewer confirmed, proceed with acceptance
-          await postData(`viewer/accept_paper`, {
-            paper_id: paperid,
-            status:"accept"
-          });
-  
-          Swal.fire("Accepted!", "The paper has been accepted.", "success");
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          // Viewer cancelled, do nothing
-          Swal.fire("Cancelled", "The paper was not accepted.", "error");
-        }
-        fetchPapers();
-        setAnchorEl(null);
-      } catch (error) {
-        console.error("Error accepting paper:", error);
-        setAnchorEl(null);
-      }
-    } else if (eventName === "Reject") {
-      try {
-        // Show confirmation message
-        const result = await Swal.fire({
-          title: "Are you sure?",
-          text: "Do you want to reject this paper?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Yes, reject it!",
-          cancelButtonText: "No, cancel!",
-          reverseButtons: true,
-        });
-  
-        if (result.isConfirmed) {
-          // Viewer confirmed, proceed with rejection
-          await postData(`viewer/reject_paper`, {
-            paper_id: paperid,
-            status:"reject"
-          });
-  
-          Swal.fire("Rejected!", "The paper has been rejected.", "success");
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          // Viewer cancelled, do nothing
-          Swal.fire("Cancelled", "The paper was not rejected.", "error");
-        }
-        fetchPapers();
-        setAnchorEl(null);
-      } catch (error) {
-        console.error("Error rejecting paper:", error);
-        setAnchorEl(null);
-      }
-    } else {
-      // other event handlers
-      console.log("event name", eventName);
-    }
-  };
-  
+  // const eventHandler = async (data) => {
+  //   setAnchorEl(null);
+  //   const paperid = data[0];
+  //   const eventName = data[1];
+  //   console.log("paper id ", paperid);
+  //   console.log("event name ", eventName);
+
+  //   if (eventName === "Accept") {
+  //     try {
+  //       // Show confirmation message
+  //       const result = await Swal.fire({
+  //         title: "Are you sure?",
+  //         text: "Do you want to accept this paper?",
+  //         icon: "question",
+  //         showCancelButton: true,
+  //         confirmButtonText: "Yes, accept it!",
+  //         cancelButtonText: "No, cancel!",
+  //         reverseButtons: true,
+  //       });
+
+  //       if (result.isConfirmed) {
+  //         // Viewer confirmed, proceed with acceptance
+  //         await postData(`viewer/accept_paper`, {
+  //           paper_id: paperid,
+  //           status: "accept",
+  //         });
+
+  //         Swal.fire("Accepted!", "The paper has been accepted.", "success");
+  //       } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //         // Viewer cancelled, do nothing
+  //         Swal.fire("Cancelled", "The paper was not accepted.", "error");
+  //       }
+  //       fetchPapers();
+  //       setAnchorEl(null);
+  //     } catch (error) {
+  //       console.error("Error accepting paper:", error);
+  //       setAnchorEl(null);
+  //     }
+  //   } else if (eventName === "Reject") {
+  //     try {
+  //       // Show confirmation message
+  //       const result = await Swal.fire({
+  //         title: "Are you sure?",
+  //         text: "Do you want to reject this paper?",
+  //         icon: "warning",
+  //         showCancelButton: true,
+  //         confirmButtonText: "Yes, reject it!",
+  //         cancelButtonText: "No, cancel!",
+  //         reverseButtons: true,
+  //       });
+
+  //       if (result.isConfirmed) {
+  //         // Viewer confirmed, proceed with rejection
+  //         await postData(`viewer/reject_paper`, {
+  //           paper_id: paperid,
+  //           status: "reject",
+  //         });
+
+  //         Swal.fire("Rejected!", "The paper has been rejected.", "success");
+  //       } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //         // Viewer cancelled, do nothing
+  //         Swal.fire("Cancelled", "The paper was not rejected.", "error");
+  //       }
+  //       fetchPapers();
+  //       setAnchorEl(null);
+  //     } catch (error) {
+  //       console.error("Error rejecting paper:", error);
+  //       setAnchorEl(null);
+  //     }
+  //   } else {
+  //     // other event handlers
+  //     console.log("event name", eventName);
+  //   }
+  // };
 
   const handleComment = async (paperid) => {
     setPaper_Id(paperid);
@@ -160,13 +158,23 @@ export default function ViewerHistoryPage() {
     } catch (error) {}
   };
 
-  
-
   return (
-    <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.3}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
-      <Grid style={{display:"flex",justifyContent:'center',alignItems:"center"}} container spacing={0.5}>
+    <motion.div
+    initial={{  opacity: 0 }}
+    animate={{ opacity: 1, transition: { duration: 1.5 } }}
+    exit={{  opacity: 0, transition: { duration: 0.2 } }}
+  >
+      <Grid
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        container
+        spacing={0.5}
+      >
         {/* paper and articles HistoryPage */}
-        <Grid  item xs={12} md={11} lg={11}>
+        <Grid item xs={12} md={11} lg={11}>
           <Paper
             sx={{
               p: 2,
@@ -193,7 +201,7 @@ export default function ViewerHistoryPage() {
                       <th>Comment</th>
                       <th>View Paper</th>
                       <th>Status</th>
-                      <th>Actions</th>
+                      {/* <th>Actions</th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -202,17 +210,25 @@ export default function ViewerHistoryPage() {
                         key={paper.id}
                         onClick={() => dispatch(setPaperId(paper.id))}
                       >
-                        <td>{paper.paper_title}
-                         <div style={{fontWeight:"bold",textTransform:"capitalize"}}>{paper.paperupload_status}</div> 
+                        <td data-label="Title">
+                          {paper.paper_title}
+                          <div
+                            style={{
+                              fontWeight: "bold",
+                              textTransform: "capitalize",
+                            }}
+                          >
+                            {paper.paperupload_status}
+                          </div>
                         </td>
-                        <td>{paper.research_area}</td>
-                        <td>{paper.paper_abstract}</td>
-                        <td>{paper.category}</td>
-                        <td>
+                        <td data-label="Research Area">{paper.research_area}</td>
+                        <td data-label="Abstract">{paper.paper_abstract}</td>
+                        <td data-label="Category">{paper.category}</td>
+                        <td data-label="Submission Date">
                           {new Date(paper.submission_date).toLocaleDateString()}
                         </td>
 
-                        <td>
+                        <td data-label="Comment">
                           <center>
                             {notifyCount.some(
                               (notify) => notify.paper_id === paper.id
@@ -223,11 +239,11 @@ export default function ViewerHistoryPage() {
                                     <Badge
                                       key={notify.paper_id}
                                       badgeContent={notify.count}
-                                      color="primary"
+                                      color="success"
                                     >
                                       <ChatIcon
                                         style={{
-                                          color: "#ed15d8",
+                                          color: "#ff6347",
                                           cursor: "pointer",
                                           fontSize: 25,
                                         }}
@@ -244,11 +260,11 @@ export default function ViewerHistoryPage() {
                               <Badge
                                 key={paper.id}
                                 badgeContent={0}
-                                color="primary"
+                                color="success"
                               >
                                 <ChatIcon
                                   style={{
-                                    color: "#ed15d8",
+                                    color: "#ff6347",
                                     cursor: "pointer",
                                     fontSize: 25,
                                   }}
@@ -261,7 +277,7 @@ export default function ViewerHistoryPage() {
                           </center>
                         </td>
 
-                        <td>
+                        <td data-label="View Paper">
                           <a
                             href={`${ServerURL}/images/${paper.paper_uploaded}`}
                             target="_blank"
@@ -270,7 +286,7 @@ export default function ViewerHistoryPage() {
                             <center>
                               <CloudDownloadIcon
                                 style={{
-                                  // color: "red",
+                                  color: "#0f0c29",
                                   cursor: "pointer",
                                   fontSize: 25,
                                 }}
@@ -278,8 +294,8 @@ export default function ViewerHistoryPage() {
                             </center>
                           </a>
                         </td>
-                        <td>{paper.paper_status}</td>
-                        <td>
+                        <td data-label="Status">{paper.paper_status}</td>
+                        {/* <td>
                           <center>
                             <div>
                               <IconButton
@@ -329,7 +345,7 @@ export default function ViewerHistoryPage() {
                               </Menu>
                             </div>
                           </center>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>

@@ -101,9 +101,7 @@ const UserList = () => {
     setAnchorEl(null);
     const paperid = PAPER_ID;
     const eventName = data;
-    // console.log("PaperIDDDDD ", PAPER_ID);
-    // console.log("event name ", eventName);
-
+  
     if (eventName === "Accept") {
       try {
         // Show confirmation message
@@ -116,14 +114,14 @@ const UserList = () => {
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-
+  
         if (result.isConfirmed) {
           // Viewer confirmed, proceed with acceptance
           await postData(`form/updateAdminPaperStatus`, {
             paper_id: paperid,
             status: "accept",
           });
-
+  
           Swal.fire("Accepted!", "The paper has been accepted.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           // Viewer cancelled, do nothing
@@ -147,14 +145,14 @@ const UserList = () => {
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-
+  
         if (result.isConfirmed) {
           // Viewer confirmed, proceed with rejection
           await postData(`form/updateAdminPaperStatus`, {
             paper_id: paperid,
             status: "reject",
           });
-
+  
           Swal.fire("Rejected!", "The paper has been rejected.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           // Viewer cancelled, do nothing
@@ -166,11 +164,42 @@ const UserList = () => {
         console.error("Error rejecting paper:", error);
         setAnchorEl(null);
       }
+    } else if (eventName === "Delete") {
+      try {
+        // Show confirmation message
+        const result = await Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to delete this paper?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "No, cancel!",
+          reverseButtons: true,
+        });
+  
+        if (result.isConfirmed) {
+          // Viewer confirmed, proceed with deletion
+          await postData(`form/deleteAdmin_paper`, {
+            paper_id: paperid,
+          });
+  
+          Swal.fire("Deleted!", "The paper has been deleted.", "success");
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          // Viewer cancelled, do nothing
+          Swal.fire("Cancelled", "The paper was not deleted.", "error");
+        }
+        fetchusers();
+        setAnchorEl(null);
+      } catch (error) {
+        console.error("Error deleting paper:", error);
+        setAnchorEl(null);
+      }
     } else {
       // other event handlers
       console.log("event name", eventName);
     }
   };
+  
 
   // const handleReject = (paperId) => {
   //   // Filter out the rejected user from the list based on paper_id
