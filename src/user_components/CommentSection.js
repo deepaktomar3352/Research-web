@@ -70,7 +70,6 @@ export default function CommentSection(props) {
     try {
       const body = {
         comment: comment.text,
-        is_admin_comment: "0",
         user_id: props.user_id,
         paper_id: props.paperId,
         user:"user"
