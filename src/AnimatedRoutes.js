@@ -17,6 +17,7 @@ import { AnimatePresence } from "framer-motion";
 import ArticlePage from "./forms/ArticlePage";
 import PaperSubmissionForm from "./forms/PaperSubmissionForm";
 import AdminProfile from "./admin/AdminProfile";
+// import Paper_AcceptedSection from "./user_components/Paper_AcceptedSection";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -34,6 +35,7 @@ function AnimatedRoutes() {
         <Route Component={Dashboard} path="/Dashboard" />
         <Route Component={ViewerDashboard} path="/ViewerDashboard" />
         <Route Component={AdminProfile} path="/AdminProfile" />
+        {/* <Route Component={Paper_AcceptedSection} path="/Paper_AcceptedSection" /> */}
       </Routes>
     </AnimatePresence>
   );

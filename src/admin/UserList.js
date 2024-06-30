@@ -101,7 +101,7 @@ const UserList = () => {
     setAnchorEl(null);
     const paperid = PAPER_ID;
     const eventName = data;
-  
+
     if (eventName === "Accept") {
       try {
         // Show confirmation message
@@ -114,14 +114,14 @@ const UserList = () => {
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-  
+
         if (result.isConfirmed) {
           // Viewer confirmed, proceed with acceptance
           await postData(`form/updateAdminPaperStatus`, {
             paper_id: paperid,
             status: "accept",
           });
-  
+
           Swal.fire("Accepted!", "The paper has been accepted.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           // Viewer cancelled, do nothing
@@ -145,14 +145,14 @@ const UserList = () => {
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-  
+
         if (result.isConfirmed) {
           // Viewer confirmed, proceed with rejection
           await postData(`form/updateAdminPaperStatus`, {
             paper_id: paperid,
             status: "reject",
           });
-  
+
           Swal.fire("Rejected!", "The paper has been rejected.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           // Viewer cancelled, do nothing
@@ -176,13 +176,13 @@ const UserList = () => {
           cancelButtonText: "No, cancel!",
           reverseButtons: true,
         });
-  
+
         if (result.isConfirmed) {
           // Viewer confirmed, proceed with deletion
           await postData(`form/deleteAdmin_paper`, {
             paper_id: paperid,
           });
-  
+
           Swal.fire("Deleted!", "The paper has been deleted.", "success");
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           // Viewer cancelled, do nothing
@@ -199,7 +199,6 @@ const UserList = () => {
       console.log("event name", eventName);
     }
   };
-  
 
   // const handleReject = (paperId) => {
   //   // Filter out the rejected user from the list based on paper_id
@@ -225,13 +224,30 @@ const UserList = () => {
       <h2 className="title">Paper List</h2>
       {peopleData.map((person) => (
         <div
-          onClick={() => dispatch(setPaperId(person.paper_id))}
+          onClick={() => {
+            if (
+              person.paper_status !== "accept" &&
+              person.paper_status !== "reject"
+            ) {
+              dispatch(setPaperId(person.paper_id));
+            }
+          }}
           style={{
             cursor: "pointer",
             overflowX: "auto",
             "&::WebkitScrollbar": { display: "none" },
             msOverflowStyle: "none",
             scrollbarWidth: "none",
+            pointerEvents:
+              person.paper_status === "accept" ||
+              person.paper_status === "reject"
+                ? "none"
+                : "auto",
+            opacity:
+              person.paper_status === "accept" ||
+              person.paper_status === "reject"
+                ? 0.5
+                : 1,
           }}
           key={person.paper_id}
           className="user-list-container"
