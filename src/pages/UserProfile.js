@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { styled } from "@mui/material/styles";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import { ServerURL, postData } from "../services/ServerServices";
 
 const Root = styled("div")(({ theme }) => ({
@@ -44,11 +44,11 @@ const ProfilePaper = styled(Paper)(({ theme }) => ({
   position: "relative",
 }));
 
-const ProfileAvatarContainer = styled('div')(({ theme }) => ({
-  position: 'relative',
-  display: 'inline-block',
-  margin: 'auto',
-  marginTop: '-70px',
+const ProfileAvatarContainer = styled("div")(({ theme }) => ({
+  position: "relative",
+  display: "inline-block",
+  margin: "auto",
+  marginTop: "-70px",
 }));
 
 const ProfileAvatar = styled(Avatar)(({ theme }) => ({
@@ -57,14 +57,14 @@ const ProfileAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const EditIconButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
+  position: "absolute",
   bottom: 0,
   right: 0,
-  backgroundColor: 'white',
+  backgroundColor: "white",
   padding: theme.spacing(0.5),
-  borderRadius: '50%',
-  '&:hover': {
-    backgroundColor: '#E8E8E8',
+  borderRadius: "50%",
+  "&:hover": {
+    backgroundColor: "#E8E8E8",
   },
 }));
 
@@ -72,8 +72,6 @@ const UserProfile = () => {
   const [profile, setProfile] = useState(null);
   const userString = localStorage.getItem("user");
   const viewerString = localStorage.getItem("viewer");
-  const adminString=localStorage.getItem("admin")
-  const adminData=JSON.parse(adminString);
 
   const user = userString ? JSON.parse(userString) : null;
   const viewer = viewerString ? JSON.parse(viewerString) : null;
@@ -99,7 +97,9 @@ const UserProfile = () => {
       setFirstName(profile.firstname);
       setLastName(profile.lastname);
       setEmail(profile.email);
-      setUserpicPreview(profile.userpic ? `${ServerURL}/images/${profile.userpic}` : "");
+      setUserpicPreview(
+        profile.userpic ? `${ServerURL}/images/${profile.userpic}` : ""
+      );
     }
   }, [profile]);
 
@@ -111,12 +111,12 @@ const UserProfile = () => {
 
   const handleUpdateData = async () => {
     const formData = new FormData();
-    formData.append('id', profile.id);
-    formData.append('firstName', firstName);
-    formData.append('lastName', lastName);
-    formData.append('email', email);
+    formData.append("id", profile.id);
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
     if (userpic) {
-      formData.append('userpic', userpic);
+      formData.append("userpic", userpic);
     }
 
     let result;
@@ -210,18 +210,22 @@ const UserProfile = () => {
         <Grid item xs={12} sm={8}>
           <ProfilePaper>
             <ProfileAvatarContainer>
-              <ProfileAvatar
-                alt={profile.firstname}
-                src={userpicPreview}
-              />
-              <EditIconButton
-                color="primary"
-                aria-label="upload picture"
-                component="label"
-              >
-                <input hidden accept="image/*" type="file" onChange={handleUserpicChange} />
-                <EditIcon />
-              </EditIconButton>
+              <ProfileAvatar alt={profile.firstname} src={userpicPreview} />
+              {viewer ? null : (
+                <EditIconButton
+                  color="primary"
+                  aria-label="upload picture"
+                  component="label"
+                >
+                  <input
+                    hidden
+                    accept="image/*"
+                    type="file"
+                    onChange={handleUserpicChange}
+                  />
+                  <EditIcon />
+                </EditIconButton>
+              )}
             </ProfileAvatarContainer>
             <Typography
               sx={{ fontWeight: 500 }}
@@ -239,7 +243,14 @@ const UserProfile = () => {
               label="First Name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
+              InputProps={{
+                readOnly: viewer ? true : false,
+              }}
+              InputLabelProps={{
+                shrink: true, // This ensures the label doesn't float back up when readOnly
+              }}
             />
+
             <TextField
               variant="outlined"
               margin="dense"
@@ -247,6 +258,12 @@ const UserProfile = () => {
               label="Last Name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
+              InputProps={{
+                readOnly: viewer ? true : false,
+              }}
+              InputLabelProps={{
+                shrink: true, // This ensures the label doesn't float back up when readOnly
+              }}
             />
             <TextField
               variant="outlined"
@@ -255,15 +272,23 @@ const UserProfile = () => {
               label="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              InputProps={{
+                readOnly: viewer ? true : false,
+              }}
+              InputLabelProps={{
+                shrink: true, // This ensures the label doesn't float back up when readOnly
+              }}
             />
-            <Button
-              onClick={handleUpdateData}
-              variant="contained"
-              color="primary"
-              fullWidth
-            >
-              Update
-            </Button>
+            {viewer ? null : (
+              <Button
+                onClick={handleUpdateData}
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
+                Update
+              </Button>
+            )}
           </ProfilePaper>
         </Grid>
       </Grid>

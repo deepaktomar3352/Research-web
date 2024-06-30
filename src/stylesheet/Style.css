@@ -7,6 +7,8 @@
 
 .content {
   flex: 1;
+  min-height: 75vh;
+  max-width: auto;
 }
 
 .footer {
@@ -323,6 +325,7 @@ footer {
     font-size: 4vw;
   }
 }
+
 
 @keyframes fadeInUp {
   0% {

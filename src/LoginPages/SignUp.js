@@ -119,8 +119,11 @@ export default function SignUp() {
   });
 
   return (
-    <motion.div initial={{width:0}} animate={{width:"100%",transition:{duration:0.2}}}  exit={{x:window.innerWidth, transition:{duration:0.2}}}>
-
+    <motion.div
+    initial={{  opacity: 0 }}
+    animate={{ opacity: 1, transition: { duration: 1.5 } }}
+    exit={{  opacity: 0, transition: { duration: 0.2 } }}
+  >
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
