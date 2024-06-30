@@ -28,6 +28,9 @@ function PasswordField({ value, onChange }) {
 }
 
 export default function Viewers_list() {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
   const [data, setData] = useState([]);
   const [columns, setColumns] = useState([
     {
@@ -63,9 +66,7 @@ export default function Viewers_list() {
         />
       ),
       editComponent: (props) => {
-        const [selectedFile, setSelectedFile] = useState(null);
-        const [open, setOpen] = useState(false);
-        const [message, setMessage] = useState("");
+
 
         const handleClose = (event, reason) => {
           if (reason === "clickaway") {

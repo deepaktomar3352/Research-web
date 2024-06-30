@@ -5,13 +5,10 @@ import "../stylesheet/PaperTable.css";
 import SendIcon from "@mui/icons-material/Send";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import io from "socket.io-client";
-import admin from "../Images/admin.png"
+import admin from "../Images/admin.png";
 import { formatDistanceToNow } from "date-fns";
 
-
 let socket;
-
-
 
 export default function CommentSection(props) {
   const [showComments, setShowComments] = useState([]);
@@ -27,13 +24,20 @@ export default function CommentSection(props) {
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);
 
-  
-
   useEffect(() => {
     // Initialize socket connection
     socket = io(`${ServerURL}/user-namespace`);
-    socket.emit('fetch_comments', { user_id: props.user_id, paper_id: props.paperId,user:"user" });
+    socket.emit("fetch_comments", {
+      user_id: props.user_id,
+      paper_id: props.paperId,
+      user: "user",
+    });
+    
 
+    // socket.emit("user_reset_comment_count", props.paperId);
+    // socket.on("user_comment_count", (data) => {
+    //   console.log("hfghfghf", data);
+    // });
 
     // Event listener for new comments from the server
     socket.on("comments", (msg) => {
@@ -42,14 +46,12 @@ export default function CommentSection(props) {
       setShowComments(updatedComments);
     });
 
-
     return () => {
       if (socket) {
         socket.disconnect();
       }
     };
   }, [props.paperId, props.user_id]);
-
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
@@ -61,7 +63,7 @@ export default function CommentSection(props) {
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
       await handleCommentSubmit(newComment); // Send the latest comment
-      props.UnCount(props.paperId);
+      socket.emit("user_reset_comment_count",props.paperId);
       // fetchComments();
     }
   };
@@ -72,9 +74,9 @@ export default function CommentSection(props) {
         comment: comment.text,
         user_id: props.user_id,
         paper_id: props.paperId,
-        user:"user"
+        user: "user",
       };
-      socket.emit('new_comment',body)
+      socket.emit("new_comment", body);
       // const response = await postData("form/send_comment", body);
       // console.log("Response:", response.data);
     } catch (error) {
@@ -98,7 +100,7 @@ export default function CommentSection(props) {
         {props.paperId ? (
           <>
             <div>
-              <h2>Send a comment to Admin</h2>
+              <h2>comment to Admin on <span style={{color:"#ff6347",textTransform:"capitalize"}}>{props.paper_Title}</span></h2>
               <TextField
                 autoFocus
                 autoComplete="off"
@@ -173,7 +175,7 @@ export default function CommentSection(props) {
                             marginRight: 10,
                             backgroundPosition: "center",
                             backgroundRepeat: "no-repeat",
-                            backgroundSize:"cover"
+                            backgroundSize: "cover",
                           }}
                         />
                       </>
@@ -189,7 +191,7 @@ export default function CommentSection(props) {
                             marginRight: 10,
                             backgroundPosition: "center",
                             backgroundRepeat: "no-repeat",
-                            backgroundSize:"cover"
+                            backgroundSize: "cover",
                           }}
                         />
                       </>
@@ -204,9 +206,12 @@ export default function CommentSection(props) {
                     </h3>
 
                     <div>
-                    <p style={{ fontSize: 12 }}>
-                          {formatDistanceToNow(new Date(c.created_at), { addSuffix: true, baseDate: currentTime })}
-                          </p>
+                      <p style={{ fontSize: 12 }}>
+                        {formatDistanceToNow(new Date(c.created_at), {
+                          addSuffix: true,
+                          baseDate: currentTime,
+                        })}
+                      </p>
                     </div>
                   </li>
                   <div style={{ marginLeft: 50, marginTop: -10 }}>

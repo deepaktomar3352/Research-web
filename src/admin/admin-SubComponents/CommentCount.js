@@ -42,7 +42,9 @@ export default function CommentCount() {
       setCommentCount(user + viewer);
     });
 
-    socket.on("comments", (count) => {
+   
+
+    socket.on("new_comments", (count) => {
       // console.log("comments", count);
       setComments({
         userComments: count.userComments,
@@ -69,8 +71,9 @@ export default function CommentCount() {
       setReplyDialogOpen(true);
       console.log("clicked",person)
       setPersonData(person);
-      const body = person;
-      var result = await postData(`admin/uncount_admin_notification`, body);
+      socket.emit("uncount_admin_notification",person)
+      // const body = person;
+      // var result = await postData(`admin/uncount_admin_notification`, body);
     }
   };
 

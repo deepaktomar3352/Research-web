@@ -40,7 +40,7 @@ export default function ReplyUser(props) {
 
   useEffect(() => {
     // Initialize socket connection
-    socket = io(`${ServerURL}/user-namespace`);
+    socket = io(`${ServerURL}/admin-namespace`);
     socket.emit("fetch_comments", {
       user_id: props.person.user_id || props.person.id,
       paper_id: props.person.paper_id,
@@ -49,28 +49,30 @@ export default function ReplyUser(props) {
 
     const user_id = props.person.user_id || props.person.id;
     setUserId(user_id);
+
+    
     // Event listener for new comments from the server
     socket.on("comments", (msg) => {
       // console.log("newComment", msg);
-      const updatedComments = [...showComments, ...msg];
+      const updatedComments = [ ...showComments, ...msg ];
       setShowComments(updatedComments);
     });
+    
+   
 
     return () => {
       if (socket) {
         socket.disconnect();
       }
     };
-  }, [props.person.user_id || props.person.id, props.person.paper_id]);
+  }, [props.person.user_id || props.person.id, props.person.paper_id,ServerURL]);
 
   const handleCommentSubmit = async (comment, user_id) => {
     // console.log(comment.text);
     const body = {
       comment: comment.text,
-      is_admin_comment: "1",
       user_id: user_id,
       paper_id: props.person.paper_id,
-      user: "admin",
     };
 
     try {
@@ -86,6 +88,10 @@ export default function ReplyUser(props) {
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
       await handleCommentSubmit(newComment, user_id || props.person.id); // Pass user_id to handleCommentSubmit
+      socket.emit("fetch_comments", {
+        user_id: props.person.user_id || props.person.id,
+        paper_id: props.person.paper_id,
+      });
     }
   };
 

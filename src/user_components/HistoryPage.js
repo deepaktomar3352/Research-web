@@ -20,11 +20,10 @@ export default function HistoryPage() {
   const [papers, setPapers] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [paperId, setPaperId] = useState("");
+  const [paper_Title, setPaper_Title] = useState("");
   const [notifyCount, setNotifyCount] = useState([]);
-  const [selectedFile, setSelectedFile] = useState([]);
   const [replyDialogOpen, setReplyDialogOpen] = useState(false);
   const [personData, setPersonData] = useState([]);
-  const fileInputRef = useRef(null);
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user);
   const user_id = userObject.id;
@@ -57,19 +56,22 @@ export default function HistoryPage() {
   }, [fetchPapers]);
 
 
-  const handleUnCount = async (paperid) => {
-    try {
-      const body = {
-        paperid: paperid,
-      };
-      var result = await postData("form/reset_count", body);
-      console.log("reset", result);
-    } catch (error) {}
-  };
+  // const handleUnCount = async (paperid) => {
+  //   try {
+  //     const body = {
+  //       paperid: paperid,
+  //     };
+  //     var result = await postData("form/reset_count", body);
+  //     console.log("reset", result);
+  //   } catch (error) {}
+  // };
 
   const handleComment = async (paperid) => {
-    setPaperId(paperid);
-    handleUnCount(paperid);
+    setPaperId(paperid[0]);
+    setPaper_Title(paperid[1]);
+    console.log("titlte", paperId); 
+    socket.emit("user_reset_comment_count", paperid[0]);
+    // handleUnCount(paperid);
   };
 
   useEffect(() => {
@@ -78,15 +80,13 @@ export default function HistoryPage() {
 
     socket.on('comment_count',(data)=>{
       setNotifyCount(data)
-      console.log('Received comment count:', data);
-      // setCommentCount(data);
     })
 
     return () => {
       socket.disconnect();
     };
 
-  }, []);
+  }, [ServerURL]);
 
 
   const handleOpenDocument = (person) => {
@@ -190,7 +190,7 @@ export default function HistoryPage() {
                                         fontSize: 25,
                                       }}
                                       onClick={() => {
-                                        handleComment(paper.paper_id);
+                                        handleComment([paper.paper_id,paper.paper_title]);
                                       }}
                                     />
                                   </Badge>
@@ -214,7 +214,7 @@ export default function HistoryPage() {
                                     fontSize: 25,
                                   }}
                                   onClick={() => {
-                                    handleComment(paper.paper_id);
+                                    handleComment([paper.paper_id,paper.paper_title]);
                                   }}
                                 />
                               </Badge>
@@ -268,7 +268,8 @@ export default function HistoryPage() {
             papers={papers}
             userObject={userObject}
             paperId={paperId}
-            UnCount={handleUnCount}
+            paper_Title={paper_Title}
+            // UnCount={handleUnCount}
           />
         </Grid>
       </Grid>

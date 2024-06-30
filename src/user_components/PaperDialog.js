@@ -22,6 +22,8 @@ import { postData } from "../services/ServerServices";
 
 export default function PaperDialog(props) {
   const fileInputRef = useRef(null);
+  const [open,setOpen]=useState("");
+  const [message,setMessage]=useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const {
