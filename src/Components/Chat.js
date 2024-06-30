@@ -163,17 +163,17 @@ const Chat = () => {
                 className="message-content"
                 style={{
                   fontWeight:
-                    message.content === "AcceptPaper"
+                    message.content === "Paper Accepted"
                       ? "bold"
-                      : message.content === "RejectPaper"
+                      : message.content === "Paper Rejected"
                       ? "bold"
                       : "normal",
 
                   textAlign: "left",
                   color:
-                    message.content === "AcceptPaper"
+                    message.content === "Paper Accepted"
                       ? "green"
-                      : message.content === "RejectPaper"
+                      : message.content === "Paper Rejected"
                       ? "red"
                       : "black",
                  

@@ -273,9 +273,10 @@ export default function HistoryPage() {
         </Grid>
       </Grid>
       <PaperDialog
-       person={personData}
-       replyDialogOpen={replyDialogOpen}
-       handleReplyDialogClose={() => setReplyDialogOpen(false)}
+        person={personData}
+        replyDialogOpen={replyDialogOpen}
+        fetchPapers={fetchPapers}
+        handleReplyDialogClose={() => setReplyDialogOpen(false)}
       />
     </motion.div>
   );

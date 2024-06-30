@@ -12,11 +12,12 @@ import {
   Grid,
   TextareaAutosize,
   Autocomplete,
+  Snackbar,
+  SnackbarContent
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Swal from "sweetalert2";
 import { postData } from "../services/ServerServices";
-import { Snackbar, SnackbarContent } from '@mui/material';
 
 
 export default function PaperDialog(props) {
@@ -95,7 +96,6 @@ export default function PaperDialog(props) {
     });
   }, [props.person]); // Dependencies array to re-run effect when props.person changes
 
-
   const handleCategoryChange = (event, newValue) => {
     setFormData({ ...formData, category: newValue });
   };
@@ -127,21 +127,30 @@ export default function PaperDialog(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    handleUpdateFile()
+    // Prepare the data object
+    const data = {
+      ...formData,
+      authors: JSON.stringify(formData.authors),
+      user_id: submitted_by,
+    };
   // Prepare the data object
-  const data = {
-    ...formData,
-    authors: JSON.stringify(formData.authors),user_id:submitted_by
-  };
-
-  console.log("data h bhai",JSON.stringify(data));
+   // console.log("data h bhai",JSON.stringify(data));
 
     try {
       const result = await postData("form/Re_upload_paper", data);
       if (result.status) {
         setSnackbarMessage(result.message);
-        setSnackbarOpen(true);
-        console.log("Upload result:", result);
+        // setSnackbarOpen(true);
+        props.handleReplyDialogClose()
+        Swal.fire({
+          icon: "success",
+          title: "updated Paper Succesfully",
+          text: result.message || "Unknown error",
+          timer: 1500,
+        });
+        props.fetchPapers()
+        // console.log("Upload result:", result);
       } else {
         Swal.fire({
           icon: "error",
@@ -171,15 +180,19 @@ export default function PaperDialog(props) {
           "Content-Type": "multipart/form-data",
         },
       });
-    
+
       if (response && response.message) {
-        alert(response.message);
+        setOpen(true);
+        setMessage(response.message);
       } else {
-        alert("Unexpected error occurred. Please try again.");
+        setOpen(true);
+        setMessage(response.message);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred during the upload. Please check the console for more details.");
+      alert(
+        "An error occurred during the upload. Please check the console for more details."
+      );
     }
   };
 
@@ -331,84 +344,94 @@ export default function PaperDialog(props) {
                   Author Details :
                 </Grid>
                 {formData.authors.map((author, index) => (
-        <Grid
-          style={{ padding: 20 }}
-          container
-          key={index}
-          rowSpacing={1}
-          spacing={2}
-        >
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              autoComplete="off"
-              required
-              id="authorName"
-              label={`Author ${index + 1} - Name`}
-              variant="outlined"
-              value={author.authorName}
-              onChange={(event) => handleAuthorInputChange(event, index)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              required
-              autoComplete="off"
-              id="designation"
-              label={`Author ${index + 1} - Designation`}
-              variant="outlined"
-              value={author.designation}
-              onChange={(event) => handleAuthorInputChange(event, index)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              autoComplete="off"
-              fullWidth
-              required
-              id="university"
-              label={`Author ${index + 1} - University/College Name`}
-              variant="outlined"
-              value={author.university}
-              onChange={(event) => handleAuthorInputChange(event, index)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              autoComplete="off"
-              required={index === 0} // Only first author's contact number is required
-              id="contactNumber"
-              label={`Author ${index + 1} - Contact Number`}
-              variant="outlined"
-              value={author.contactNumber}
-              onChange={(event) => handleAuthorInputChange(event, index)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              autoComplete="off"
-              required={index === 0} // Only first author's email is required
-              id="email"
-              label={`Author ${index + 1} - Email`}
-              variant="outlined"
-              value={author.email}
-              onChange={(event) => handleAuthorInputChange(event, index)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => handleRemoveAuthor(index)}
-            >
-              {`Remove Author - ${index + 1}`}
-            </Button>
-          </Grid>
-        </Grid>
-      ))}
+                  <Grid
+                    style={{ padding: 20 }}
+                    container
+                    key={index}
+                    rowSpacing={1}
+                    spacing={2}
+                  >
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        autoComplete="off"
+                        required
+                        id="authorName"
+                        label={`Author ${index + 1} - Name`}
+                        variant="outlined"
+                        value={author.authorName}
+                        onChange={(event) =>
+                          handleAuthorInputChange(event, index)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        required
+                        autoComplete="off"
+                        id="designation"
+                        label={`Author ${index + 1} - Designation`}
+                        variant="outlined"
+                        value={author.designation}
+                        onChange={(event) =>
+                          handleAuthorInputChange(event, index)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        autoComplete="off"
+                        fullWidth
+                        required
+                        id="university"
+                        label={`Author ${index + 1} - University/College Name`}
+                        variant="outlined"
+                        value={author.university}
+                        onChange={(event) =>
+                          handleAuthorInputChange(event, index)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        autoComplete="off"
+                        required={index === 0} // Only first author's contact number is required
+                        id="contactNumber"
+                        label={`Author ${index + 1} - Contact Number`}
+                        variant="outlined"
+                        value={author.contactNumber}
+                        onChange={(event) =>
+                          handleAuthorInputChange(event, index)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        autoComplete="off"
+                        required={index === 0} // Only first author's email is required
+                        id="email"
+                        label={`Author ${index + 1} - Email`}
+                        variant="outlined"
+                        value={author.email}
+                        onChange={(event) =>
+                          handleAuthorInputChange(event, index)
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => handleRemoveAuthor(index)}
+                      >
+                        {`Remove Author - ${index + 1}`}
+                      </Button>
+                    </Grid>
+                  </Grid>
+                ))}
                 <Grid item xs={12}>
                   <Button
                     variant="contained"

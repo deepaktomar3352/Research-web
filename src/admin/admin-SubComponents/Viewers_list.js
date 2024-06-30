@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import MaterialTable from "material-table";
-import { Avatar, Button, TextField } from "@mui/material";
+import { Avatar, Button, ButtonGroup, TextField,Snackbar } from "@mui/material";
 import { getData, postData, ServerURL } from "../../services/ServerServices";
 
 // Custom component for editing the password field
@@ -56,20 +56,86 @@ export default function Viewers_list() {
       title: "Picture",
       field: "userPic",
       render: (rowData) => (
-        <Avatar
+        <img
           src={`${ServerURL}/images/${rowData.userpic}`}
           alt={`${rowData.firstname} ${rowData.lastname}`}
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: "50%",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
+          style={{ width: 50, borderRadius: "50%" }}
         />
       ),
-      editable: "never",
+      editComponent: (props) => {
+        const [selectedFile, setSelectedFile] = useState(null);
+        const [open, setOpen] = useState(false);
+        const [message, setMessage] = useState("");
+
+        const handleClose = (event, reason) => {
+          if (reason === "clickaway") {
+            return;
+          }
+          setOpen(false);
+        };
+
+        const handleFileChange = (e) => {
+          const file = e.target.files[0];
+          setSelectedFile(file);
+        };
+
+        const handleSave = async () => {
+          if (selectedFile) {
+            const formData = new FormData();
+            formData.append("id", props.rowData.id);
+            formData.append("file", selectedFile);
+            const result = await postData(
+              "viewer/updateViewer_Profile",
+              formData
+            );
+            if (result) {
+              setOpen(true);
+              setMessage(result.message);
+            }
+          } else {
+            setOpen(true);
+            setMessage(result.message);
+          }
+        };
+
+        const handleCancel = () => {
+          setSelectedFile(null);
+        };
+
+        return (
+          <div>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+            {selectedFile && (
+              <div style={{ marginTop: "2%" }}>
+                <ButtonGroup>
+                  <Button
+                    sx={{ bgcolor: "#0f0c29" }}
+                    variant="contained"
+                    size="small"
+                    onClick={handleSave}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    sx={{ bgcolor: "#0f0c29" }}
+                    variant="contained"
+                    size="small"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </Button>
+                </ButtonGroup>
+                <Snackbar
+                  open={open}
+                  autoHideDuration={5000}
+                  onClose={handleClose}
+                  message={message}
+                />
+              </div>
+            )}
+          </div>
+        );
+      },
     },
   ]);
 

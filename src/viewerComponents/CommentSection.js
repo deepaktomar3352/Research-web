@@ -70,12 +70,12 @@ export default function CommentSection(props) {
   const handleCommentSend = async (action) => {
     console.log("actions ", action);
     if (action === "Accept") {
-      const newComment = { text: "AcceptPaper", date: new Date() };
+      const newComment = { text: "Paper Accepted", date: new Date() };
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
       await handleCommentSubmit(newComment);
     } else if (action === "Reject") {
-      const newComment = { text: "RejectPaper", date: new Date() };
+      const newComment = { text: "Paper Rejected", date: new Date() };
       setComments([...comments, newComment]);
       setComment(""); // Clear the input field
       await handleCommentSubmit(newComment);
