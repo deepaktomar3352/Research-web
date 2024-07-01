@@ -26,7 +26,15 @@ export default function Paper_AcceptedSection() {
   const fileInputRef = useRef(null);
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user);
-  const user_id = userObject.id;
+  const viewer = localStorage.getItem("viewer");
+  const viewerObject = JSON.parse(viewer);
+  let ID =""
+  if(userObject){
+   ID = userObject.id;
+  }
+  else if (viewerObject){
+  ID = viewerObject.id;
+  }
   var itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
   const currentPapers = papers.slice(offset, offset + itemsPerPage);
@@ -38,18 +46,29 @@ export default function Paper_AcceptedSection() {
   // Function to fetch papers
   const fetchPapers = useCallback(async () => {
     try {
-      const result = await postData(`form/fetchAccording_To_Paper_Status`, {
-        user_id: user_id,
-        paper_status: "accept",
-      });
-      if (result) {
-        console.log("paper details aa gyi bhaiyo accepted", result);
-        setPapers(result.papers);
+      if (viewerObject) {
+        const result = await postData(`viewer/fetchPaper_by_Status`, {
+          viewer_id: ID,
+          paper_status: "accept",
+        });
+        if (result) {
+          console.log("paper details aa gyi bhaiyo accepted viewer", result);
+          setPapers(result.papers);
+        }
+      } else {
+        const result = await postData(`form/fetchAccording_To_Paper_Status`, {
+          user_id: ID,
+          paper_status: "accept",
+        });
+        if (result) {
+          console.log("paper details aa gyi bhaiyo accepted", result);
+          setPapers(result.papers);
+        }
       }
     } catch (error) {
       console.error(error);
     }
-  }, [user_id]);
+  }, [ID]);
 
   useEffect(() => {
     fetchPapers();
@@ -247,7 +266,14 @@ export default function Paper_AcceptedSection() {
                   </table>
                 </div>
               ) : (
-                <p style={{ textAlign: "center", fontFamily: "sans-serif",paddingTop:'2vh',paddingBottom:"2vh" }}>
+                <p
+                  style={{
+                    textAlign: "center",
+                    fontFamily: "sans-serif",
+                    paddingTop: "2vh",
+                    paddingBottom: "2vh",
+                  }}
+                >
                   There is no accepeted paper
                 </p>
               )}
@@ -266,7 +292,9 @@ export default function Paper_AcceptedSection() {
                   subContainerClassName={"pages pagination"}
                   activeClassName={"active"}
                 />
-              ) : ''}
+              ) : (
+                ""
+              )}
             </div>
           </Paper>
         </Grid>

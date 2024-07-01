@@ -15,7 +15,7 @@ import { io } from "socket.io-client";
 
 let socket;
 
-export default function Paper_RejectedSection() {
+export default function Paper_RejectedSection({ paperStatus }) {
   const [papers, setPapers] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [paperId, setPaperId] = useState("");
@@ -26,30 +26,39 @@ export default function Paper_RejectedSection() {
   const fileInputRef = useRef(null);
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user);
-  const user_id = userObject.id;
-  var itemsPerPage = 10;
+  const viewer = localStorage.getItem("viewer");
+  const viewerObject = JSON.parse(viewer);
+  let ID = userObject ? userObject.id : viewerObject ? viewerObject.id : "";
+
+  const itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
   const currentPapers = papers.slice(offset, offset + itemsPerPage);
 
   const handlePageChange = (selected) => {
-    setCurrentPage(selected.selected); // Set the new page when changed
+    setCurrentPage(selected.selected);
   };
 
-  // Function to fetch papers
+  // Function to fetch papers based on status condition
   const fetchPapers = useCallback(async () => {
     try {
-      const result = await postData(`form/fetchAccording_To_Paper_Status`, {
-        user_id: user_id,
+      let endpoint = viewerObject
+        ? "viewer/fetchPaper_by_Status"
+        : "form/fetchAccording_To_Paper_Status";
+
+      const result = await postData(endpoint, {
+        viewer_id: ID,
+        user_id: ID,
         paper_status: "reject",
       });
+
       if (result) {
-        console.log("paper details aa gyi bhaiyo accepted", result);
+        console.log("Fetched papers:", result);
         setPapers(result.papers);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching papers:", error);
     }
-  }, [user_id]);
+  }, [ID]);
 
   useEffect(() => {
     fetchPapers();
@@ -57,12 +66,12 @@ export default function Paper_RejectedSection() {
 
   const handleUnCount = async (paperid) => {
     try {
-      const body = {
-        paperid: paperid,
-      };
-      var result = await postData("form/reset_count", body);
-      console.log("reset", result);
-    } catch (error) {}
+      const body = { paperid };
+      const result = await postData("form/reset_count", body);
+      console.log("Reset count result:", result);
+    } catch (error) {
+      console.error("Error resetting count:", error);
+    }
   };
 
   const handleComment = async (paperid) => {
@@ -76,7 +85,6 @@ export default function Paper_RejectedSection() {
     socket.on("comment_count", (data) => {
       setNotifyCount(data);
       console.log("Received comment count:", data);
-      // setCommentCount(data);
     });
 
     return () => {
@@ -100,7 +108,6 @@ export default function Paper_RejectedSection() {
         spacing={0.5}
         style={{ display: "flex", justifyContent: "center" }}
       >
-        {/* paper and articles HistoryPage */}
         <Grid item xs={12} md={11} lg={11}>
           <Paper
             sx={{
@@ -109,15 +116,17 @@ export default function Paper_RejectedSection() {
               flexDirection: "column",
               height: "auto",
               m: "2%",
-              overflow: "auto", // Allow horizontal overflow if content is too wide
+              overflow: "auto",
             }}
           >
             <div>
-              <h2 className="mainHeading">Rejected Papers</h2>
+              <h2 className="mainHeading">
+                {paperStatus === "accept"
+                  ? "Accepted Papers"
+                  : "Rejected Papers"}
+              </h2>
               {papers?.length > 0 ? (
                 <div style={{ overflowX: "auto" }}>
-                  {" "}
-                  {/* Wrapper for horizontal scrolling */}
                   <table className="styled-table">
                     <thead>
                       <tr>
@@ -166,15 +175,13 @@ export default function Paper_RejectedSection() {
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <center>
-                                <CloudDownloadIcon
-                                  style={{
-                                    color: "#0f0c29",
-                                    cursor: "pointer",
-                                    fontSize: 25,
-                                  }}
-                                />
-                              </center>
+                              <CloudDownloadIcon
+                                style={{
+                                  color: "#0f0c29",
+                                  cursor: "pointer",
+                                  fontSize: 25,
+                                }}
+                              />
                             </a>
                           </td>
                           <td className="disabled" data-label="Comment">
@@ -200,9 +207,8 @@ export default function Paper_RejectedSection() {
                                     </Badge>
                                   );
                                 }
-                                return null; // Add this line to return null when the condition is not met
+                                return null;
                               })}
-                              {/* If no match found, display 0 */}
                               {notifyCount.every(
                                 (notify) => notify.paper_id !== paper.paper_id
                               ) && (
@@ -255,11 +261,12 @@ export default function Paper_RejectedSection() {
                     paddingBottom: "2vh",
                   }}
                 >
-                  There is no rejected paper
+                  There are no{" "}
+                  {paperStatus === "accept" ? "accepted" : "rejected"} papers
                 </p>
               )}
-              {/* Add pagination */}
-              {papers.length > 0 ? (
+
+              {papers.length > 0 && (
                 <ReactPaginate
                   previousLabel={<span>&#11104; Previous</span>}
                   nextLabel={<span>Next &#11106;</span>}
@@ -273,7 +280,7 @@ export default function Paper_RejectedSection() {
                   subContainerClassName={"pages pagination"}
                   activeClassName={"active"}
                 />
-              ) : null}
+              )}
             </div>
           </Paper>
         </Grid>
