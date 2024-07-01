@@ -15,6 +15,8 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import DnsIcon from "@mui/icons-material/Dns";
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import InsertPageBreakRoundedIcon from '@mui/icons-material/InsertPageBreakRounded';
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ListItemText from "@mui/material/ListItemText";
 import MainView from "./MainView";
@@ -30,6 +32,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { motion } from "framer-motion";
 import { ServerURL } from "../services/ServerServices";
 import { useNavigate } from "react-router-dom";
+import Accepted_Paper from "./admin-SubComponents/Accepted_Paper";
 
 function Copyright(props) {
   return (
@@ -131,6 +134,10 @@ export default function Dashboard() {
         return <Viewers_list />;
       case "Users_list":
         return <Users_list />;
+      case "Accepted_Paper":
+        return <Accepted_Paper status="accept" />;
+      case "Rejected_Paper":
+        return <Accepted_Paper status="reject" />;
       default:
         return null;
     }
@@ -159,10 +166,10 @@ export default function Dashboard() {
 
   return (
     <motion.div
-    initial={{  opacity: 0 }}
-    animate={{ opacity: 1, transition: { duration: 1.5 } }}
-    exit={{  opacity: 0, transition: { duration: 0.2 } }}
-  >
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { duration: 1.5 } }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+    >
       <ThemeProvider theme={defaultTheme}>
         <Box sx={{ display: "flex" }}>
           {/* <CssBaseline /> */}
@@ -197,7 +204,7 @@ export default function Dashboard() {
               >
                 Research Paper
               </Typography>
-          
+
               <Box
                 sx={{
                   display: "flex",
@@ -227,7 +234,7 @@ export default function Dashboard() {
                   </IconButton>
                 </Tooltip>
               </Box>
-                <CommentCount/>
+              <CommentCount />
               <Menu
                 anchorEl={anchorEl}
                 id="account-menu"
@@ -263,7 +270,10 @@ export default function Dashboard() {
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
-                <Link sx={{textDecoration:"none",color:"black"}} href="/AdminProfile">
+                <Link
+                  sx={{ textDecoration: "none", color: "black" }}
+                  href="/AdminProfile"
+                >
                   <MenuItem>Profile</MenuItem>
                 </Link>
                 <Divider />
@@ -324,6 +334,25 @@ export default function Dashboard() {
                 </ListItemIcon>
                 <ListItemText primary="Users List" />
               </ListItemButton>
+              <ListItemButton
+                onClick={() => handleItemClick("Accepted_Paper")} // Set active item on click
+                selected={activeItem === "Accepted_Paper"} // Check if it's active
+              >
+                <ListItemIcon>
+                  <CheckBoxIcon />
+                </ListItemIcon>
+                <ListItemText primary="Accepted" />
+              </ListItemButton>
+              <ListItemButton
+                onClick={() => handleItemClick("Rejected_Paper")} // Set active item on click
+                selected={activeItem === "Rejected_Paper"} // Check if it's active
+              >
+                <ListItemIcon>
+                  <InsertPageBreakRoundedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Rejected" />
+              </ListItemButton>
+
               <Divider sx={{ my: 1 }} />
             </List>
           </Drawer>
