@@ -186,8 +186,10 @@ const UserList = () => {
       {peopleData.length > 0 ? (
         peopleData.map((person) => (
           <div
-          style={{cursor: 'pointer'}}
-            onClick={() => {dispatch(setPaperId(person.paper_id))}}
+            onClick={() => {
+              dispatch(setPaperId(person.paper_id));
+            }}
+            style={{cursor:"pointer"}}
             key={person.paper_id}
             className="user-list-container"
           >
