@@ -16,38 +16,36 @@ let socket;
 
 const Chat = () => {
   const paperId = useSelector((state) => state.paper.id); // Accessing the paper ID from the Redux state
-  const viewerKiId = useSelector((data)=> data.viewer.id)
+  const viewerId = useSelector((state) => state.viewer.id);
   const bottomOfChatRef = useRef(null);
   const chatMessagesRef = useRef(null);
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [viewerData, setViewerData] = useState([]);
-  const[notificationPaperId,setNotificationPaperId] = useState("");
+  const [notificationPaperId, setNotificationPaperId] = useState("");
   const [selectedViewerId, setSelectedViewerId] = useState(null);
 
-  if (viewerKiId && viewerKiId.Viewer_id !== selectedViewerId) {
-    setSelectedViewerId(viewerKiId.Viewer_id);
-    setNotificationPaperId(viewerKiId.paper_id)
-    console.log(viewerKiId)
+  if (viewerId && viewerId !== selectedViewerId) {
+    setSelectedViewerId(viewerId);
+    setNotificationPaperId(viewerId);
+    console.log("iiiiiiiiii", viewerId);
   }
-  
+  console.log("ddddddddddddd", viewerId);
+  console.log("ssssssssss", selectedViewerId);
+  console.log("pppppppp", paperId);
 
   // console.log("chat viewer id", selectedViewerId);
   const fetchViewerData = useCallback(async () => {
     const paper_id = paperId || notificationPaperId;
-  
+
     if (paper_id) {
-      setLoading(true);
-      try {
-        const result = await postData("viewer/selectedviewer_info", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ paper_id }),
-        });
+      const numericPaperId = Number(paper_id); // Convert to number if not already
+      const body = { paper_id: numericPaperId }; // Create the body with paper_id as a number
   
+      try {
+        const result = await postData("viewer/selectedviewer_info", body);
+
         if (result && result.data) {
           setViewerData(result.data);
         } else {
@@ -60,7 +58,7 @@ const Chat = () => {
       }
     }
   }, [paperId, notificationPaperId]);
-  
+
   useEffect(() => {
     fetchViewerData();
   }, [paperId || notificationPaperId]);
@@ -70,7 +68,6 @@ const Chat = () => {
   }, [fetchViewerData]);
 
   useEffect(() => {
-    // Initialize socket connection
     socket = io(`${ServerURL}/admin-namespace`);
 
     return () => {
@@ -82,7 +79,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (selectedViewerId) {
-      socket.emit("fetch_comments", {
+      socket.emit("fetch_admin_comments", {
         viewer_id: selectedViewerId,
         paper_id: paperId || notificationPaperId,
         user: "viewer",
@@ -91,8 +88,8 @@ const Chat = () => {
   }, [selectedViewerId, paperId]);
 
   useEffect(() => {
-    socket.on("comments", (msg) => {
-      // console.log("newComment", msg);
+    socket.on("viewer_comments", (msg) => {
+      console.log("viewer ki Comment", msg);
       const updatedComments = [...messages, ...msg];
       setMessages(updatedComments);
       // scrollToBottom();
@@ -153,7 +150,9 @@ const Chat = () => {
         {viewerData.map((viewer) => (
           <div
             key={viewer.viewer_id}
-            onClick={() => setSelectedViewerId(viewer.viewer_id || selectedViewerId)}
+            onClick={() =>
+              setSelectedViewerId(viewer.viewer_id || selectedViewerId)
+            }
             className={`viewer ${
               selectedViewerId === viewer.viewer_id ? "active" : ""
             }`}
@@ -173,7 +172,6 @@ const Chat = () => {
               className={`message ${
                 message.is_admin_comment === 1 ? "sent" : "received"
               }`}
-             
               ref={index === messages.length - 1 ? bottomOfChatRef : null}
             >
               <div
@@ -193,7 +191,6 @@ const Chat = () => {
                       : message.content === "Paper Rejected"
                       ? "red"
                       : "black",
-                 
                 }}
               >
                 {message.content}
@@ -221,7 +218,7 @@ const Chat = () => {
               alignItems: "center",
               justifyContent: "space-between",
               borderRadius: "10px",
-              width:"100%"
+              width: "100%",
             }}
           >
             <InputBase

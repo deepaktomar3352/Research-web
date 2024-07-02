@@ -27,11 +27,8 @@ export default function CommentSection(props) {
   useEffect(() => {
     // Initialize socket connection
     socket = io(`${ServerURL}/user-namespace`);
-    socket.emit("fetch_comments", {
-      user_id: props.user_id,
-      paper_id: props.paperId,
-      user: "user",
-    });
+    socket.emit("fetch_user_comments", {
+      user_id: props.user_id,});
     
 
     // socket.emit("user_reset_comment_count", props.paperId);
@@ -40,7 +37,7 @@ export default function CommentSection(props) {
     // });
 
     // Event listener for new comments from the server
-    socket.on("comments", (msg) => {
+    socket.on("user_comments", (msg) => {
       // console.log("newComment", msg);
       const updatedComments = [...showComments, ...msg];
       setShowComments(updatedComments);
@@ -51,7 +48,7 @@ export default function CommentSection(props) {
         socket.disconnect();
       }
     };
-  }, [props.paperId, props.user_id]);
+  }, [ServerURL,props.user_id]);
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);

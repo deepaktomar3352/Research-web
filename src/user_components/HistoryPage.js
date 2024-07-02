@@ -13,10 +13,9 @@ import { motion } from "framer-motion";
 import PaperDialog from "./PaperDialog";
 import { io } from "socket.io-client";
 import Paper_AcceptedSection from "./Paper_AcceptedSection";
-import Paper_RejectedSection from "./Paper_RejectedSection"
+import Paper_RejectedSection from "./Paper_RejectedSection";
 
 let socket;
-
 
 export default function HistoryPage() {
   const [papers, setPapers] = useState([]);
@@ -29,8 +28,6 @@ export default function HistoryPage() {
   const user = localStorage.getItem("user");
   const userObject = JSON.parse(user);
   const user_id = userObject.id;
-
-
 
   var itemsPerPage = 10;
   const offset = currentPage * itemsPerPage;
@@ -57,6 +54,18 @@ export default function HistoryPage() {
     fetchPapers();
   }, [fetchPapers]);
 
+  useEffect(() => {
+    socket = io(`${ServerURL}/user-namespace`);
+
+    socket.on("comment_count", (data) => {
+      console.log(data);
+      setNotifyCount(data);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [ServerURL]);
 
   // const handleUnCount = async (paperid) => {
   //   try {
@@ -71,25 +80,12 @@ export default function HistoryPage() {
   const handleComment = async (paperid) => {
     setPaperId(paperid[0]);
     setPaper_Title(paperid[1]);
-    console.log("titlte", paperId); 
-    socket.emit("user_reset_comment_count", paperid[0]);
+    const paper_id = paperid[0];
+    // console.log("titlteeeeeeeeee", { paper_id });
+    socket.emit("fetch_user_comments", { "paper_id": paper_id });
+    socket.emit("user_reset_comment_count", { "paper_id": paper_id });
     // handleUnCount(paperid);
   };
-
-  useEffect(() => {
-
-    socket = io(`${ServerURL}/user-namespace`)
-
-    socket.on('comment_count',(data)=>{
-      setNotifyCount(data)
-    })
-
-    return () => {
-      socket.disconnect();
-    };
-
-  }, [ServerURL]);
-
 
   const handleOpenDocument = (person) => {
     setReplyDialogOpen(true);
@@ -98,11 +94,10 @@ export default function HistoryPage() {
 
   return (
     <motion.div
-    initial={{  opacity: 0 }}
-    animate={{ opacity: 1, transition: { duration: 1.5 } }}
-    exit={{  opacity: 0, transition: { duration: 0.2 } }}
-    
-  >
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { duration: 1.5 } }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+    >
       <Grid container spacing={0.5}>
         {/* paper and articles HistoryPage */}
         <Grid item xs={12} md={8} lg={8}>
@@ -193,7 +188,10 @@ export default function HistoryPage() {
                                         fontSize: 25,
                                       }}
                                       onClick={() => {
-                                        handleComment([paper.paper_id,paper.paper_title]);
+                                        handleComment([
+                                          paper.paper_id,
+                                          paper.paper_title,
+                                        ]);
                                       }}
                                     />
                                   </Badge>
@@ -217,14 +215,17 @@ export default function HistoryPage() {
                                     fontSize: 25,
                                   }}
                                   onClick={() => {
-                                    handleComment([paper.paper_id,paper.paper_title]);
+                                    handleComment([
+                                      paper.paper_id,
+                                      paper.paper_title,
+                                    ]);
                                   }}
                                 />
                               </Badge>
                             )}
                           </center>
                         </td>
-                        
+
                         <td data-label="Action">
                           <center>
                             <div
@@ -282,8 +283,8 @@ export default function HistoryPage() {
         fetchPapers={fetchPapers}
         handleReplyDialogClose={() => setReplyDialogOpen(false)}
       />
-      <Paper_AcceptedSection/>
-      <Paper_RejectedSection/>
+      <Paper_AcceptedSection />
+      <Paper_RejectedSection />
     </motion.div>
   );
 }

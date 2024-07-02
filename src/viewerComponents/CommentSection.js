@@ -41,16 +41,12 @@ export default function CommentSection(props) {
   }, []);
 
   useEffect(() => {
-    // Initialize socket connection
     socket = io(`${ServerURL}/viewer-namespace`);
-    socket.emit("fetch_comments", {
-      viewer_id: props.viewer_id,
-      paper_id: props.paperId,
-      user: "viewer",
-    });
+
+    socket.emit("fetch_viewer_comments", {viewer_id: props.viewer_id});
 
     // Event listener for new comments from the server
-    socket.on("comments", (msg) => {
+    socket.on("viewer_comments", (msg) => {
       console.log("newComment", msg);
       const updatedComments = [...showComments, ...msg];
       setShowComments(updatedComments);
@@ -61,7 +57,7 @@ export default function CommentSection(props) {
         socket.disconnect();
       }
     };
-  }, [props.paperId, props.viewer_id]);
+  }, [props.viewer_id]);
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
@@ -93,14 +89,11 @@ export default function CommentSection(props) {
     try {
       const body = {
         comment: comment.text,
-        is_admin_comment: "0",
         viewer_id: props.viewer_id,
         paper_id: props.paperId,
         user: "viewer",
       };
-      socket.emit("new_comment", body);
-      // const response = await postData("viewer/send_comment", body);
-      // console.log("Response:", response.data);
+      socket.emit("new_viewer_comment", body);
     } catch (error) {
       console.error("Error submitting comment:", error);
     }

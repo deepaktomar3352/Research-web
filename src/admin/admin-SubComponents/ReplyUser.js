@@ -41,7 +41,7 @@ export default function ReplyUser(props) {
   useEffect(() => {
     // Initialize socket connection
     socket = io(`${ServerURL}/admin-namespace`);
-    socket.emit("fetch_comments", {
+    socket.emit("fetch_admin_comments", {
       user_id: props.person.user_id || props.person.id,
       paper_id: props.person.paper_id,
       user: "user",
@@ -52,7 +52,7 @@ export default function ReplyUser(props) {
 
     
     // Event listener for new comments from the server
-    socket.on("comments", (msg) => {
+    socket.on("user_comments", (msg) => {
       // console.log("newComment", msg);
       const updatedComments = [ ...showComments, ...msg ];
       setShowComments(updatedComments);

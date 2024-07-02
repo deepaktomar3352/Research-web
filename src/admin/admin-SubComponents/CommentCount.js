@@ -46,7 +46,7 @@ export default function CommentCount() {
 
    
 
-    socket.on("new_comments", (count) => {
+    socket.on("notification_comments", (count) => {
       // console.log("comments", count);
       setComments({
         userComments: count.userComments,
@@ -70,18 +70,14 @@ export default function CommentCount() {
 
   const handleCommentClick = async (person) => {
     if (person.commentType === "user") {
-      setReplyDialogOpen(true);
-      console.log("clicked",person)
-      setPersonData(person);
       socket.emit("uncount_admin_notification",person)
-      // const body = person;
-      // var result = await postData(`admin/uncount_admin_notification`, body);
+      setReplyDialogOpen(true);
+      setPersonData(person);
     }
     if (person.commentType === "viewer") {
-      dispatch(setViewerId(person))
+      const viewerId = person.Viewer_id; 
+      dispatch(setViewerId(viewerId))
       socket.emit("uncount_admin_notification",person)
-      // const body = person;
-      // var result = await postData(`admin/uncount_admin_notification`, body);
     }
   };
 

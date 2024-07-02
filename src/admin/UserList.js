@@ -179,15 +179,15 @@ const UserList = () => {
     setPersonData(person);
   };
 
+
   return (
     <div>
       <h2 className="title">Paper List</h2>
       {peopleData.length > 0 ? (
         peopleData.map((person) => (
           <div
-            onClick={() => {
-              dispatch(setPaperId(person.paper_id));
-            }}
+          style={{cursor: 'pointer'}}
+            onClick={() => {dispatch(setPaperId(person.paper_id))}}
             key={person.paper_id}
             className="user-list-container"
           >
@@ -227,7 +227,7 @@ const UserList = () => {
                   </div>
                   <span
                     style={{
-                      marginLeft: "3rem",
+                      marginLeft: "50px",
                       fontSize: 12,
                       display: "flex",
                       flexDirection: "column",
