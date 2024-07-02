@@ -189,7 +189,6 @@ const UserList = () => {
             onClick={() => {
               dispatch(setPaperId(person.paper_id));
             }}
-            style={{cursor:"pointer"}}
             key={person.paper_id}
             className="user-list-container"
           >
